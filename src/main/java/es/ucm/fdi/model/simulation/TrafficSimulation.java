@@ -4,16 +4,52 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.SwingUtilities;
 
 import es.ucm.fdi.ini.Ini;
 import es.ucm.fdi.model.SimObj.Junction;
 import es.ucm.fdi.model.SimObj.Road;
 import es.ucm.fdi.model.SimObj.Vehicle;
 import es.ucm.fdi.model.events.Event;
+import es.ucm.fdi.util.EventType;
 import es.ucm.fdi.util.MultiTreeMap;
 
 public class TrafficSimulation {
 
+	// Clases internas para manejo de eventos
+	
+	public interface Listener {
+		void update(UpdateEvent ue, String error);
+	}
+	
+	public class UpdateEvent {
+		
+		EventType event;
+		
+		public UpdateEvent(EventType ev){
+			event = ev;
+		}
+		
+		public EventType getEvent() {
+			return event;
+		}
+		
+		public RoadMap getRoadMap() {
+			return roadMap;
+		}
+		
+		public MultiTreeMap<Integer, Event> getEventQueue() {
+			return events;
+		}
+		
+		public int getCurrentTime() {
+			return time;
+		}
+	}
+
+	
 	/**
 	 * Mapa de eventos donde: Integer representa el tiempo de
 	 * ejecución de un evento, Event para añadir listas de eventos
@@ -32,6 +68,8 @@ public class TrafficSimulation {
 	 */
 	private int time;
 
+	private ArrayList<Listener> listeners;
+	
 	public TrafficSimulation() {
 		// Listas vacías. 
 		events = new MultiTreeMap<>();
@@ -136,6 +174,35 @@ public class TrafficSimulation {
 			else {
 				throw new NonExistingSimObjException("Vehicle with id: " + id + " to make faulty not found.");
 			}
+		}
+	}
+	
+	/**
+	 *  Añade un listener a la lista (además, implementa registered).
+	 *  @param l es el listener a añadir
+	 */
+	public void addSimulatorListener(Listener l) {
+		listeners.add(l);
+		UpdateEvent ue = new UpdateEvent(EventType.REGISTERED);
+		// evita pseudo-recursividad
+		// Error?
+		SwingUtilities.invokeLater(()->l.update(ue,"Registered error."));
+	}
+	
+	/**
+	 *  Elimina un listener de la lista.
+	 *  @param l es el listener a eliminar
+	 */
+	public void removeListener(Listener l) {
+		listeners.remove(l);
+	}
+	
+	// uso interno, evita tener que escribir el mismo bucle muchas veces
+	private void fireUpdateEvent(EventType type, String error) {
+		//TODO
+		UpdateEvent ue = new UpdateEvent(type);
+		for(Listener l : listeners){
+			l.update(ue, error);
 		}
 	}
 
