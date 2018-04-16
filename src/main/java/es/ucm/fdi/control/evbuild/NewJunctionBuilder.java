@@ -6,11 +6,11 @@ import es.ucm.fdi.model.events.NewJunction;
 
 public class NewJunctionBuilder extends EventBuilder{
 	
-	public NewJunctionBuilder(){
+	public NewJunctionBuilder() {
 		super("new_junction");
 	}
 	
-	//Parser de NewJunction
+	// Parser de NewJunction
 	@Override
 	Event parse(IniSection ini) throws IllegalArgumentException{
 		//Comprobación de que es un NewJunction

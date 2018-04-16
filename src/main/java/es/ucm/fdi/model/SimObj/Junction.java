@@ -22,7 +22,7 @@ public class Junction extends SimObject {
 	/**
 	 * Entero que mediante la operación módulo representa el semáforo encendido.
 	 */
-	private int light;	
+	protected int light;	
 	
 	public Junction(String identifier) {
 		super(identifier);
@@ -40,36 +40,33 @@ public class Junction extends SimObject {
 	 */
 	@Override
 	public void proceed() {
-		// 1 //
-		// El primer vehículo esperando en la carretera con el semáforo
-		// abierto avanza si no está averiado.
-
-		// Carretera con el semáforo en verde.
-		if (light != -1) {
-			Road greenRoad = incomingRoads.get(light);
-
-			if ( ! greenRoad.noVehiclesWaiting() ) {
-				// El vehículo cruza si no está averiado.
-				try {
-					greenRoad.moveWaitingVehicles();
-				}
-				catch (SimulationException e) {
-					System.err.println( e.getMessage() );
-				}
-			}
-
-			// 2 //
-			// Se actualiza el indicador resp. de la carretera.
-			greenRoad.setLight(false);
+		
+		if (light == -1) {
+			// Número de carreteras entrantes en el cruce.
+			int numIncomingRoads = incomingRoads.size();
 			
-			// 3 //
+			// Avanza en 1 el semáforo circular.
+			light = (light + 1) % numIncomingRoads;
+
+			// El semáforo de la carretera se pone verde.
+			incomingRoads.get(light).setLight(true);
+		}
+		else {
+			// 1 //
+			// El primer vehículo esperando en la carretera con el semáforo
+			// abierto avanza si no está averiado.
+			Road greenRoad = incomingRoads.get(light);
+			
+			roadAdvance(greenRoad);
+			
+			// 2 //
 			// Se reduce el tiempo de avería de los vehículos en la cola de espera.
 			greenRoad.refreshWaiting();
-		}
-		
-		// 4 //
-		// Se actualiza el semáforo del cruce.
-		lightAdvance();		
+
+			// 3 //
+			// Se actualiza el semáforo del cruce.
+			lightAdvance();		
+		}		
 	}
 	
 	/**
@@ -84,6 +81,26 @@ public class Junction extends SimObject {
 
 		// El semáforo de la carretera se pone verde.
 		incomingRoads.get(light).setLight(true);
+	}
+
+	/**
+	 * Avanza un vehículo esperando en una incomingRoad.
+	 */
+	private void roadAdvance(Road greenRoad) {
+		// Si hay vehículos esperando.
+		if ( ! greenRoad.noVehiclesWaiting() ) {
+			// El vehículo cruza si no está averiado.
+			try {
+				greenRoad.moveWaitingVehicles();
+			}
+			catch (SimulationException e) {
+				System.err.println( e.getMessage() );
+			}
+		}
+
+		// * //
+		// Se actualiza el indicador resp. de la carretera.
+		greenRoad.setLight(false);
 	}
 
 	/**

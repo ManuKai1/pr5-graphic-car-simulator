@@ -7,9 +7,10 @@ import es.ucm.fdi.model.simulation.TrafficSimulation;
 
 public class NewJunction extends Event{
 
-	private String id;
+	protected String id;
 	
-	public NewJunction(int newTime, String ID) throws IniError{
+	// throws IniError ?
+	public NewJunction(int newTime, String ID) {
 		super(newTime);
 		id = ID;	
 	}
