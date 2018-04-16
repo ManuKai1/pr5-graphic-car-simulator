@@ -245,10 +245,14 @@ public class Road extends SimObject {
 	}	
 
 	/**
-	 * Mueve el primer vehicle a la espera en un Junction a sus respectiva
-	 * Road de salida.
+	 * Mueve el primer <code>Vehicle</code> a la espera en la <code>Junction</code> 
+	 * de salida de la <code>Road</code> a su correspondiente <code>Road</code> 
+	 * de indicada por la ruta.
+	 * 
+	 * @return si ha cruzado el <code>Vehicle</code>
+	 * @throws SimulationException si la <code>Road</code> está en rojo
 	 */
-	public boolean moveWaitingVehicles() throws SimulationException {
+	public boolean moveWaitingVehicle() throws SimulationException {
 		// EXCEPCIÓN: si se llama con semáforo en rojo.
 		if ( isGreen ) {
 			boolean hasCrossed = false;
@@ -379,6 +383,41 @@ public class Road extends SimObject {
 	}
 
 	/**
+	 * Devuelve un StringBuilder con el estado de la cola de
+	 * espera de la Road. 
+	 * Ejemplo:
+	 * (r2,green,[v3,v2,v5])
+	 * 
+	 * @param lightTime tiempo restante que el semáforo estará encendido
+	 * @return StringBuilder with state of waiting list
+	 */
+	public StringBuilder getWaitingState(int lightTime) {
+		StringBuilder state = new StringBuilder();
+		// ID
+		state.append("(" + getID() + ",");
+		// Semáforo
+		state.append(isGreen ? "green" : "red");
+		// Tiempo de semáforo
+		state.append(":" + lightTime);
+		// Cola de espera
+		state.append(",[");
+		if (waiting.isEmpty()) {
+			state.append("]");
+		} else {
+			for (Vehicle v : waiting) {
+				state.append(v.getID() + ",");
+			}
+			if (waiting.size() > 0) {
+				state.deleteCharAt(state.length() - 1);
+			}
+			state.append("]");
+		}
+		state.append(")");
+
+		return state;
+	}
+
+	/**
 	 * A partir de los datos de la carretera genera una IniSection
 	 * @param simTime tiempo del simulador
 	 * @return IniSection report de la carretera
@@ -442,6 +481,13 @@ public class Road extends SimObject {
 	}
 
 	/**
+	 * @return if lights are green
+	 */
+	public boolean isGreen() {
+		return isGreen;
+	}
+
+	/**
 	 * @returns if waiting cue is empty
 	 */
 	public boolean noVehiclesWaiting() {
@@ -480,6 +526,16 @@ public class Road extends SimObject {
 	 */
 	public ArrayDeque<Vehicle> getEntryRecord() {
 		return entryRecord;
+	}
+
+	/**
+	 * Devuelve el número de <code>Vehicles</code> esperando
+	 * en la cola <code>waiting</code>.
+	 * 
+	 * @return número de <code>Vehicles</code> esperando.
+	 */
+	public int getNumWaitingVehicles() {
+		return waiting.size();
 	}
 	
 	public boolean equals(Object obj){
