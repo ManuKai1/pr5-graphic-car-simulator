@@ -2,11 +2,11 @@ package es.ucm.fdi.control.evbuild;
 
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.events.Event;
-import es.ucm.fdi.model.events.NewJunction;
+import es.ucm.fdi.model.events.NewRobinJunction;
 
 public class NewRobinJunctionBuilder extends EventBuilder {
     
-    public NewJunctionBuilder() {
+    public NewRobinJunctionBuilder() {
 		super("new_junction");
     }
     

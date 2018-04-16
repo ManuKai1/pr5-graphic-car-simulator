@@ -248,9 +248,11 @@ public class Road extends SimObject {
 	 * Mueve el primer vehicle a la espera en un Junction a sus respectiva
 	 * Road de salida.
 	 */
-	public void moveWaitingVehicles() throws SimulationException {
+	public boolean moveWaitingVehicles() throws SimulationException {
 		// EXCEPCIÓN: si se llama con semáforo en rojo.
 		if ( isGreen ) {
+			boolean hasCrossed = false;
+
 			// Primer vehículo que está esperando.
 			Vehicle toMove = waiting.getFirst();
 
@@ -262,7 +264,11 @@ public class Road extends SimObject {
 
 				// Se mueve a la siguiente carretera.
 				toMove.moveToNextRoad();
+
+				hasCrossed = true;
 			}
+
+			return hasCrossed;
 		}
 		else {
 			throw new SimulationException("Tried to advance waiting vehicle with red traffic lights in road with id: " + id);

@@ -4,10 +4,8 @@ import java.util.ArrayList;
 
 import es.ucm.fdi.model.SimObj.BikeVehicle;
 import es.ucm.fdi.model.SimObj.Junction;
-import es.ucm.fdi.model.SimObj.Vehicle;
 import es.ucm.fdi.model.simulation.AlreadyExistingSimObjException;
 import es.ucm.fdi.model.simulation.NonExistingSimObjException;
-import es.ucm.fdi.model.simulation.SimulationException;
 import es.ucm.fdi.model.simulation.TrafficSimulation;
 
 public class NewBikeVehicle extends NewVehicle {

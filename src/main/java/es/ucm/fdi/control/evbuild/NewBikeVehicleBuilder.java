@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.model.events.NewBikeVehicle;
-import es.ucm.fdi.model.events.NewVehicle;
 
 public class NewBikeVehicleBuilder extends EventBuilder {
 	

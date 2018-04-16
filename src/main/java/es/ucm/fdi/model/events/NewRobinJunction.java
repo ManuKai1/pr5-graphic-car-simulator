@@ -1,10 +1,6 @@
 package es.ucm.fdi.model.events;
 
-import es.ucm.fdi.ini.IniError;
-import es.ucm.fdi.model.SimObj.Junction;
 import es.ucm.fdi.model.SimObj.RobinJunction;
-import es.ucm.fdi.model.simulation.AlreadyExistingSimObjException;
-import es.ucm.fdi.model.simulation.TrafficSimulation;
 
 public class NewRobinJunction extends NewJunction {
     
@@ -21,7 +17,7 @@ public class NewRobinJunction extends NewJunction {
      * del evento.
      */
     @Override
-    protected RobinJunction newRoad(TrafficSimulation sim) throws NonExistingSimObjException {
+    protected RobinJunction newJunction() {
         return new RobinJunction(id, minTime, maxTime);
     }
 }

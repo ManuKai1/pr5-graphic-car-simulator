@@ -7,17 +7,17 @@ import es.ucm.fdi.model.simulation.SimulationException;
 
 public class Junction extends SimObject {
 	
-	private final String REPORT_TITLE = "[junction_report]";
+	protected final String REPORT_TITLE = "[junction_report]";
 
 	/**
 	 * Lista de carreteras entrantes en el cruce.
 	 */
-	private ArrayList<Road> incomingRoads;
+	protected ArrayList<Road> incomingRoads;
 
 	/**
 	 * Lista de carreteras salientes en el cruce.
 	 */
-	private ArrayList<Road> exitRoads;
+	protected ArrayList<Road> exitRoads;
 
 	/**
 	 * Entero que mediante la operación módulo representa el semáforo encendido.
@@ -41,12 +41,10 @@ public class Junction extends SimObject {
 	@Override
 	public void proceed() {
 		
-		if (light == -1) {
-			// Número de carreteras entrantes en el cruce.
-			int numIncomingRoads = incomingRoads.size();
-			
-			// Avanza en 1 el semáforo circular.
-			light = (light + 1) % numIncomingRoads;
+		if (light == -1) {			
+			// Primera carretera 
+			// (suponemos que todo cruce tiene al menos una carretera entrante)
+			light += 1;
 
 			// El semáforo de la carretera se pone verde.
 			incomingRoads.get(light).setLight(true);
@@ -56,7 +54,6 @@ public class Junction extends SimObject {
 			// El primer vehículo esperando en la carretera con el semáforo
 			// abierto avanza si no está averiado.
 			Road greenRoad = incomingRoads.get(light);
-			
 			roadAdvance(greenRoad);
 			
 			// 2 //
@@ -72,7 +69,7 @@ public class Junction extends SimObject {
 	/**
 	 * Actualiza el semáforo circular de una Junction.
 	 */
-	private void lightAdvance() {
+	protected void lightAdvance() {
 		// Número de carreteras entrantes en el cruce.
 		int numIncomingRoads = incomingRoads.size();
 		
@@ -86,7 +83,7 @@ public class Junction extends SimObject {
 	/**
 	 * Avanza un vehículo esperando en una incomingRoad.
 	 */
-	private void roadAdvance(Road greenRoad) {
+	protected void roadAdvance(Road greenRoad) {
 		// Si hay vehículos esperando.
 		if ( ! greenRoad.noVehiclesWaiting() ) {
 			// El vehículo cruza si no está averiado.

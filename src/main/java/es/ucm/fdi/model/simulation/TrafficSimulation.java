@@ -2,7 +2,6 @@ package es.ucm.fdi.model.simulation;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 import es.ucm.fdi.ini.Ini;
