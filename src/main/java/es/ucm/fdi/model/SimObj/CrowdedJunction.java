@@ -3,7 +3,6 @@ package es.ucm.fdi.model.SimObj;
 import java.util.HashMap;
 
 import es.ucm.fdi.ini.IniSection;
-import es.ucm.fdi.model.simulation.SimulationException;
 
 public class CrowdedJunction extends Junction {
 
