@@ -4,15 +4,31 @@ import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.model.events.NewRobinJunction;
 
+/**
+ * Clase que construye un evento <code>NewRobinJunction</code> utilizado para
+ * crear un <code>RobinJunction</code> en la simulación.
+ */
 public class NewRobinJunctionBuilder extends EventBuilder {
     
     private final String type = "rr";
 
+    /**
+     * Constructor de <code>NewRobinJunctionBuilder</code> que pasa
+     * el parámetro <code>new_junction</code> al constructor de la
+     * superclase.
+     */
     public NewRobinJunctionBuilder() {
 		super("new_junction");
     }
     
-    // Parser de NewRobinJunction
+    /**
+     * Método de <code>parsing</code> de <code>NewRobinJunctionBuilder</code> que comprueba
+     * si la <code>IniSection</code> pasada como argumento representa un <code>NewRobinJunction</code>
+     * y si sus parámetros son correctos.
+     * 
+     * @param ini <code>IniSection</code> a parsear.
+     * @return <code>NewRobinJunction</code> o <code>null</code>.
+     */
 	@Override
 	Event parse(IniSection ini) throws IllegalArgumentException {
         boolean match = false;

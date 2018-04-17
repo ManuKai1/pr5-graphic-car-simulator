@@ -4,15 +4,31 @@ import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.model.events.NewCrowdedJunction;
 
+/**
+ * Clase que construye un evento <code>NewCrowdedJunction</code> utilizado para
+ * crear un <code>CrowdedJunction</code> en la simulación.
+ */
 public class NewCrowdedJunctionBuilder extends EventBuilder {
 
     private final String type = "mc";
 
+    /**
+     * Constructor de <code>NewCrowdedJunctionBuilder</code> que pasa
+     * el parámetro <code>new_junction</code> al constructor de la
+     * superclase.
+     */
     public NewCrowdedJunctionBuilder() {
         super("new_junction");
     }
 
-    // Parser de NewCrowdedJunction
+    /**
+     * Método de <code>parsing</code> de <code>NewCrowdedJunctionBuilder</code> que comprueba
+     * si la <code>IniSection</code> pasada como argumento representa un <code>NewCrowdedJunction</code>
+     * y si sus parámetros son correctos.
+     * 
+     * @param ini <code>IniSection</code> a parsear.
+     * @return <code>NewCrowdedJunction</code> o <code>null</code>.
+     */
     @Override
     Event parse(IniSection ini) throws IllegalArgumentException {
         boolean match = false;

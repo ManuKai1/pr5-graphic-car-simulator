@@ -4,8 +4,19 @@ import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.model.events.NewHighwayRoad;
 
+/**
+ * Clase que construye un evento <code>NewHighwayRoad</code> utilizado para
+ * crear un <code>HighwayRoad</code> en la simulación.
+ */
 public class NewHighwayRoadBuilder extends EventBuilder {
 
+    private final String type = "lanes";
+
+    /**
+     * Constructor de <code>NewHighwayRoadBuilder</code> que pasa
+     * el parámetro <code>new_road</code> al constructor de la
+     * superclase.
+     */
     public NewHighwayRoadBuilder() {
         super("new_road");
     }
@@ -15,7 +26,7 @@ public class NewHighwayRoadBuilder extends EventBuilder {
         boolean match = false;
 
         // Se comprueba si es una NewHighwayRoad.
-		if ( ini.getTag().equals(iniName) && ini.getValue("type").equals("lanes") ) {
+		if ( ini.getTag().equals(iniName) && ini.getValue("type").equals(type) ) {
 			match = true;
 		}
 
@@ -100,9 +111,8 @@ public class NewHighwayRoadBuilder extends EventBuilder {
             // New Highway Road.
             NewHighwayRoad road = new NewHighwayRoad(time, id, length, maxSpeed, src, dest, lanes);
             return road;
-        } else
-            return null;
+        } 
+        else return null;
     }
-
 }
 
