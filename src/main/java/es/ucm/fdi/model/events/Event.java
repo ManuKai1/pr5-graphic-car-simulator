@@ -41,6 +41,7 @@ public abstract class Event {
 	 * Comprueba si el <code>Event</code> es igual a un objeto dado
 	 * <code>obj</code>.
 	 * 
+	 * @param obj objeto a comparar
 	 * @return if <code>Event</code> equals <code>obj</code>
 	 */
 	public boolean equals(Object obj) {

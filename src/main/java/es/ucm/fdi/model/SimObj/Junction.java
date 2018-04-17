@@ -132,7 +132,7 @@ public class Junction extends SimObject {
 		section.setValue("time", simTime);
 		section.setValue("queues", getQueuesValue() );
 
-
+		
 		return section;
 	}
 

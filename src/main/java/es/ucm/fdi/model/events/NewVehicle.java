@@ -133,6 +133,7 @@ public class NewVehicle extends Event {
 	 * máxima y la ruta son iguales. 
 	 * </p>
 	 * 
+	 * @param obj objeto a comparar
 	 * @return if <code>NewVehicle</code> equals <code>obj</code>
 	 */
 	@Override

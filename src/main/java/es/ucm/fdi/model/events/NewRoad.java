@@ -117,6 +117,7 @@ public class NewRoad extends Event {
 	 * el límite de velocidad y las <code>Junctions</code> de entrada y salida son iguales.
 	 * </p>
 	 * 
+	 * @param obj objeto a comparar
 	 * @return if <code>NewRoad</code> equals <code>obj</code>
 	 */
 	@Override

@@ -69,6 +69,7 @@ public class NewJunction extends Event {
 	 * En el caso de <code>NewJunction</code>, comprueba también que los IDs sean iguales.
 	 * </p>
 	 * 
+	 * @param obj objeto a comparar
 	 * @return if <code>NewJunction</code> equals <code>obj</code>
 	 */
 	@Override

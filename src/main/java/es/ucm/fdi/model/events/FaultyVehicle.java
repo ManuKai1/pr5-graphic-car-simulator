@@ -63,6 +63,7 @@ public class FaultyVehicle extends Event {
 	 * vehículos a averiar y el tiempo de avería sean iguales.
 	 * </p>
 	 * 
+	 * @param obj objeto a comparar
 	 * @return if <code>FaultyVehicleEvent</code> equals <code>obj</code>
 	 */
 	@Override
