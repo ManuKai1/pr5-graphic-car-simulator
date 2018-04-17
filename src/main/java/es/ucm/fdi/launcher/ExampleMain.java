@@ -21,11 +21,32 @@ import es.ucm.fdi.ini.Ini;
 
 public class ExampleMain {
 
+	/**
+	 * Default time limit if none indicated by user.
+	 */
 	private final static Integer _timeLimitDefaultValue = 10;
+	
+	/**
+	 * Execution time limit: number of ticks the simulator will do.
+	 */
 	private static Integer _timeLimit = null;
+
+	/**
+	 * <code>String</code> with the input file pathname.
+	 */
 	private static String _inFile = null;
+
+	/**
+	 * <code>String</code> with the output file pathname.
+	 */
 	private static String _outFile = null;
 
+	/**
+	 * Parses introduced <code>args</code>. If error found, a <code>ParseException</code>
+	 * is caught and program exits with <code>1</code>.
+	 * 
+	 * @param args arguments of command line
+	 */
 	private static void parseArgs(String[] args) {
 
 		// define the valid command line options
@@ -61,9 +82,10 @@ public class ExampleMain {
 	}
 
 	/**
-	 * Genera y devuelve una colección de opciones posibles de línea
-	 * de comando.
-	 * @return colección de opciones
+	 * Generates and returns a collection of possible <code>Options</code> to be
+	 * used in a <code>CommandLine</code>.
+	 * 
+	 * @return collection of <code>Options</code>
 	 */
 	private static Options buildOptions() {
 		// Colección
@@ -74,48 +96,61 @@ public class ExampleMain {
 			Option.builder("h")
 			.longOpt("help")
 			.desc("Print this message")
-			.build());
+			.build()
+		);
+		
 		// Comando de input: -i; --input; <arg.ini>; "Events input file"
 		cmdLineOptions.addOption(
 			Option.builder("i")
 			.longOpt("input")
 			.hasArg()
 			.desc("Events input file")
-			.build());
+			.build()
+		);
+		
 		// Comando de salida: -o; --output; <arg.ini>; "Output file, where reports are written"
 		cmdLineOptions.addOption(
-				Option.builder("o")
-				.longOpt("output")
-				.hasArg()
-				.desc("Output file, where reports are written.")
-				.build());
+			Option.builder("o")
+			.longOpt("output")
+			.hasArg()
+			.desc("Output file, where reports are written.")
+			.build()
+		);
+		
 		// Comando de ticks: -t; --ticks; <x>; "Ticks to execute the simulator's main loop..."
 		cmdLineOptions.addOption(
 			Option.builder("t")
 			.longOpt("ticks")
 			.hasArg()
 			.desc("Ticks to execute the simulator's main loop (default value is " + _timeLimitDefaultValue + ").")
-			.build());
+			.build()
+		);
 
 		return cmdLineOptions;
 	}
 
 	/**
-	 * Si el comando tiene la opción de ayuda, se muestra la ayuda de todas las
-	 * opciones disponibles en cmdLineOptions.
+	 * If indicated in the command line, help is shown in console with the help message
+	 * of all possible options available to use in a command line.
+	 * 
+	 * @param line <code>CommandLine</code> introduced.
+	 * @param cmdLineOptions collection of <code>Options</code> available.
 	 */
 	private static void parseHelpOption(CommandLine line, Options cmdLineOptions) {
-		if (line.hasOption("h")) {
+		if ( line.hasOption("h") ) {
 			HelpFormatter formatter = new HelpFormatter();
 			formatter.printHelp(ExampleMain.class.getCanonicalName(), cmdLineOptions, true);
+			
 			System.exit(0);
 		}
 	}
 
 	/**
-	 * Actualiza el nombre del fichero de entrada de datos de la clase Main
-	 * con la opción dada en la línea de comando.
-	 * @throws ParseException if there is no events file
+	 * Modifies the input file name attribute: <code>_outFile</code> with the one indicated
+	 * in the command line, after parsing it.
+	 * 
+	 * @param line <code>CommandLine</code> introduced.
+	 * @throws ParseException if not a valid input file name.
 	 */
 	private static void parseInFileOption(CommandLine line) throws ParseException {
 		_inFile = line.getOptionValue("i");
@@ -125,21 +160,31 @@ public class ExampleMain {
 	}
 
 	/**
-	 * Actualiza el nombre del fichero de salida de la clase Main
-	 * con la opción dada en la línea de comando.
+	 * Modifies the output file name attribute: <code>_outFile</code> with the one indicated
+	 * in the command line, after partsing it.
+	 * 
+	 * @param line <code>CommandLine</code> introduced.
+	 * @throws ParseException if not a valid output file name.
 	 */
 	private static void parseOutFileOption(CommandLine line) throws ParseException {
 		_outFile = line.getOptionValue("o");
 	}
 
 	/**
-	 * Actualiza el número de pasos indicados por el comando en el
-	 * atributo _timeLimit de Main. Si no hay ninguno, por defecto es 10.
+	 * <p>
+	 * Updates the number of steps indicated by the command line and stored in attribute
+	 * <code>_timeLimit</code>.
+	 * </p> <p>
+	 * If no value is indicated, automatically set up to <code>_timeLimitDefaultValue</code>.
+	 * </p>
+	 * 
+	 * @param line <code>CommandLine</code> introduced
 	 * @throws ParseException if the time value is not valid
 	 */
 	private static void parseStepsOption(CommandLine line) throws ParseException {
-		// Si no se ha introducido ningún valor, se toma el por defecto.
+		// Si no se ha introducido ningún valor, se toma por defecto.
 		String t = line.getOptionValue("t", _timeLimitDefaultValue.toString());
+
 		// Se comprueba que el valor introducido sea válido.
 		try {
 			_timeLimit = Integer.parseInt(t);
@@ -150,60 +195,101 @@ public class ExampleMain {
 	}
 
 	/**
-	 * This method run the simulator on all files that ends with .ini if the given
-	 * path, and compares that output to the expected output. It assumes that for
-	 * example "example.ini" the expected output is stored in "example.ini.eout".
-	 * The simulator's output will be stored in "example.ini.out"
+	 * <p>
+	 * Runs the simulator on all files that end with <code>.ini</code> in the given
+	 * <code>path</code>, and compares that output to the expected output. 
+	 * </p> <p>
+	 * It assumed that for example <code>example.ini</code> the expected output is stored 
+	 * in <code>example.ini.eout</code>.
+	 * </p> <p>
+	 * The simulator's output will be stored in <code>example.ini.out</code>.
+	 * </p>
 	 * 
-	 * @throws IOException
+	 * @param path <code>String</code> with the directory path
+	 * @throws IOException if failure in reading/writing files.
 	 */
 	private static void test(String path) throws IOException {
-
+		// Directorio.
 		File dir = new File(path);
 
-		if ( !dir.exists() ) {
+		// Directorio ok?
+		if ( ! dir.exists() ) {
 			throw new FileNotFoundException(path);
 		}
 		
-		File[] files = dir.listFiles(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				return name.endsWith(".ini");
+		// Array de archivos de prueba (filtrado por "acabados en .ini")
+		File[] files = dir.listFiles( 
+			new FilenameFilter() {
+				@Override
+				public boolean accept(File dir, String name) {
+					return name.endsWith(".ini");
+				}
 			}
-		});
+		);
 
+		// Prueba de todos los archivos del directorio.
 		for (File file : files) {
-			test(file.getAbsolutePath(), file.getAbsolutePath() + ".out", file.getAbsolutePath() + ".eout",10);
+			test(
+				file.getAbsolutePath(), 
+				file.getAbsolutePath() + ".out", 
+				file.getAbsolutePath() + ".eout",
+				10
+			);
 		}
-
-	}
-
-	private static void test(String inFile, String outFile, String expectedOutFile, int timeLimit) throws IOException {
-		_outFile = outFile;
-		_inFile = inFile;
-		_timeLimit = timeLimit;
-		startBatchMode();
-		boolean equalOutput = (new Ini(_outFile)).equals(new Ini(expectedOutFile));
-		System.out.println("Result for: '" + _inFile + "' : "
-				+ (equalOutput ? "OK!" : ("not equal to expected output +'" + expectedOutFile + "'")));
 	}
 
 	/**
-	 * Run the simulator in batch mode
+	 * Runs the simulator on a file <code>inFile</code>, writes the simulation report in <code>outFile</code>, and
+	 * compares the result with the expected report stored in the file <code>expectedOutFile</code>. 
 	 * 
-	 * @throws IOException
+	 * @param inFile <code>String</code> with the input file abstract pathname
+	 * @param outFile <code>String</code> with the output file abstract pathname
+	 * @param expectedOutFile <code>String</code> with the expected output file abstract pathname
+	 * @param timeLimit execution time limit
+	 * @throws IOException if failure in reading/writing of files
+	 */
+	private static void test(String inFile, String outFile, String expectedOutFile, int timeLimit) throws IOException {
+		_inFile = inFile;
+		_outFile = outFile;		
+		_timeLimit = timeLimit;
+
+		// Ejecución en batch.
+		startBatchMode();
+
+		// Comprobación del resultado.
+		boolean equalOutput = ( new Ini(_outFile) ).equals( new Ini(expectedOutFile) );
+		
+		// Muestra por consola.
+		System.out.println(
+			"Result for: '" + _inFile + "' : " + 
+			( equalOutput ? ("OK!") : ("not equal to expected output +'" + expectedOutFile + "'") )
+ 		);
+	}
+
+	/**
+	 * Run the <code>Simulator</code> in <code>batch</code> mode.
+	 * 
+	 * @throws IOException if failure in reading/writing files.
 	 */
 	private static void startBatchMode() throws IOException {		
-		// Controlador.
+		// Argumentos
 		Ini iniInput = new Ini(_inFile);
 		File outFile = new File(_outFile);
 		OutputStream os = new FileOutputStream(outFile);
+
+		// Controlador
 		Controller control = new Controller(iniInput, os, _timeLimit);
 
 		// Ejecución
 		control.execute();
 	}
 
+	/**
+	 * Runs the <code>Simulator</code> in <code>command line</code> mode.
+	 * 
+	 * @param args simulation arguments
+	 * @throws IOException if failure in reading/writing files.
+	 */
 	private static void start(String[] args) throws IOException {
 		parseArgs(args);
 		startBatchMode();
@@ -211,24 +297,22 @@ public class ExampleMain {
 
 	public static void main(String[] args) throws IOException, InvocationTargetException, InterruptedException {
 
-		// example command lines:
-		//
-		// -i resources/examples/events/basic/ex1.ini
-		// -i resources/examples/events/basic/ex1.ini -o ex1.out
-		// -i resources/examples/events/basic/ex1.ini -t 20
-		// -i resources/examples/events/basic/ex1.ini -o ex1.out -t 20
-		// --help
+		/*
+		* Command lines, examples:
+		*
+		* -i resources/examples/events/basic/ex1.ini
+		* -i resources/examples/events/basic/ex1.ini -o ex1.out
+		* -i resources/examples/events/basic/ex1.ini -t 20
+		* -i resources/examples/events/basic/ex1.ini -o ex1.out -t 20
+		* --help
+		*/
 
-		// Call test in order to test the simulator on all examples in a directory.
-		//
+		// Simulation testing //
 		test("src/main/resources/examples/basic");
-		//Fallan los casos con las junctions avanzadas (esperado)
 		test("src/main/resources/examples/advanced");
 		test("src/main/resources/examples/err");
 
-		// Call start to start the simulator from command line, etc.
+		// Start simulator from command line //
 		// start(args);
-
 	}
-
 }
