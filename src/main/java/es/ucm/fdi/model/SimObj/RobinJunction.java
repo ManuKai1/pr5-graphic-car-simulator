@@ -5,18 +5,28 @@ import java.util.HashMap;
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.simulation.SimulationException;
 
+/**
+ * Clase que representa una intersección inteligente, que modifica
+ * la duración del semáforo según el flujo de las <code>Roads</code>,
+ * como un objeto de simulación.
+ */
 public class RobinJunction extends Junction {
 
     private final String type = "rr"; // round-robin
 
     /**
-     * Tiempos mínimo y máximo de duración de un semáforo.
+     * Tiempo mínimo de duración de un semáforo.
      */
-    protected int minLightTime, maxLightTime;
+    protected int minLightTime;
+    
+    /**
+     * Tiempo máximo de duración de un semáforo.
+     */
+    protected int maxLightTime;
 
     /**
-     * Mapa de incomingRoads a sus respectivos intervalos de duración
-     * de sus semáforos.
+     * Mapa de <code>incomingRoads</code> a sus respectivos intervalos 
+     * de duración de sus semáforos.
      */
     protected HashMap<Road, Integer> timeLapses;
 
@@ -26,17 +36,25 @@ public class RobinJunction extends Junction {
     protected int elapsedTime;
 
     /**
-     * Booleano que informa si en un cruce el semáforo ha estado abiero
-     * y en ningún momento ha pasado ningún coche.
+     * Booleano que informa si en una <code>RobinJunction</code> el semáforo ha 
+     * estado abierto y en ningún momento ha pasado ningún coche.
      */
     protected boolean uselessGreen;
 
     /**
-     * Booleano que informa si en un cruce el semáforo ha estado abierto
-     * y cada vez ha cruzado un coche.
+     * Booleano que informa si en una <code>RobinJunction</code> el semáforo ha 
+     * estado abierto y cada vez ha cruzado un coche.
      */
     protected boolean usefulGreen;
 
+
+    /**
+     * Constructor de <code>RobinJunction</code>.
+     * 
+     * @param identifier identificador del objeto
+     * @param minTime duración mínima del semáforo
+     * @param maxTime duración máxima del semáforo
+     */
     public RobinJunction(String identifier, int minTime, int maxTime) {
         super(identifier);
         minLightTime = minTime;
@@ -183,6 +201,7 @@ public class RobinJunction extends Junction {
      * @param simTime tiempo del simulador
      * @return informe <code>IniSection</code> de la <code>RobinJunction</code>
      */
+    @Override
 	public IniSection generateIniSection(int simTime) {
         // Se utiliza getQueuesValue() de RobinJunction.
         IniSection section = super.generateIniSection(simTime);         
@@ -192,7 +211,7 @@ public class RobinJunction extends Junction {
 	}
 
     /**
-     * {@inherirDoc}
+     * {@inheritDoc}
      * <p>
      * En una <code>RobinJunction</code> se incluye el tiempo restante del semáforo
      * de la <code>Road</code> en verde.
@@ -200,6 +219,7 @@ public class RobinJunction extends Junction {
      * 
      * @return <code>String</code> con las colas.
      */
+    @Override
     protected String getQueuesValue() {
         // Generación del string de queues
         StringBuilder queues = new StringBuilder();

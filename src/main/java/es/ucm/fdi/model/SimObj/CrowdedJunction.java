@@ -4,13 +4,18 @@ import java.util.HashMap;
 
 import es.ucm.fdi.ini.IniSection;
 
+/**
+ * Clase que representa una intersección inteligente, que modifica
+ * la duración y el orden del semáforo según el tamaño de las colas de
+ * las <code>incomingRoads</code>, como un objeto de simulación.
+ */
 public class CrowdedJunction extends Junction {
 
     private final String type = "mc"; // most-crowded
 
     /**
-     * Mapa de incomingRoads a sus respectivos intervalos de duración
-     * de sus semáforos.
+     * Mapa de <code>incomingRoads</code> a sus respectivos intervalos 
+     * de duración de sus semáforos.
      */
     protected HashMap<Road, Integer> timeLapses;
 
@@ -19,10 +24,15 @@ public class CrowdedJunction extends Junction {
     */
     protected int elapsedTime;
 
+    /**
+     * Constructor de <code>CrowdedJunction</code>.
+     * 
+     * @param identifier identificador del objeto
+     */
     public CrowdedJunction(String identifier) {
         super(identifier); // light: -1
 
-        // Al inicio de la sumulación, la duración de los semáforos es nula.
+        // Al inicio de la simulación, la duración de los semáforos es nula.
         timeLapses = new HashMap<>();
         for ( Road inc : incomingRoads ) {
             timeLapses.put(inc, 0);
@@ -165,7 +175,7 @@ public class CrowdedJunction extends Junction {
     }
 
     /**
-     * {@inherirDoc}
+     * {@inheritDoc}
      * <p>
      * En una <code>CrowdedJunction</code> se incluye el tiempo restante del semáforo
      * de la <code>Road</code> en verde.
@@ -173,6 +183,7 @@ public class CrowdedJunction extends Junction {
      * 
      * @return <code>String</code> con las colas.
      */
+    @Override
     protected String getQueuesValue() {
         // Generación del string de queues
         StringBuilder queues = new StringBuilder();
@@ -203,7 +214,7 @@ public class CrowdedJunction extends Junction {
     * @return tiempo restante del semáforo.
     */
     private int lastingLightTime(Road road) {
-        return timeLapses.get(road) - elapsedTime;
+        return ( timeLapses.get(road) - elapsedTime );
     }
 
     

@@ -5,17 +5,20 @@ import java.util.ArrayList;
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.simulation.SimulationException;
 
+/**
+ * Clase que representa una intersección como un objeto de simulación.
+ */
 public class Junction extends SimObject {
 	
 	protected final String REPORT_TITLE = "[junction_report]";
 
 	/**
-	 * Lista de carreteras entrantes en el cruce.
+	 * Lista de <code>Roads</code> entrantes en la <code>Junction</code>.
 	 */
 	protected ArrayList<Road> incomingRoads;
 
 	/**
-	 * Lista de carreteras salientes en el cruce.
+	 * Lista de <code>Roads</code> salientes en la <code>Junction</code>.
 	 */
 	protected ArrayList<Road> exitRoads;
 
@@ -24,11 +27,18 @@ public class Junction extends SimObject {
 	 */
 	protected int light;	
 	
+	/**
+	 * Constructor de <code>Junction</code>.
+	 * 
+	 * @param identifier identificador del objeto
+	 */
 	public Junction(String identifier) {
 		super(identifier);
+
 		// Listas vacías.
 		incomingRoads = new ArrayList<>();
 		exitRoads = new ArrayList<>();
+
 		// Todos los semáforos en rojo al principio.
 		light = -1;
 	}
@@ -37,6 +47,23 @@ public class Junction extends SimObject {
 	 * Método de AVANCE de Junction. Provoca el paso de los vehículos 
 	 * de la carretera entrante con el semáforo en verde. Finalmente, 
 	 * se actualiza el semáforo circular.
+	 */
+	/**
+	 * {@inheritDoc}
+	 * Método de AVANCE de <code>Junction</code>.
+	 * <p>
+	 * * En la primera iteración tras la creación de la <code>Junction</code>, se
+	 * produce la primera actualización del semáforo con <code>firstLightUpdate()</code>.
+	 * </p> <p>
+	 * En primer lugar, se actualiza en <code>roadUpdate(Road)</code> la cola de
+	 * la <code>greenRoad</code> con el semáforo en verde.
+	 * </p> <p>
+	 * En segundo lugar, se actualiza el tiempo de avería de los <code>Vehicles</code>
+	 * averiados en la cola de espera con <code>refreshWaiting()</code>.
+	 * </p> <p> 
+	 * Finalmente, se actualiza el semáforo de la <code>Junction</code> mediante
+	 * <code>lightUpdate()</code>.
+	 * </p>
 	 */
 	@Override
 	public void proceed() {
@@ -113,11 +140,11 @@ public class Junction extends SimObject {
 	}
 	
 	/**
-	 * Genera una <code>IniSection</code> a partir de los datos de la
-	 * <code>Junction</code>: <code>id, time, queues</code>
+	 * Genera una <code>IniSection</code> que informa de los atributos de la
+	 * <code>Junction</code> en el tiempo del simulador.
 	 * 
 	 * @param simTime tiempo del simulador
-	 * @return informe <code>IniSection</code> de la <code>Junction</code>
+	 * @return <code>IniSection</code> con información de la <code>Junction</code>
 	 */
 	public IniSection generateIniSection(int simTime) {
 		// 1 //
@@ -132,7 +159,7 @@ public class Junction extends SimObject {
 		section.setValue("time", simTime);
 		section.setValue("queues", getQueuesValue() );
 
-		
+
 		return section;
 	}
 
@@ -157,41 +184,61 @@ public class Junction extends SimObject {
 
 		return queues.toString();
 	}
+
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * En el caso de <code>Junction</code>, comprueba además todos los atributos
+	 * correspondientes.
+	 * </p>
+	 * 
+	 * @param obj objeto a comparar
+	 * @return if <code>Junction</code> equals <code>obj</code>.
+	 */
+	public boolean equals(Object obj) {
+		boolean same;
+		same = super.equals(obj);
+
+		if (same) {
+			Junction other = (Junction) obj;
+
+			same = (same && light == other.light);
+			same = (same && incomingRoads.equals(other.incomingRoads));
+			same = (same && exitRoads.equals(other.exitRoads));
+		}
+
+		return same;
+	}
 	
 	/**
-	 * Devuelve el ArrayList de carreteras entrantes
-	 * @return arrayList de carreteras entrantes.
+	 * Devuelve la lista de <code>Roads</code> entrantes
+	 * 
+	 * @return lista de <code>Roads</code> entrantes.
 	 */
 	public ArrayList<Road> getIncomingRoads() {
 		return incomingRoads;
 	}
 	
 	/**
-	 * Comprueba si el cruce tiene carreteras entrantes.
+	 * Comprueba si la <code>Junction</code> tiene <code>Roads</code> entrantes.
+	 * 
+	 * @return si <code>incomingRoads</code> no es vacía
 	 */
 	public boolean hasIncomingRoads() {
 		return (incomingRoads.size() > 0);
 	}
 
 	/**
-	 * Devuelve el ArrayList de carreteras salientes
-	 * @return arrayList de carreteras salientes.
+	 * Devuelve la lista de <code>Roads</code> salientes
+	 * 
+	 * @return lista de <code>Roads</code> salientes
 	 */
 	public ArrayList<Road> getExitRoads() {
 		return exitRoads;
 	}
 	
-	public boolean equals(Object obj){
-		boolean same;
-		same = super.equals(obj);
-		if(same){
-			Junction other = (Junction) obj;
-			same = same && light == other.light;
-			same = same && incomingRoads.equals(other.incomingRoads);
-			same = same && exitRoads.equals(other.exitRoads);
-		}
-		return same;
-	}
+
+	
 	
 
 

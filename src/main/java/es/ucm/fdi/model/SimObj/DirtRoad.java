@@ -4,26 +4,48 @@ import java.util.ArrayList;
 
 import es.ucm.fdi.ini.IniSection;
 
+/**
+ * Clase que representa un camino como un objeto de simulación.
+ * Hereda de <code>Road</code>.
+ */
 public class DirtRoad extends Road {
 
     private String type = "dirt";
 
+    /**
+     * Constructor de <code>DirtRoad</code>.
+     * 
+     * @param identifier identificador del objeto
+     * @param len longitud de la vía
+     * @param spLimit límite de velocidad
+     * @param fromJ <code>Junction</code> donde empieza
+     * @param toJ <code>Junction</code> donde acaba
+     */
     public DirtRoad(String identifier, int len, int spLimit, Junction fromJ, Junction toJ) {
         super(identifier, len, spLimit, fromJ, toJ);
     }
 
     /**
-    * Calcula la velocidad base de la DirtRoad: la velocidad máxima de la
-    * carretera.
-    */
+     * Calcula la velocidad base de la <code>DirtRoad</code>: el límite de
+     * velocidad <code>speedLimit</code>.
+     * 
+     * @return la velocidad base de la <code>DirtRoad</code>.
+     */
     @Override
     protected int getBaseSpeed() {
         return speedLimit;
     }
 
     /**
-     * Modifica la velocidad que llevarán los vehículos en el
-     * carretera (camino) previo avance.
+     * <p>
+     * Modifica la velocidad que llevarán los <code>Vehicles</code> en la
+     * <code>DirtRoad</code> previo avance.
+     * </p> <p>
+     * En la <code>DirtRoad</code>, el <code>reductionFactor</code> aumenta en uno
+     * por cada <code>Vehicle</code> averiado delante de un <code>Vehicle</code>.
+     * </p>
+     * 
+     * @param onRoad lista de <code>Vehicles</code> en <code>DirtRoad</code>.
      */
     @Override
     protected void vehicleSpeedModifier(ArrayList<Vehicle> onRoad) {
@@ -45,11 +67,34 @@ public class DirtRoad extends Road {
     }
 
     /**
-     * Informe de la HighwayRoad en cuestión, mostrando: id,
-     * tiempo de simulación, tipo y estado.
-     * @param simTime tiempo de simulación
-     * @returns well-formatted String representing a Road report
+     * Genera una <code>IniSection</code> que informa de los atributos de la
+     * <code>DirtRoad</code> en el tiempo del simulador.
+     * 
+     * @param simTime tiempo del simulador
+     * @return <code>IniSection</code> con información de la <code>DirtRoad</code>
      */
+    @Override
+    public IniSection generateIniSection(int simTime) {
+        IniSection section = super.generateIniSection(simTime);
+        section.setValue("type", type);
+        
+        return section;
+    }
+
+
+
+
+
+
+
+
+
+    /**
+    * Informe de la HighwayRoad en cuestión, mostrando: id,
+    * tiempo de simulación, tipo y estado.
+    * @param simTime tiempo de simulación
+    * @returns well-formatted String representing a Road report
+    */
     @Override
     public String getReport(int simTime) {
         StringBuilder report = new StringBuilder();
@@ -66,23 +111,5 @@ public class DirtRoad extends Road {
         report.append(getRoadState());
 
         return report.toString();
-    }
-
-    /**
-     * A partir de los datos de la carretera (autopista) genera una IniSection
-     * @param simTime tiempo del simulador
-     * @return IniSection report de la carretera
-     */
-    @Override
-    public IniSection generateIniSection(int simTime) {
-        String tag = REPORT_TITLE;
-        //Creación de etiqueta (sin corchetes)
-        tag = (String) tag.subSequence(1, tag.length() - 1);
-        IniSection section = new IniSection(tag);
-        section.setValue("id", id);
-        section.setValue("time", simTime);
-        section.setValue("type", type);
-        section.setValue("state", getRoadState().toString());
-        return section;
     }
 }
