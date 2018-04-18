@@ -202,14 +202,37 @@ public class RobinJunction extends Junction {
      * @return informe <code>IniSection</code> de la <code>RobinJunction</code>
      */
     @Override
-	public IniSection generateIniSection(int simTime) {
+    public IniSection generateIniSection(int simTime) {
+        // 1 //
+        // Se crea la etiqueta de la sección (sin corchetes).
+        String tag = REPORT_TITLE;
+        tag = (String) tag.subSequence(1, tag.length() - 1);
+        IniSection section = new IniSection(tag);
+
+        // 2 // 
+        // Se generan los datos en el informe.
+        section.setValue("id", id);
+        section.setValue("time", simTime);
+        section.setValue("type", type);
+        section.setValue("queues", getQueuesValue());
+
+        return section;
+    }
+
+    /*
+    * ESTE MÉTODO NO CONSERVA EL ORDEN DE LOS EXPECTED OUTPUTS, 
+    * PERO LA COMPARACIÓN ES CORRECTA POR SECCIONES.
+    public IniSection generateIniSection(int simTime) {
         // Se utiliza getQueuesValue() de RobinJunction.
         IniSection section = super.generateIniSection(simTime);         
         section.setValue("type", type);
-
-		return section;
-	}
-
+    
+    	return section;
+    }
+    */
+    
+    
+    
     /**
      * {@inheritDoc}
      * <p>

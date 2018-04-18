@@ -75,11 +75,32 @@ public class DirtRoad extends Road {
      */
     @Override
     public IniSection generateIniSection(int simTime) {
+        // 1 //
+        // Se crea la etiqueta de la sección (sin corchetes).
+        String tag = REPORT_TITLE;
+        tag = (String) tag.subSequence(1, tag.length() - 1);
+        IniSection section = new IniSection(tag);
+
+        // 2 // 
+        // Se generan los datos en el informe.
+        section.setValue("id", id);
+        section.setValue("time", simTime);
+        section.setValue("type", type);
+        section.setValue("state", getRoadState().toString());
+
+        return section;
+    }
+
+    /*
+    * ESTE MÉTODO NO CONSERVA EL ORDEN DE LOS EXPECTED OUTPUTS, 
+    * PERO LA COMPARACIÓN ES CORRECTA POR SECCIONES.
+    public IniSection generateIniSection(int simTime) {
         IniSection section = super.generateIniSection(simTime);
         section.setValue("type", type);
         
         return section;
     }
+    */
 
 
 
