@@ -236,6 +236,26 @@ public class Junction extends SimObject {
 	public ArrayList<Road> getExitRoads() {
 		return exitRoads;
 	}
+
+	/**
+	 * Añade una nueva <code>Road</code> de salida a la 
+	 * <code>Junction</code>.
+	 * 
+	 * @param newRoad Nueva <code>Road</code> saliente
+	 */
+	public void addNewExitRoad(Road newRoad) {
+		exitRoads.add(newRoad);
+	}
+
+	/**
+	 * Añade una nueva <code>Road</code> de entrada a la 
+	 * <code>Junction</code>.
+	 * 
+	 * @param newRoad Nueva <code>Road</code> entrante
+	 */
+	public void addNewIncomingRoad(Road newRoad) {
+		incomingRoads.add(newRoad);
+	}
 	
 
 	

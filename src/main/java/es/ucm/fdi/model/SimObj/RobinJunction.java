@@ -60,12 +60,7 @@ public class RobinJunction extends Junction {
         minLightTime = minTime;
         maxLightTime = maxTime;
 
-        // Al inicio de la sumulación, la duración de los 
-        // semáforos es máxima.
         timeLapses = new HashMap<>();
-        for ( Road inc : incomingRoads ) {
-            timeLapses.put(inc, maxLightTime);
-        }
 
         elapsedTime = 0;
 
@@ -144,6 +139,9 @@ public class RobinJunction extends Junction {
         Road usedRoad = incomingRoads.get(light);
         int roadTimeLapse = timeLapses.get(usedRoad);
 
+        // Se actualiza el tiempo transcurrido con el semáforo en verde.
+        elapsedTime += 1;
+
         // El semáforo ha agotado su tiempo.
         if ( roadTimeLapse == elapsedTime ) {
             // * //
@@ -185,10 +183,6 @@ public class RobinJunction extends Junction {
             uselessGreen = true;
             usefulGreen = true;
         }
-        else {
-            // Se actualiza el tiempo transcurrido con el semáforo en verde.
-            elapsedTime += 1;
-        }    
     }
 	
 	/**
@@ -213,8 +207,8 @@ public class RobinJunction extends Junction {
         // Se generan los datos en el informe.
         section.setValue("id", id);
         section.setValue("time", simTime);
-        section.setValue("type", type);
         section.setValue("queues", getQueuesValue());
+        section.setValue("type", type);
 
         return section;
     }
@@ -274,6 +268,19 @@ public class RobinJunction extends Junction {
      */
     private int lastingLightTime(Road road) {
         return timeLapses.get(road) - elapsedTime;
+    }
+
+    /**
+     * Añade una nueva <code>Road</code> de entrada a la 
+     * <code>RobinJunction</code>. Al introducir una entrante,
+     * la duración de su semáforo es máxima.
+     * 
+     * @param newRoad Nueva <code>Road</code> entrante
+     */
+    @Override
+    public void addNewIncomingRoad(Road newRoad) {
+        incomingRoads.add(newRoad);
+        timeLapses.put(newRoad, maxLightTime);
     }
 
 

@@ -24,7 +24,7 @@ public class ExampleMain {
 	/**
 	 * Default time limit if none indicated by user.
 	 */
-	private final static Integer _timeLimitDefaultValue = 10;
+	private final static Integer _timeLimitDefaultValue = 120;
 	
 	/**
 	 * Execution time limit: number of ticks the simulator will do.
@@ -233,7 +233,7 @@ public class ExampleMain {
 				file.getAbsolutePath(), 
 				file.getAbsolutePath() + ".out", 
 				file.getAbsolutePath() + ".eout",
-				10
+				_timeLimitDefaultValue
 			);
 		}
 	}
@@ -308,9 +308,10 @@ public class ExampleMain {
 		*/
 
 		// Simulation testing //
-		test("src/main/resources/examples/basic");
-		test("src/main/resources/examples/advanced");
-		test("src/main/resources/examples/err");
+		// test("src/main/resources/examples/basic");
+		// test("src/main/resources/examples/advanced");
+		// test("src/main/resources/examples/err");
+		test("src/main/resources/examples/new");
 
 		// Start simulator from command line //
 		// start(args);

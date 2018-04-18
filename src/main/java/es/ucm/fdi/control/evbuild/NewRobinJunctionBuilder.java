@@ -88,7 +88,7 @@ public class NewRobinJunctionBuilder extends EventBuilder {
             }
 
             // Mínimo menor que máximo.
-            if (maxTime > minTime) {
+            if (minTime > maxTime) {
                 throw new IllegalArgumentException("Not a valid time lapse in junction with ID: " + id);
             }
 			

@@ -516,8 +516,11 @@ public class Road extends SimObject {
 	 * <code>incomingRoads, exitRoads</code>.
 	 */
 	private void getInOwnJunctions() {
-		fromJunction.getExitRoads().add(this);
-		toJunction.getIncomingRoads().add(this);
+		// fromJunction.getExitRoads().add(this);
+		// toJunction.getIncomingRoads().add(this);
+
+		fromJunction.addNewExitRoad(this);
+		toJunction.addNewIncomingRoad(this);
 	}
 
 	/**

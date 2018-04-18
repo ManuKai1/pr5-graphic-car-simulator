@@ -1,6 +1,7 @@
 package es.ucm.fdi.model.SimObj;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import es.ucm.fdi.ini.IniSection;
 
@@ -103,6 +104,9 @@ public class CrowdedJunction extends Junction {
         Road usedRoad = incomingRoads.get(light);
         int roadTimeLapse = timeLapses.get(usedRoad);
 
+        // Se actualiza el tiempo transcurrido con el semáforo en verde.
+        elapsedTime += 1;
+
         // El semáforo ha agotado su tiempo.
         if ( roadTimeLapse == elapsedTime ) {
             // * //
@@ -126,10 +130,6 @@ public class CrowdedJunction extends Junction {
             // Se resetea elapsedTime.
             elapsedTime = 0;
         }
-        else {
-            // Se actualiza el tiempo transcurrido con el semáforo en verde.
-            elapsedTime += 1;
-        }
     }
 
     /**
@@ -143,12 +143,35 @@ public class CrowdedJunction extends Junction {
         int max = 0; // 0 vehículos
         int crowdedPos = 0; // la primera carretera
 
+        // Se halla el máximo.
         for (int i = 0; i < incomingRoads.size(); ++i) {
             int numVehicles = incomingRoads.get(i).getNumWaitingVehicles();
 
             if (numVehicles > max) {
                 max = numVehicles;
                 crowdedPos = i;
+            }
+        }
+
+        // Posiciones de las carreteras que empatan.
+        HashSet<Integer> equallyCrowdedPos = new HashSet<>();
+        
+        for (int i = 0; i < incomingRoads.size(); ++i) {
+            int numVehicles = incomingRoads.get(i).getNumWaitingVehicles();
+
+            if (numVehicles == max) {
+                equallyCrowdedPos.add(i);
+            }
+        }
+
+        // Si hay empate, se sigue el orden de eventos
+        if (equallyCrowdedPos.size() > 1) {
+            // Si hay empate, de seguro el semáforo en verde no estará en la Road
+            // que se acaba de poner en rojo (light).
+            crowdedPos = ( (light + 1) % incomingRoads.size() );
+
+            if ( ! equallyCrowdedPos.contains(crowdedPos) ) {
+                crowdedPos = ( (crowdedPos + 1) % incomingRoads.size() );
             }
         }
 
@@ -177,8 +200,8 @@ public class CrowdedJunction extends Junction {
         // Se generan los datos en el informe.
         section.setValue("id", id);
         section.setValue("time", simTime);
-        section.setValue("type", type);
         section.setValue("queues", getQueuesValue());
+        section.setValue("type", type);
 
         return section;
     }

@@ -42,7 +42,7 @@ public class HighwayRoad extends Road {
     @Override
     protected int getBaseSpeed() {
         // Cálculo de velocidadBase según la fórmula
-        int congestionSpeed = ( speedLimit / Math.max(vehiclesOnRoad.size(), numLanes) ) + 1;
+        int congestionSpeed = ( ( speedLimit * numLanes ) / ( Math.max(vehiclesOnRoad.size(), 1) ) ) + 1;
 
         return ( Math.min(speedLimit, congestionSpeed) );
     }
