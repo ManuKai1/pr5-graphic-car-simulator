@@ -137,7 +137,11 @@ public class RoadMap {
         return null;
     }
 
-
+    public void clear(){
+    	junctionObjects.clear();
+    	roadObjects.clear();
+    	vehicleObjects.clear();
+    }
 
     
 }
