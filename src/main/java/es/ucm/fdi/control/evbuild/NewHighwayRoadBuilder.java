@@ -4,8 +4,19 @@ import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.model.events.NewHighwayRoad;
 
+/**
+ * Clase que construye un evento <code>NewHighwayRoad</code> utilizado para
+ * crear un <code>HighwayRoad</code> en la simulación.
+ */
 public class NewHighwayRoadBuilder extends EventBuilder {
 
+    private final String type = "lanes";
+
+    /**
+     * Constructor de <code>NewHighwayRoadBuilder</code> que pasa
+     * el parámetro <code>new_road</code> al constructor de la
+     * superclase.
+     */
     public NewHighwayRoadBuilder() {
         super("new_road");
     }
@@ -14,7 +25,8 @@ public class NewHighwayRoadBuilder extends EventBuilder {
     Event parse(IniSection ini) {
         boolean match = false;
 
-		if ( ini.getTag().equals(iniName) && ini.getValue("type").equals("lanes") ) {
+        // Se comprueba si es una NewHighwayRoad.
+		if ( ini.getTag().equals(iniName) && ini.getValue("type").equals(type) ) {
 			match = true;
 		}
 
@@ -25,12 +37,12 @@ public class NewHighwayRoadBuilder extends EventBuilder {
             int length;
             int lanes;
 
-            //El ID sólo contiene letras,. números, o '_'
+            // ID ok?
             if (!EventBuilder.validID(id)) {
                 throw new IllegalArgumentException("Illegal road ID: " + id);
             }
 
-            //Si se ha incluido la key time
+            // TIME ok?
             String timeKey = ini.getValue("time");
             if (timeKey != null) {
                 try {
@@ -46,16 +58,19 @@ public class NewHighwayRoadBuilder extends EventBuilder {
                 }
             }
 
+            // SRC ok?
             String src = ini.getValue("src");
             if (!EventBuilder.validID(src)) {
                 throw new IllegalArgumentException("Illegal source junction ID in road with ID: " + id);
             }
 
+            // DEST ok?
             String dest = ini.getValue("dest");
             if (!EventBuilder.validID(dest)) {
                 throw new IllegalArgumentException("Illegal destination junction ID in road with ID: " + id);
             }
 
+            // MAXSPEED ok?
             try {
                 maxSpeed = Integer.parseInt(ini.getValue("max_speed"));
             }
@@ -68,6 +83,7 @@ public class NewHighwayRoadBuilder extends EventBuilder {
                 throw new IllegalArgumentException("Non-positive speed in road with ID: " + id);
             }
 
+            // LENGTH ok?
             try {
                 length = Integer.parseInt(ini.getValue("length"));
             }
@@ -80,7 +96,7 @@ public class NewHighwayRoadBuilder extends EventBuilder {
                 throw new IllegalArgumentException("Non-positive length in road with ID: " + id);
             }
 
-            // Número de carriles.
+            // LANES ok?
             try {
                 lanes = Integer.parseInt( ini.getValue("lanes") );
             }
@@ -91,12 +107,12 @@ public class NewHighwayRoadBuilder extends EventBuilder {
                 throw new IllegalArgumentException("Non-positive lanes in road with ID: " + id);
             }
 
+
+            // New Highway Road.
             NewHighwayRoad road = new NewHighwayRoad(time, id, length, maxSpeed, src, dest, lanes);
             return road;
-
-        } else
-            return null;
+        } 
+        else return null;
     }
-
 }
 

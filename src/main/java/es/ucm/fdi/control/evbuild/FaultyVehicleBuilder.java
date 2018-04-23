@@ -6,65 +6,96 @@ import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.model.events.FaultyVehicle;
 
-public class FaultyVehicleBuilder extends EventBuilder{
+/**
+ * Clase que construye un evento <code>FaultyVehicle</code> utilizado para
+ * averiar <code>Vehicles</code> durante la simulación.
+ */
+public class FaultyVehicleBuilder extends EventBuilder {
 	
-	public FaultyVehicleBuilder(){
+	/**
+	 * Constructor de <code>FaultyVehicleBuilder</code> que pasa
+	 * el parámetro <code>make_vehicle_faulty</code> al constructor de la
+	 * superclase.
+	 */
+	public FaultyVehicleBuilder() {
 		super("make_vehicle_faulty");
 	}
 	
+	/**
+	 * Método de <code>parsing</code> de <code>FaultyVehicleBuilder</code> que comprueba
+	 * si la <code>IniSection</code> pasada como argumento representa un <code>FaultyVehicleEvent</code>
+	 * y si sus parámetros son correctos.
+	 * 
+	 * @param ini <code>IniSection</code> a parsear.
+	 * @return <code>FaultyVehicle</code> o <code>null</code>.
+	 */
 	@Override
-	Event parse(IniSection ini) {
-		if(ini.getTag().equals(iniName)){
+	public Event parse(IniSection ini) {
+		boolean match = false;
+
+		// Se comprueba si es un FaultyVehicle
+		if ( ini.getTag().equals(iniName) ) {
+			match = true;
+		}
+
+		if (match) {
 			int time = 0;
-			
-			//Si se ha incluido la key time
+			int duration;
+
+			// TIME ok?
 			String timeKey = ini.getValue("time");
-			if(timeKey != null){
-				try{
+			if (timeKey != null) {
+				try {
 					time = Integer.parseInt(timeKey);
 				}
-				//El tiempo no era un entero
-				catch(NumberFormatException e){
+				// El tiempo no era un entero
+				catch (NumberFormatException e) {
 					throw new IllegalArgumentException("Time reading failure in faulty vehicles.");
 				}
-				//Comprobamos que el tiempo sea no negativo
-				if(time < 0){
+				// Comprobamos que el tiempo sea no negativo
+				if (time < 0) {
 					throw new IllegalArgumentException("Negative time in faulty vehicles.");
 				}
 			}
-			
-			int duration;
-			try{
+
+			// DURATION ok?
+			try {
 				duration = Integer.parseInt(ini.getValue("duration"));
 			}
-			//La duracion no era un entero
-			catch(NumberFormatException e){
+			// La duracion no era un entero
+			catch (NumberFormatException e) {
 				throw new IllegalArgumentException("Duration reading failure in faulty vehicles.");
 			}
-			//Comprobamos que la duracion sea positiva
-			if(duration <= 0){
+			// Comprobamos que la duracion sea positiva
+			if (duration <= 0) {
 				throw new IllegalArgumentException("Non-positive duration in faulty vehicles.");
 			}
-			
-			//Lista de vehículos
+
+			// VEHICLE_LIST ok?
+			// Creación de la lista de vehículos.
 			ArrayList<String> vehicles = new ArrayList<>();
+			
+			// Array de Strings con las IDs de los vehículos.
 			String line = ini.getValue("vehicles");
 			String[] input = line.split(",");
-			for(int i = 0; i < input.length; i++){
-				if(!EventBuilder.validID(input[i])){
-					throw new IllegalArgumentException("Illegal vehicle ID (number " + (i+1) + ")in faulty vehicles");
+
+			// Comprobación de IDs.
+			for (String idS : input) {
+				if ( ! EventBuilder.validID(idS) ) {
+					throw new IllegalArgumentException("Illegal vehicle ID: " + idS + " in faulty vehicles.");
 				}
-				vehicles.add(input[i]);
+				vehicles.add(idS);
 			}
-			//Tiene que haber al menos un vehiculo;
-			if(vehicles.size() < 1){
+
+			// Al menos un vehículo.
+			if (vehicles.size() < 1) {
 				throw new IllegalArgumentException("Less than one vehicle in faulty vehicles.");
 			}
-			
+
+			// Faulty Vehicle.
 			FaultyVehicle faulty = new FaultyVehicle(time, vehicles, duration);
 			return faulty;
 		}
 		else return null;
 	}
-
 }

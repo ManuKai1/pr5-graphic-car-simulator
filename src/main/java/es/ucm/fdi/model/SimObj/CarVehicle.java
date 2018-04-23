@@ -6,19 +6,47 @@ import java.util.Random;
 import es.ucm.fdi.ini.IniSection;
 
 public class CarVehicle extends Vehicle {
-	//Resistencia a las averías
+	
+	private final String type = "car"; // car
+
+	/**
+	 * Resistencia a las averías.
+	 */
 	private int resistance;
-	//Probabilidad de avería
+
+	/**
+	 * Probabilidad de avería.
+	 */
 	private double faultyChance;
-	//Duración máxima de avería
+	
+	/**
+	 * Duración máxima de la avería.
+	 */
 	private int faultDuration;
-	//Semilla aleatoria
+	
+	/**
+	 * Semilla aleatoria.
+	 */
 	private Random randomSeed;
-	//Tiempo desde la última avería
+	
+	/**
+	 * Distancia transcurrida desde la última avería.
+	 */
 	private int kmSinceFaulty;
 	
-	public CarVehicle(String identifier, ArrayList<Junction> trp, int max, int res,
-			double breakChance, int breakDuration, long seed) {
+	/**
+	 * Constructor de <code>CarVehicle</code>.
+	 * 
+	 * @param identifier identificador del objeto
+	 * @param trp ruta de <code>Junctions</code>
+	 * @param max máxima velocidad alcanzable
+	 * @param res resistencia a averiarse
+	 * @param breakChance probabilidad de avería
+	 * @param breakDuration duración máxima de avería
+	 * @param seed semilla aleatoria
+	 */
+	public CarVehicle(String identifier, ArrayList<Junction> trp, int max, 
+			int res, double breakChance, int breakDuration, long seed) {
 		super(identifier, trp, max);
 		resistance = res;
 		faultyChance = breakChance;
@@ -27,26 +55,91 @@ public class CarVehicle extends Vehicle {
 		kmSinceFaulty = 0;
 	}
 	
-	public void proceed(){
-		if(!isFaulty()){
-			if(kmSinceFaulty > resistance){
-				if(randomSeed.nextDouble() < faultyChance){
-					// Se cumplen todas las condiciones de avería aleatoria
+	/**
+	 * {@inheritDoc}
+	 * <p>
+	 * ----------
+	 * </p> <p>
+	 * PREVIAMENTE a lo anterior: como <code>CarVehicle</code>, se comprueba si el
+	 * <code>Vehicle</code> puede averiarse por distancia recorrida y probabilidad
+	 * de avería.
+	 * </p>
+	 */
+	@Override
+	public void proceed() {
+		// 1 //
+		// No está averiado, pero puede averiarse si se dan las condiciones.
+		if ( ! isFaulty() ) {
+			if ( kmSinceFaulty > resistance ) {
+				if ( randomSeed.nextDouble() < faultyChance ) {
 					// Generamos un tiempo de avería entre 1 y faultDuration
-					setBreakdownTime(randomSeed.nextInt(faultDuration) + 1);
+					setBreakdownTime( randomSeed.nextInt(faultDuration) + 1 );
 				}
 			}
 		}
-		//Necesitamos volver a comprobarlo por si ha cambiado en el if anterior
-		if(isFaulty()){
+
+		// 2 //
+		// Puede averarse por un evento o si se dan las condiciones anteriores.
+		if ( isFaulty() ) {
 			kmSinceFaulty = 0;
 			actualSpeed = 0;
 		}
-		//Guardamos km anteriores para conocer nueva distancia recorrida
+
+		// 3 //
+		// El coche avanza como un vehículo normal y con las diferencias de kilometraje
+		// se calculan la distancia que lleva el coche sin averiarse.
 		int oldKilometrage = kilometrage;
 		super.proceed();
+
 		kmSinceFaulty += kilometrage - oldKilometrage;
 	}
+	
+	/**
+	 * Genera una <code>IniSection</code> que informa de los atributos del
+	 * <code>CarVehicle</code> en el tiempo del simulador.
+	 * 
+	 * @param simTime tiempo del simulador
+	 * @return <code>IniSection</code> con información del <code>CarVehicle</code>
+	 */
+	@Override
+	public IniSection generateIniSection(int simTime) {
+		// 1 //
+		// Se crea la etiqueta de la sección (sin corchetes).
+		String tag = REPORT_TITLE;
+		tag = (String) tag.subSequence(1, tag.length() - 1);
+		IniSection section = new IniSection(tag);
+
+		// 2 // 
+		// Se generan los datos en el informe.
+		section.setValue("id", id);
+		section.setValue("time", simTime);
+		section.setValue("type", type);
+		section.setValue("speed", actualSpeed);
+		section.setValue("kilometrage", kilometrage);
+		section.setValue("faulty", breakdownTime);
+		section.setValue("location", hasArrived ? "arrived" : "(" + road.getID() + "," + location + ")");
+
+		return section;
+	}
+
+	/*
+	* ESTE MÉTODO NO CONSERVA EL ORDEN DE LOS EXPECTED OUTPUTS, 
+	* PERO LA COMPARACIÓN ES CORRECTA POR SECCIONES.
+	public IniSection generateIniSection(int simTime) {
+		IniSection section = super.generateIniSection(simTime);
+		section.setValue("type", type);
+	
+		return section;
+	}
+	*/
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	/**
 	 * Informe del car en cuestión, mostrando: id, tiempo de simulación, tipo coche
@@ -72,29 +165,9 @@ public class CarVehicle extends Vehicle {
 		report.append("faulty = " + breakdownTime + '\n');
 		// Localización
 		report.append("location = ");
-		report.append( hasArrived ? "arrived" : "(" + road.getID() + "," + location + ")");
+		report.append(hasArrived ? "arrived" : "(" + road.getID() + "," + location + ")");
 
 		return report.toString();
-	}
-	
-	/**
-	 * A partir de los datos del car genera una IniSection
-	 * @param simTime tiempo del simulador
-	 * @return IniSection report del car
-	 */
-	public IniSection generateIniSection(int simTime){
-		String tag = REPORT_TITLE;
-		//Creación de etiqueta (sin corchetes)
-		tag = (String) tag.subSequence(1, tag.length() - 1);
-		IniSection section = new IniSection(tag);
-		section.setValue("id", id);
-		section.setValue("time", simTime);
-		section.setValue("type", "car");
-		section.setValue("speed", actualSpeed);
-		section.setValue("kilometrage", kilometrage);
-		section.setValue("faulty", breakdownTime);
-		section.setValue("location", hasArrived ? "arrived" : "(" + road.getID() + "," + location + ")");
-		return section;
 	}
 	
 	

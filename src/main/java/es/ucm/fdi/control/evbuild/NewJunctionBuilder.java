@@ -4,43 +4,65 @@ import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.model.events.NewJunction;
 
+/**
+ * Clase que construye un evento <code>NewJunction</code> utilizado para
+ * crear un <code>Junction</code> en la simulación.
+ */
 public class NewJunctionBuilder extends EventBuilder{
 	
-	public NewJunctionBuilder(){
+	/**
+	 * Constructor de <code>NewJunctionBuilder</code> que pasa
+	 * el parámetro <code>new_junction</code> al constructor de la
+	 * superclase.
+	 */
+	public NewJunctionBuilder() {
 		super("new_junction");
 	}
 	
-	//Parser de NewJunction
+	/**
+	 * Método de <code>parsing</code> de <code>NewJunctionBuilder</code> que comprueba
+	 * si la <code>IniSection</code> pasada como argumento representa un <code>NewJunction</code>
+	 * y si sus parámetros son correctos.
+	 * 
+	 * @param ini <code>IniSection</code> a parsear.
+	 * @return <code>NewJunction</code> o <code>null</code>.
+	 */
 	@Override
-	Event parse(IniSection ini) throws IllegalArgumentException{
-		//Comprobación de que es un NewJunction
-		if(ini.getTag().equals(iniName)){
+	Event parse(IniSection ini) throws IllegalArgumentException {
+		boolean match = false;
+
+		// Se comprueba si es un NewJunction
+		if ( ini.getTag().equals(iniName) && ini.getValue("type") == null ) {
+			match = true;
+		}
+
+		if (match) {
 			String id = ini.getValue("id");
 			int time = 0;
-			
-			//El ID sólo contiene letras,. números, o '_'
-			if(!EventBuilder.validID(id)){
+
+			// ID ok?
+			if ( ! EventBuilder.validID(id) ) {
 				throw new IllegalArgumentException("Illegal junction ID: " + id);
 			}
-			
-			//Si se ha incluido la key time
+
+			// TIME ok?
 			String timeKey = ini.getValue("time");
-			if(timeKey != null){
-				try{
+			if (timeKey != null) {
+				try {
 					time = Integer.parseInt(timeKey);
 				}
-				//El tiempo no era un entero
-				catch(NumberFormatException e){
+				// El tiempo no era un entero
+				catch(NumberFormatException e) {
 					throw new IllegalArgumentException("Time reading failure in junction with ID: " + id);
 				}
-				//Comprobamos que el tiempo sea positivo
-				if(time < 0){
+				// Comprobamos que el tiempo sea positivo
+				if (time < 0) {
 					throw new IllegalArgumentException("Negative time in junction with ID: " + id);
 				}
-			}
-			
-			NewJunction junct = new NewJunction(time, id);
-			return junct;
+            }
+
+			NewJunction junction = new NewJunction(time, id);
+			return junction;
 		}
 		else return null;
 	}

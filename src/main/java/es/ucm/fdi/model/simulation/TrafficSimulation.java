@@ -2,7 +2,6 @@ package es.ucm.fdi.model.simulation;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,6 +15,11 @@ import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.util.EventType;
 import es.ucm.fdi.util.MultiTreeMap;
 
+/**
+ * Clase que representa el simulador de tráfico, almacenando los <code>Events</code>
+ * de la simulación, así como los objetos de simulación en un <code>RoadMap</code>, y el
+ * tiempo de actual de la simulación.
+ */
 public class TrafficSimulation {
 
 	// Clases internas para manejo de eventos
@@ -79,9 +83,11 @@ public class TrafficSimulation {
 	}
 	
 	/**
-	 * Añade un evento al mapa de eventos de la simulación, comprobando
-	 * que el tiempo del evento sea mayor que el de la simulación.
-	 * @param e evento a añadir
+	 * Añade un evento al mapa de <code>Events</code>> de la simulación, 
+	 * comprobando que el tiempo del <code>Evente</code> sea mayor que el 
+	 * de la simulación.
+	 * 
+	 * @param e <code>Event</code> a añadir
 	 * @throws SimulationException if event time lower thar sim time
 	 */
 	public void pushEvent(Event e) throws SimulationException {
@@ -97,12 +103,19 @@ public class TrafficSimulation {
 	/**
 	 * Simula un número determinado de ticks y guarda el fichero de salida
 	 * de esta ejecución.
+	 * 
 	 * @param steps número de pasos a ejecutar
 	 * @param file fichero de salida
 	 */
 	public void execute(int steps, OutputStream file) {
+		// * //
+		// Tiempo límite en que para la simulación.
 		int timeLimit = time + steps - 1;
+
+		// ** //
+		// Bucle de la simulación.
 		while (time <= timeLimit) {
+			// 1 // EVENTOS //
 			// Se ejecutan los eventos correspondientes a ese tiempo.
 			if ( events.get(time) != null ) {
 				for ( Event event : events.get(time) ) {
@@ -115,6 +128,7 @@ public class TrafficSimulation {
 				}
 			}			
 
+			// 2 // SIMULACIÓN //
 			// Para cada carretera, los coches que no están esperando avanzan.
 			for ( Road road : roadMap.getRoads() ) {
 				road.proceed();
@@ -130,9 +144,10 @@ public class TrafficSimulation {
 
 			// Se avanza un tick.
 			time++;
-			// Escribir un informe en OutputStream
-			// en caso de que no sea nulo
-			if(file != null) {
+
+			// 3 // INFORME //
+			// Escribir un informe en OutputStream en caso de que no sea nulo
+			if (file != null) {
 				//Creación de ini
 				Ini iniFile = new Ini();
 				//Junctions:
@@ -153,26 +168,34 @@ public class TrafficSimulation {
 					iniFile.store(file);
 				}
 				catch(IOException e){
-					System.err.println("Error when saving file on time " + time + ":" + e.getMessage());
+					System.err.println(
+						"Error when saving file on time " + time + ":" + e.getMessage()
+					);
 				}
 			}
+
 		}
 	}
 
 	/**
-	 * Añade tiempo de avería a los vehículos con los ID de la lista.
-	 * Además comprueba que existan los vehículos referenciados por esos IDs.
-	 * @param vehiclesID lista de IDs de los vehículos a averiar
+	 * Añade tiempo de avería a los <code>Vehicles</code> con los ID de la lista.
+	 * Además comprueba que existan los <code>Vehicles</code> referenciados 
+	 * por esos IDs.
+	 * 
+	 * @param vehiclesID lista de IDs de los <code>Vehicles</code> a averiar
 	 * @param breakDuration duración del tiempo de avería a añadir
 	 */
 	public void makeFaulty(ArrayList<String> vehiclesID, int breakDuration) throws NonExistingSimObjException {
 		for ( String id : vehiclesID ) {
 			Vehicle toBreak = getVehicle(id);
+
 			if ( toBreak != null ) {
 				toBreak.setBreakdownTime(breakDuration);
 			}
 			else {
-				throw new NonExistingSimObjException("Vehicle with id: " + id + " to make faulty not found.");
+				throw new NonExistingSimObjException(
+					"Vehicle with id: " + id + " to make faulty not found."
+				);
 			}
 		}
 	}
@@ -206,63 +229,85 @@ public class TrafficSimulation {
 		}
 	}
 
+	/**
+	 * Añade un <code>Vehicle</code> al <code>roadMap</code>.
+	 * 
+	 * @param newVehicle <code>Vehicle</code> a añadir
+	 */
 	public void addVehicle(Vehicle newVehicle) {
 		// Se guarda en el inventario de objetos de simulación.
 		roadMap.addVehicle(newVehicle);
 	}
 
+	/**
+	 * Añade una <code>Road</code> al <code>roadMap</code>.
+	 * 
+	 * @param newRoad <code>Road</code> a añadir
+	 */
 	public void addRoad(Road newRoad) {
 		// Se mete en el RoadMap.
 		roadMap.addRoad(newRoad);
 	}
 
+	/**
+	 * Añade una <code>Junction</code> al <code>roadMap</code>.
+	 * 
+	 * @param newJunction <code>Junction</code> a añadir
+	 */
 	public void addJunction(Junction newJunction) {
 		// Se mete en el RoadMap
 		roadMap.addJunction(newJunction);
 	}
 
 	/**
-	 * Busca en el mapa si hay un vehículo con el mismo ID.
+	 * Busca en el mapa si hay un <code>Vehicle</code> con el mismo ID.
+	 * 
 	 * @param id id a buscar
-	 * @returns si hay un Vehicle con el id dado
+	 * @return si hay un <code>Vehicle</code> con el id dado
 	 */
 	public boolean existsVehicle(String id) {
 		return roadMap.existsVehicleID(id);
 	}
 
 	/**
-	 * Busca en el mapa si hay un cruce con el mismo ID.
+	 * Busca en el mapa si hay una <code>Junction</code> con el mismo ID.
+	 * 
 	 * @param id id a buscar
-	 * @returns si hay un Junction con el id dado
+	 * @return si hay un <code>Junction</code> con el id dado
 	 */
 	public boolean existsJunction(String id) {
 		return roadMap.existsJunctionID(id);
 	}
 
 	/**
-	 * Busca en el mapa si hay una carretera con el mismo ID.
+	 * Busca en el mapa si hay una <code>Road</code> con el mismo ID.
+	 * 
 	 * @param id id a buscar
-	 * @returns si hay una Road con el id dado
+	 * @return si hay una <code>Road</code> con el id dado
 	 */
 	public boolean existsRoad(String id) {
 		return roadMap.existsRoadID(id);
 	}
 
 	/**
-	 * Busca en el mapa un vehículo con el mismo ID. 
-	 * Devuelve ese Vehicle si lo encuentra o null en caso contrario.
+	 * Busca en el mapa un <code>Vehicle</code>> con el mismo ID. 
+	 * Devuelve ese <code>Vehicle</code> si lo encuentra o <code>null</code> 
+	 * en caso contrario.
+	 * 
 	 * @param id id a buscar
-	 * @returns Vehicle con ese id si existe; null en caso contrario
+	 * @return <code>Vehicle</code> con ese id si existe o <code>null</code>
 	 */
 	private Vehicle getVehicle(String id) {
 		return roadMap.getVehicleWithID(id);
 	}
 
 	/**
-	 * Busca en el mapa un cruce con el mismo ID. 
-	 * Devuelve ese Junction si lo encuentra o null en caso contrario.
+	 * Busca en el mapa una <code>Junction</code> con el mismo ID. 
+	 * Devuelve esa <code>Junction</code> si lo encuentra o <code>null</code> 
+	 * en caso contrario.
+	 * 
 	 * @param id id a buscar
-	 * @returns Junction con ese id si existe; null en caso contrario
+	 * @return <code>Junction</code> buscad si existeo <code>null</code>
 	 */
 	public Junction getJunction(String id) {
 		return roadMap.getJunctionWithID(id);
