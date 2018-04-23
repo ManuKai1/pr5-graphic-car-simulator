@@ -1,6 +1,7 @@
 package es.ucm.fdi.model.SimObj;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.simulation.SimulationException;
@@ -28,24 +29,24 @@ public class RobinJunction extends Junction {
      * Mapa de <code>incomingRoads</code> a sus respectivos intervalos 
      * de duración de sus semáforos.
      */
-    protected HashMap<Road, Integer> timeLapses;
+    protected Map<Road, Integer> timeLapses = new HashMap<>();
 
     /**
      * Tiempo consumido (unidades: ticks)
      */
-    protected int elapsedTime;
+    protected int elapsedTime = 0;
 
     /**
      * Booleano que informa si en una <code>RobinJunction</code> el semáforo ha 
      * estado abierto y en ningún momento ha pasado ningún coche.
      */
-    protected boolean uselessGreen;
+    protected boolean uselessGreen = true;
 
     /**
      * Booleano que informa si en una <code>RobinJunction</code> el semáforo ha 
      * estado abierto y cada vez ha cruzado un coche.
      */
-    protected boolean usefulGreen;
+    protected boolean usefulGreen = true;
 
 
     /**
@@ -59,14 +60,6 @@ public class RobinJunction extends Junction {
         super(identifier);
         minLightTime = minTime;
         maxLightTime = maxTime;
-
-        timeLapses = new HashMap<>();
-
-        elapsedTime = 0;
-
-        // Suponemos ambos ciertos.
-        uselessGreen = true;
-        usefulGreen = true;
     }
 
     /**
@@ -281,59 +274,5 @@ public class RobinJunction extends Junction {
     public void addNewIncomingRoad(Road newRoad) {
         incomingRoads.add(newRoad);
         timeLapses.put(newRoad, maxLightTime);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    /**
-     * {@inheritDoc} 
-     * <p>
-     * Informe de la Robin-Round Junction en cuestión, mostrando: id,
-     * tiempo de simulación, colas de espera de sus carreteras entrantes.
-     * </p>
-     * 
-     * @param simTime tiempo de la simulación 
-     */
-    @Override
-    public String getReport(int simTime) {
-        StringBuilder report = new StringBuilder();
-        // TITLE
-        report.append(REPORT_TITLE + '\n');
-        // ID
-        report.append("id = " + id);
-        // SimTime
-        report.append("time = " + simTime);
-        // Colas de espera
-        report.append("queues = ");
-        for (Road incR : incomingRoads) {
-            // Semáforo en verde.
-            if (incR.isGreen()) {
-                report.append(incR.getWaitingState(lastingLightTime(incR)));
-            } else { // En rojo.
-                report.append(incR.getWaitingState());
-            }
-            report.append(",");
-        }
-
-        // Borrado de última coma
-        if (report.length() > 0) {
-            report.deleteCharAt(report.length() - 1);
-        }
-
-        return report.toString();
     }
 }

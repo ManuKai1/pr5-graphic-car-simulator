@@ -1,5 +1,7 @@
 package es.ucm.fdi.model.SimObj;
 
+import es.ucm.fdi.ini.IniSection;
+
 /**
  * Clase base que representa un objeto cualquiera de la simulación, a saber:
  * <code>Junctions</code>, <code>Roads</code> y <code>Vehicles</code>.
@@ -16,7 +18,7 @@ public abstract class SimObject {
 	 * un tick.
 	 */
 	public abstract void proceed();
-	public abstract String getReport(int simTime);
+	public abstract IniSection generateIniSection(int simTime);
 
 	/**
 	 * Constructor de <code>SimObject</code>.

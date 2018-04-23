@@ -59,8 +59,8 @@ public class NewDirtRoad extends NewRoad {
     @Override
     protected DirtRoad newRoad(TrafficSimulation sim) throws NonExistingSimObjException {
         Junction fromJunction, toJunction;
-        fromJunction = sim.getJunction(fromJunctionID);
-        toJunction = sim.getJunction(toJunctionID);
+        fromJunction = sim.getRoadMap().getJunctionWithID(fromJunctionID);
+        toJunction = sim.getRoadMap().getJunctionWithID(toJunctionID);
 
         if ( fromJunction != null && toJunction != null ) {
             return ( new DirtRoad(id, length, speedLimit, fromJunction, toJunction) );

@@ -59,29 +59,22 @@ public class TrafficSimulation {
 	 * ejecución de un evento, Event para añadir listas de eventos
 	 * que se ejecutan en ese tiempo.
 	 */
-	private MultiTreeMap<Integer, Event> events;
+	private MultiTreeMap<Integer, Event> events = new MultiTreeMap<>();
 
 	/**
 	 * Mapa de simulación que relaciona Junction con sus carreteras entrantes
 	 * y salientes.
 	 */
-	RoadMap roadMap;
+	RoadMap roadMap = new RoadMap();
 
 	/**
 	 * Tiempo actual de la simulación.
 	 */
-	private int time;
+	private int time = 0;
 
-	private List<Listener> listeners;
+	private List<Listener> listeners = new ArrayList<>();
 	
-	public TrafficSimulation() {
-		// Listas vacías. 
-		events = new MultiTreeMap<>();
-		roadMap = new RoadMap();
-		listeners = new ArrayList<>();
-		// Tiempo inicial a 0
-		time = 0;
-	}
+	public TrafficSimulation() {}
 	
 	/**
 	 * Añade un evento al mapa de <code>Events</code>> de la simulación, 
@@ -134,13 +127,13 @@ public class TrafficSimulation {
 
 			// 2 // SIMULACIÓN //
 			// Para cada carretera, los coches que no están esperando avanzan.
-			for ( Road road : roadMap.getRoads() ) {
+			for ( Road road : roadMap.getRoads().values() ) {
 				road.proceed();
 			}
 
 			// Para cada cruce, avanzan los vehículos a la espera que puedan y se actualiza 
 			// el semáforo y los tiempos de avería de los vehículos a la espera.
-			for ( Junction junction : roadMap.getJunctions() ) {
+			for ( Junction junction : roadMap.getJunctions().values() ) {
 				if ( junction.hasIncomingRoads() ) {
 					junction.proceed();
 				}				
@@ -158,15 +151,15 @@ public class TrafficSimulation {
 				//Creación de ini
 				Ini iniFile = new Ini();
 				//Junctions:
-				for(Junction junction : roadMap.getJunctions()){
+				for(Junction junction : roadMap.getJunctions().values() ){
 					iniFile.addsection(junction.generateIniSection(time));
 				}
 				//Roads:
-				for(Road road : roadMap.getRoads()){
+				for(Road road : roadMap.getRoads().values() ){
 					iniFile.addsection(road.generateIniSection(time));
 				}
 				//Vehicles:
-				for(Vehicle vehicle : roadMap.getVehicles()){
+				for(Vehicle vehicle : roadMap.getVehicles().values() ){
 					iniFile.addsection(vehicle.generateIniSection(time));
 				}
 				
@@ -194,7 +187,7 @@ public class TrafficSimulation {
 	 */
 	public void makeFaulty(ArrayList<String> vehiclesID, int breakDuration) throws NonExistingSimObjException {
 		for ( String id : vehiclesID ) {
-			Vehicle toBreak = getVehicle(id);
+			Vehicle toBreak = roadMap.getVehicleWithID(id);
 
 			if ( toBreak != null ) {
 				toBreak.setBreakdownTime(breakDuration);
@@ -278,56 +271,9 @@ public class TrafficSimulation {
 	}
 
 	/**
-	 * Busca en el mapa si hay un <code>Vehicle</code> con el mismo ID.
-	 * 
-	 * @param id id a buscar
-	 * @return si hay un <code>Vehicle</code> con el id dado
+	 * @return el RoadMap del simulador
 	 */
-	public boolean existsVehicle(String id) {
-		return roadMap.existsVehicleID(id);
+	public RoadMap getRoadMap(){
+		return roadMap;
 	}
-
-	/**
-	 * Busca en el mapa si hay una <code>Junction</code> con el mismo ID.
-	 * 
-	 * @param id id a buscar
-	 * @return si hay un <code>Junction</code> con el id dado
-	 */
-	public boolean existsJunction(String id) {
-		return roadMap.existsJunctionID(id);
-	}
-
-	/**
-	 * Busca en el mapa si hay una <code>Road</code> con el mismo ID.
-	 * 
-	 * @param id id a buscar
-	 * @return si hay una <code>Road</code> con el id dado
-	 */
-	public boolean existsRoad(String id) {
-		return roadMap.existsRoadID(id);
-	}
-
-	/**
-	 * Busca en el mapa un <code>Vehicle</code>> con el mismo ID. 
-	 * Devuelve ese <code>Vehicle</code> si lo encuentra o <code>null</code> 
-	 * en caso contrario.
-	 * 
-	 * @param id id a buscar
-	 * @return <code>Vehicle</code> con ese id si existe o <code>null</code>
-	 */
-	private Vehicle getVehicle(String id) {
-		return roadMap.getVehicleWithID(id);
-	}
-
-	/**
-	 * Busca en el mapa una <code>Junction</code> con el mismo ID. 
-	 * Devuelve esa <code>Junction</code> si lo encuentra o <code>null</code> 
-	 * en caso contrario.
-	 * 
-	 * @param id id a buscar
-	 * @return <code>Junction</code> buscad si existeo <code>null</code>
-	 */
-	public Junction getJunction(String id) {
-		return roadMap.getJunctionWithID(id);
-	}	
 }

@@ -65,8 +65,8 @@ public class NewHighwayRoad extends NewRoad {
     @Override
     protected HighwayRoad newRoad(TrafficSimulation sim) throws NonExistingSimObjException {
         Junction fromJunction, toJunction;
-        fromJunction = sim.getJunction(fromJunctionID);
-        toJunction = sim.getJunction(toJunctionID);
+        fromJunction = sim.getRoadMap().getJunctionWithID(fromJunctionID);
+        toJunction = sim.getRoadMap().getJunctionWithID(toJunctionID);
 
         if ( fromJunction != null && toJunction != null ) {
             return ( new HighwayRoad(id, length, speedLimit, fromJunction, toJunction, numLanes) );

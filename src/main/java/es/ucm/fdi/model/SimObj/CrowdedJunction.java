@@ -2,6 +2,7 @@ package es.ucm.fdi.model.SimObj;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import es.ucm.fdi.ini.IniSection;
 
@@ -18,12 +19,12 @@ public class CrowdedJunction extends Junction {
      * Mapa de <code>incomingRoads</code> a sus respectivos intervalos 
      * de duración de sus semáforos.
      */
-    protected HashMap<Road, Integer> timeLapses;
+    protected Map<Road, Integer> timeLapses = new HashMap<>();
 
     /**
     * Tiempo consumido (unidades: ticks)
     */
-    protected int elapsedTime;
+    protected int elapsedTime = 0;
 
     /**
      * Constructor de <code>CrowdedJunction</code>.
@@ -34,12 +35,9 @@ public class CrowdedJunction extends Junction {
         super(identifier); // light: -1
 
         // Al inicio de la simulación, la duración de los semáforos es nula.
-        timeLapses = new HashMap<>();
         for ( Road inc : incomingRoads ) {
             timeLapses.put(inc, 0);
         }
-
-        elapsedTime = 0;
     }
 
     /**
@@ -261,62 +259,5 @@ public class CrowdedJunction extends Junction {
         return ( timeLapses.get(road) - elapsedTime );
     }
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Informe de la <code>Crowdedjunction</code>, mostrando:
-     * </p>
-     */
-    @Override
-    public String getReport(int simTime) {
-        StringBuilder report = new StringBuilder();
-        // TITLE
-        report.append(REPORT_TITLE + '\n');
-        // ID
-        report.append("id = " + id);
-        // SimTime
-        report.append("time = " + simTime);
-        // Type
-        report.append("type = " + type);
-        // Colas de espera
-        report.append("queues = ");
 
-        // Borrado de última coma
-        if (report.length() > 0) {
-            report.deleteCharAt(report.length() - 1);
-        }
-
-        return report.toString();
-    }
 }

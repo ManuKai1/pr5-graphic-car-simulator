@@ -43,7 +43,7 @@ public class NewJunction extends Event {
 	 */
 	@Override
 	public void execute(TrafficSimulation sim) throws AlreadyExistingSimObjException {
-		if ( ! sim.existsJunction(id) ) {
+		if ( ! sim.getRoadMap().existsJunctionID(id) ) {
 			sim.addJunction( newJunction() );
 		} 
 		else {

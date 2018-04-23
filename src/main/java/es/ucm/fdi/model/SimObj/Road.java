@@ -3,6 +3,8 @@ package es.ucm.fdi.model.SimObj;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Deque;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import es.ucm.fdi.ini.IniSection;
@@ -44,32 +46,32 @@ public class Road extends SimObject {
 	 * la <code>Road</code>. Utilizada para el caso en que dos <code>Vehicles</code>
 	 * se encuentran en la misma posición.
 	 */
-	private ArrayDeque<Vehicle> entryRecord;
+	private Deque<Vehicle> entryRecord = new ArrayDeque<>();
 
 	/**
 	 * Lista de <code>Vehicles</code> en la <code>Road</code> que no 
 	 * están esperando a cruzar la <code>toJunction</code>.
 	 */
-	protected ArrayList<Vehicle> vehiclesOnRoad;
+	protected List<Vehicle> vehiclesOnRoad = new ArrayList<>();
 
 	/**
 	 * Lista temporal reutilizada en cada tick en la que se ordenan
 	 * los <code>Vehicles</code> que llegan a <code>toJunction</code> 
 	 * por tiempo de llegada.
 	 */
-	private ArrayList<ArrivedVehicle> arrivalsToWaiting;
+	private List<ArrivedVehicle> arrivalsToWaiting = new ArrayList<>();
 
 	/**
 	 * Lista de <code>Vehicles</code> en la <code>Roa</code> que están 
 	 * esperando para cruzar <code>toJunction</code>.
 	 */
-	private ArrayDeque<Vehicle> waiting;
+	private Deque<Vehicle> waiting = new ArrayDeque<>();
 
 	/**
 	 * Booleano que indica si el semáforo de la <code>toJunction</code> está
 	 * verde para la <code>Road</code>.
 	 */
-	private boolean isGreen;
+	private boolean isGreen = false;
 	
 	/**
 	 * Comparador según la localización de 2 <code>Vehicles</code> en la 
@@ -78,7 +80,7 @@ public class Road extends SimObject {
 	 */
 	private static class CompByLocation implements Comparator<Vehicle> {
 		
-		ArrayDeque<Vehicle> entries;		
+		Deque<Vehicle> entries;		
 
 		public CompByLocation(Road road) {
 			entries = road.getEntryRecord();
@@ -163,24 +165,16 @@ public class Road extends SimObject {
 	 * @param fromJ <code>Junction</code> donde empieza
 	 * @param toJ <code>Junction</code> donde acaba
 	 */
-	public Road(String identifier, int len, int spLimit, Junction fromJ, Junction toJ) {
+	public Road(String identifier, int len, int spLimit, 
+			Junction fromJ, Junction toJ) {
 		super(identifier);
 		length = len;
 		speedLimit = spLimit;
 		fromJunction = fromJ;
 		toJunction = toJ;
-
-		// Listas vacías
-		entryRecord = new ArrayDeque<>();
-		vehiclesOnRoad = new ArrayList<>();
-		arrivalsToWaiting = new ArrayList<>();
-		waiting = new ArrayDeque<>();
-
+		
 		// Actualización de cruces afectados.
 		getInOwnJunctions();	
-		
-		// Inicialmente en rojo
-		isGreen = false;
 	}
 
 	/**
@@ -609,7 +603,7 @@ public class Road extends SimObject {
 	 * 
 	 * @return <code>entryRecord</code>
 	 */
-	public ArrayDeque<Vehicle> getEntryRecord() {
+	public Deque<Vehicle> getEntryRecord() {
 		return entryRecord;
 	}
 
@@ -622,35 +616,5 @@ public class Road extends SimObject {
 	public int getNumWaitingVehicles() {
 		return waiting.size();
 	}
-	
-	
-	
 
-
-
-
-
-
-
-	/**
-	 * Informe de la Road en cuestión, mostrando: id,
-	 * tiempo de simulación,
-	 * @param simTime tiempo de simulación
-	 * @returns well-formatted String representing a Road report
-	 */
-	@Override
-	public String getReport(int simTime) {
-		StringBuilder report = new StringBuilder();
-		// TITLE
-		report.append(REPORT_TITLE + '\n');
-		// ID
-		report.append("id = " + id + '\n');
-		// SimTime
-		report.append("time = " + simTime + '\n');
-		// Road State
-		report.append("state = ");
-		report.append(getRoadState());
-
-		return report.toString();
-	}
 }

@@ -1,6 +1,9 @@
 package es.ucm.fdi.model.simulation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import es.ucm.fdi.model.SimObj.Junction;
 import es.ucm.fdi.model.SimObj.Road;
@@ -9,19 +12,14 @@ import es.ucm.fdi.model.SimObj.Vehicle;
 public class RoadMap {
 
     // MAPA
-    private ArrayList<Junction> junctionObjects;
-    private ArrayList<Road> roadObjects;
-    private ArrayList<Vehicle> vehicleObjects;
+    private Map<String, Junction> junctionObjects = new HashMap<>();
+    private Map<String, Road> roadObjects = new HashMap<>();
+    private Map<String, Vehicle> vehicleObjects = new HashMap<>();
 
     /**
-     * Constructor de <code>RoadMap</code> que crea listas
-     * vacías de los 3 principales objetos de simulación.
+     *
      */
-    public RoadMap() {
-        junctionObjects = new ArrayList<>();
-        roadObjects = new ArrayList<>();
-        vehicleObjects = new ArrayList<>();
-    }
+    public RoadMap() {}
 
     // MÉTODOS
 
@@ -30,7 +28,7 @@ public class RoadMap {
      * 
      * @return <code>roadObjects</code>
      */
-    public ArrayList<Road> getRoads() {
+    public Map<String, Road> getRoads() {
         return roadObjects;
     }
 
@@ -39,7 +37,7 @@ public class RoadMap {
      * 
      * @return <code>junctionObjects</code>
      */
-    public ArrayList<Junction> getJunctions() {
+    public Map<String, Junction> getJunctions() {
         return junctionObjects;
     }
     
@@ -48,7 +46,7 @@ public class RoadMap {
      * 
      * @return <code>vehicleObjects</code>
      */
-    public ArrayList<Vehicle> getVehicles() {
+    public Map<String, Vehicle> getVehicles() {
         return vehicleObjects;
     }
 
@@ -58,7 +56,7 @@ public class RoadMap {
      * @param newJunction <code>Junction</code> a añadir
      */
     public void addJunction(Junction newJunction) {
-        junctionObjects.add(newJunction);
+        junctionObjects.put(newJunction.getID(), newJunction);
     }
 
     /**
@@ -67,7 +65,7 @@ public class RoadMap {
      * @param newRoad <code>Road</code> a añadir
      */
     public void addRoad(Road newRoad) {
-        roadObjects.add(newRoad);
+        roadObjects.put(newRoad.getID(), newRoad);
     }
     
     /**
@@ -76,7 +74,7 @@ public class RoadMap {
      * @param newVehicle <code>Vehicle</code> a añadir
      */
     public void addVehicle(Vehicle newVehicle) {
-        vehicleObjects.add(newVehicle);
+        vehicleObjects.put(newVehicle.getID(), newVehicle);
     }
 
     /**
@@ -87,14 +85,8 @@ public class RoadMap {
      * @return if <code>Junction</code> found
      */
     public boolean existsJunctionID(String id) {
-        // O(n)
-        for (Junction j : junctionObjects) {
-            if (j.getID().equals(id)) {
-                return true;
-            }
-        }
-
-        return false;
+    	//O(1)
+       return junctionObjects.containsKey(id);
     }
 
     /**
@@ -105,14 +97,8 @@ public class RoadMap {
      * @return if <code>Road</code> found
      */
     public boolean existsRoadID(String id) {
-        // O(n)
-        for ( Road r : roadObjects ) {
-            if ( r.getID().equals(id) ) {
-                return true;
-            }
-        }
-
-        return false;
+    	//O(1)
+       return roadObjects.containsKey(id);
     }
 
     /**
@@ -123,14 +109,8 @@ public class RoadMap {
      * @return if <code>Vehicle</code> found
      */
     public boolean existsVehicleID(String id) {
-        // O(n)
-        for ( Vehicle v : vehicleObjects ) {
-            if ( v.getID().equals(id) ) {
-                return true;
-            }
-        }
-
-        return false;
+    	//O(1)
+    	return vehicleObjects.containsKey(id);
     }
 
     /**
@@ -141,14 +121,8 @@ public class RoadMap {
      * @return <code>Vehicle</code> buscado o <code>null</code>
      */
     public Vehicle getVehicleWithID(String id) {
-        // O(n)
-        for ( Vehicle v : vehicleObjects ) {
-            if ( v.getID().equals(id) ) {
-                return v;
-            }
-        }
-
-        return null;
+    	//O(1)
+        return vehicleObjects.get(id);
     }
 
     /**
@@ -159,14 +133,8 @@ public class RoadMap {
      * @return <code>Junction</code> buscada o <code>null</code>
      */
     public Junction getJunctionWithID(String id) {
-        // O(n)
-        for ( Junction j : junctionObjects ) {
-            if ( j.getID().equals(id) ) {
-                return j;
-            }
-        }
-
-        return null;
+    	//O(1)
+    	return junctionObjects.get(id);
     }
     
     /**
@@ -177,14 +145,8 @@ public class RoadMap {
      * @return <code>Road</code> buscada o <code>null</code>
      */
     public Road getRoadWithID(String id) {
-        // O(n)
-        for ( Road r : roadObjects ) {
-            if ( r.getID().equals(id) ) {
-                return r;
-            }
-        }
-
-        return null;
+    	//O(1)
+    	return roadObjects.get(id);
     }
 
     public void clear(){

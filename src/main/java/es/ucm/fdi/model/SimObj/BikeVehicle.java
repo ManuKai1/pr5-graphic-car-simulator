@@ -78,42 +78,5 @@ public class BikeVehicle extends Vehicle {
 		return section;
 	}
 	*/
-
-
-
-
-
-
-
-
-
-	/**
-	* Informe de la bike en cuestión, mostrando: id, tiempo de simulación, tipo bici
-	* velocidad actual, kilometraje, tiempo de avería, localización, llegada a
-	* destino
-	*/
-	@Override
-	public String getReport(int simTime) {
-		StringBuilder report = new StringBuilder();
-		// TITLE
-		report.append(REPORT_TITLE + '\n');
-		// ID
-		report.append("id = " + id + '\n');
-		// SimTime
-		report.append("time = " + simTime + '\n');
-		// Type
-		report.append("type = bike" + '\n');
-		// Velocidad actual
-		report.append("speed = " + actualSpeed + '\n');
-		// Kilometraje
-		report.append("kilometrage = " + kilometrage + '\n');
-		// Tiempo de avería
-		report.append("faulty = " + breakdownTime + '\n');
-		// Localización
-		report.append("location = ");
-		report.append(hasArrived ? "arrived" : "(" + road.getID() + "," + location + ")");
-
-		return report.toString();
-	}
 	
 }

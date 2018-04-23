@@ -1,6 +1,10 @@
 package es.ucm.fdi.model.SimObj;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.simulation.SimulationException;
@@ -13,19 +17,19 @@ public class Junction extends SimObject {
 	protected final String REPORT_TITLE = "[junction_report]";
 
 	/**
-	 * Lista de <code>Roads</code> entrantes en la <code>Junction</code>.
+	 * Mapa de <code>Roads</code> entrantes en la <code>Junction</code>.
 	 */
-	protected ArrayList<Road> incomingRoads;
+	protected List<Road> incomingRoads = new ArrayList<>();
 
 	/**
-	 * Lista de <code>Roads</code> salientes en la <code>Junction</code>.
+	 * Mapa de <code>Roads</code> salientes en la <code>Junction</code>.
 	 */
-	protected ArrayList<Road> exitRoads;
+	protected Map<String, Road> exitRoads = new HashMap<>();
 
 	/**
 	 * Entero que mediante la operación módulo representa el semáforo encendido.
 	 */
-	protected int light;	
+	protected int light = -1;	
 	
 	/**
 	 * Constructor de <code>Junction</code>.
@@ -34,13 +38,6 @@ public class Junction extends SimObject {
 	 */
 	public Junction(String identifier) {
 		super(identifier);
-
-		// Listas vacías.
-		incomingRoads = new ArrayList<>();
-		exitRoads = new ArrayList<>();
-
-		// Todos los semáforos en rojo al principio.
-		light = -1;
 	}
 
 	/**
@@ -172,7 +169,7 @@ public class Junction extends SimObject {
 	protected String getQueuesValue() {
 		// Generación del string de queues
 		StringBuilder queues = new StringBuilder();
-		for (Road incR : incomingRoads) {
+		for (Road incR : incomingRoads ) {
 			queues.append(incR.getWaitingState());
 			queues.append(",");
 		}
@@ -211,11 +208,11 @@ public class Junction extends SimObject {
 	}
 	
 	/**
-	 * Devuelve la lista de <code>Roads</code> entrantes
+	 * Devuelve la Mapa de <code>Roads</code> entrantes
 	 * 
-	 * @return lista de <code>Roads</code> entrantes.
+	 * @return Mapa de <code>Roads</code> entrantes.
 	 */
-	public ArrayList<Road> getIncomingRoads() {
+	public List<Road> getIncomingRoads() {
 		return incomingRoads;
 	}
 	
@@ -229,11 +226,11 @@ public class Junction extends SimObject {
 	}
 
 	/**
-	 * Devuelve la lista de <code>Roads</code> salientes
+	 * Devuelve el Mapa de <code>Roads</code> salientes
 	 * 
-	 * @return lista de <code>Roads</code> salientes
+	 * @return mapa de <code>Roads</code> salientes
 	 */
-	public ArrayList<Road> getExitRoads() {
+	public Map<String, Road> getExitRoads() {
 		return exitRoads;
 	}
 
@@ -244,7 +241,7 @@ public class Junction extends SimObject {
 	 * @param newRoad Nueva <code>Road</code> saliente
 	 */
 	public void addNewExitRoad(Road newRoad) {
-		exitRoads.add(newRoad);
+		exitRoads.put(newRoad.getID(), newRoad);
 	}
 
 	/**
@@ -257,49 +254,30 @@ public class Junction extends SimObject {
 		incomingRoads.add(newRoad);
 	}
 	
-
 	
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	/**
-	* WARNING: No se utiliza. Si se pretende utilizar, revisar el código del
-	* método, pues seguramente contenga fallos.
-	*/
-	@Override
-	public String getReport(int simTime) {
-		StringBuilder report = new StringBuilder();
-		// TITLE
-		report.append(REPORT_TITLE + '\n');
-		// ID
-		report.append("id = " + id);
-		// SimTime
-		report.append("time = " + simTime);
-		// Colas de espera
-		report.append("queues = ");
-		for (Road incR : incomingRoads) {
-			report.append(incR.getWaitingState());
-			report.append(",");
+	 * Método que devuelve la <code>Road</code> entre dos <code>Junctions</code>.
+	 * La junction de origen es la actual.
+	 * 
+	 * @param toJunction <code>Junction</code> de destino
+	 * @return <code>Road</code> entre las dos <code>Junctions</code>
+	 * @throws SimulationException if <code>Road</code> between <code>Junctions</code> not found
+	 */
+	public Road getRoadTo(Junction junction) throws SimulationException {
+		// Se recorren las carreteras de entrada a la intersección siguiente.
+		Iterator<Road> toIt = junction.getIncomingRoads().iterator();
+		while (toIt.hasNext()) {
+			String toID = toIt.next().getID();
+			
+			if ( exitRoads.containsKey(toID) ) {
+				return exitRoads.get(toID);
+			}
 		}
-
-		// Borrado de última coma
-		if (report.length() > 0) {
-			report.deleteCharAt(report.length() - 1);
-		}
-
-		return report.toString();
+		
+		throw new SimulationException(
+			"Road not fot found between junctions with id: " + 
+			id + ", " + junction.getID()
+		);
 	}
+	
 }

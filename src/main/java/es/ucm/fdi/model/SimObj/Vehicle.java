@@ -2,6 +2,7 @@ package es.ucm.fdi.model.SimObj;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.simulation.SimulationException;
@@ -19,14 +20,14 @@ public class Vehicle extends SimObject {
 	/**
 	 * Ruta del <code>Vehicle</code> en forma de lista de <code>Junctions</code>.
 	 */
-	protected ArrayList<Junction> trip;
+	protected List<Junction> trip;
 
 	/**
 	 * Última posición en la lista que representa la ruta, de forma que
 	 * <code>trip.get(lastTripPos)</code> es la última <code>Junction</code> por
 	 * la que ha pasado el <code>Vehicle</code>.
 	 */
-	protected int lastTripPos;
+	protected int lastTripPos = 0;
 
 	/**
 	 * Máxima velocidad que puede alcanzar el <code>Vehicle</code> en 
@@ -38,25 +39,25 @@ public class Vehicle extends SimObject {
 	 * Distancia recorrida por el <code>Vehicle</code> desde que empezo la
 	 * simulación.
 	 */
-	protected int kilometrage;
+	protected int kilometrage = 0;
 
 	/**
 	 * Tiempo restante hasta la recuperación de un <code>Vehicle</code> averiado. Si 
 	 * <code>breakdownTime = 0</code>, no está averiado.
 	 */
-	protected int breakdownTime;
+	protected int breakdownTime = 0;
 
 	/**
 	 * Booleano que indica si el <code>Vehicle</code> ha llegado a si destino, es
 	 * decir, a la última <code>Junction</code> de <code>trip</code>.
 	 */
-	protected boolean hasArrived;
+	protected boolean hasArrived = false;
 
 	/**
 	 * Booleano que indica si un <code>Vehicle</code> está esperando en la cola
 	 * de una <code>Road</code> para cruzar una <code>Junction</code>.
 	 */
-	protected boolean isWaiting;
+	protected boolean isWaiting = false;
 
 	/**
 	 * <code>Road</code> en la que se encuentra el <code>Vehicle</code>.
@@ -66,12 +67,12 @@ public class Vehicle extends SimObject {
 	/**
 	 * Localización del <code>Vehicle</code> dentro de la <code>road</code>.
 	 */
-	protected int location;
+	protected int location = 0;
 
 	/**
 	 * Velocidad actual del coche en la <code>road</code>.
 	 */
-	protected int actualSpeed;	
+	protected int actualSpeed = 0;	
 
 
 	/**
@@ -86,25 +87,17 @@ public class Vehicle extends SimObject {
 		trip = trp;
 		maxSpeed = max;
 
-		// Valores iniciales.
-		lastTripPos = 0;
-		kilometrage = 0;
-		breakdownTime = 0;
-
-		hasArrived = false;
-		isWaiting = false;
-
 		// Se mete en la primera carretera.
 		try {
-			road = getRoadBetween( trip.get(lastTripPos), trip.get(lastTripPos + 1) );
+			Junction fromJunction = trip.get(lastTripPos);
+			Junction nextJunction = trip.get(lastTripPos + 1);
+			road = fromJunction.getRoadTo(nextJunction);
+						
 			road.pushVehicle(this);
 		}
 		catch (SimulationException e) {
 			System.err.println( e.getMessage() );
 		}
-
-		location = 0;
-		actualSpeed = 0; // Irrelevante.
 	}
 	
 	/**
@@ -184,7 +177,10 @@ public class Vehicle extends SimObject {
 		else {
 			// Cambio normal de una road a otra.
 			try {
-				road = getRoadBetween(trip.get(waitingPos), trip.get(nextWaitingPos));
+				Junction fromJunction = trip.get(waitingPos);
+				Junction nextJunction = trip.get(nextWaitingPos);
+				road = fromJunction.getRoadTo(nextJunction);
+				
 				road.pushVehicle(this);
 
 				location = 0;
@@ -197,50 +193,6 @@ public class Vehicle extends SimObject {
 		lastTripPos++;
 		// El vehículo ya no está esperando
 		isWaiting = false;
-	}
-
-	/**
-	 * Método que devuelve la <code>Road</code> entre dos <code>Junctions</code>.
-	 * 
-	 * @param fromJunction <code>Junction</code> de origen
-	 * @param toJunction <code>Junction</code> de destino
-	 * @return <code>Road</code> entre las dos <code>Junctions</code>
-	 * @throws SimulationException if <code>Road</code> between <code>Junctions</code> not found
-	 */
-	private Road getRoadBetween(Junction fromJunction, Junction toJunction) throws SimulationException {
-		// Carreteras de salida y entrada.
-		ArrayList<Road> fromRoads = fromJunction.getExitRoads();
-		ArrayList<Road> toRoads = toJunction.getIncomingRoads();
-		// Carretera buscada.
-		Road searched = null;
-
-		// Se recorren las carreteras de salida.
-		boolean found = false;
-		Iterator<Road> fromIt = fromRoads.iterator();
-		while (fromIt.hasNext() && !found) {
-			Road fromR = fromIt.next();
-
-			// Se recorren las carreteras de entrada.
-			Iterator<Road> toIt = toRoads.iterator();
-			while (toIt.hasNext() && !found) {
-				Road toR = toIt.next();
-				if (toR == fromR) {
-					found = true;
-					searched = fromR;
-				}
-			}
-		}
-
-		if (found) {
-			return searched;
-		} 
-		else {
-			throw new SimulationException(
-				"Road not fot found on route of vehicle with id: " + id + 
-				" between junctions with id: " + 
-				fromJunction.getID() + ", " + toJunction.getID()
-			);
-		}
 	}
 	
 	/**
@@ -372,48 +324,6 @@ public class Vehicle extends SimObject {
 	 */
 	public boolean isFaulty() {
 		return (breakdownTime > 0);
-	}
-	
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	/**
-	* Informe de el Vehicle en cuestión, mostrando: id, tiempo de simulación,
-	* velocidad actual, kilometraje, tiempo de avería, localización, llegada a
-	* destino
-	*/
-	@Override
-	public String getReport(int simTime) {
-		StringBuilder report = new StringBuilder();
-		// TITLE
-		report.append(REPORT_TITLE + '\n');
-		// ID
-		report.append("id = " + id + '\n');
-		// SimTime
-		report.append("time = " + simTime + '\n');
-		// Velocidad actual
-		report.append("speed = " + actualSpeed + '\n');
-		// Kilometraje
-		report.append("kilometrage = " + kilometrage + '\n');
-		// Tiempo de avería
-		report.append("faulty = " + breakdownTime + '\n');
-		// Localización
-		report.append("location = ");
-		report.append(hasArrived ? "arrived" : "(" + road.getID() + "," + location + ")");
-
-		return report.toString();
 	}
 	
 }

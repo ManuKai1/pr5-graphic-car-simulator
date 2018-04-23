@@ -71,7 +71,7 @@ public class NewRoad extends Event {
 	 */
 	@Override
 	public void execute(TrafficSimulation sim) throws AlreadyExistingSimObjException, NonExistingSimObjException {
-		if ( ! sim.existsRoad(id) ) {
+		if ( ! sim.getRoadMap().existsRoadID(id) ) {
 			try {
 				sim.addRoad( newRoad(sim) );			
 			}
@@ -96,8 +96,8 @@ public class NewRoad extends Event {
 	 */
 	protected Road newRoad(TrafficSimulation sim) throws NonExistingSimObjException {
 		Junction fromJunction, toJunction;
-		fromJunction = sim.getJunction(fromJunctionID);
-		toJunction = sim.getJunction(toJunctionID);
+		fromJunction = sim.getRoadMap().getJunctionWithID(fromJunctionID);
+		toJunction = sim.getRoadMap().getJunctionWithID(toJunctionID);
 
 		if ( fromJunction != null && toJunction != null ) {
 			return new Road(id, length, speedLimit, fromJunction, toJunction);

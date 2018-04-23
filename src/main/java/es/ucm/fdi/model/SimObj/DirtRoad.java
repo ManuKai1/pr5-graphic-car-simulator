@@ -102,35 +102,4 @@ public class DirtRoad extends Road {
     }
     */
 
-
-
-
-
-
-
-
-
-    /**
-    * Informe de la HighwayRoad en cuestión, mostrando: id,
-    * tiempo de simulación, tipo y estado.
-    * @param simTime tiempo de simulación
-    * @returns well-formatted String representing a Road report
-    */
-    @Override
-    public String getReport(int simTime) {
-        StringBuilder report = new StringBuilder();
-        // TITLE
-        report.append(REPORT_TITLE + '\n');
-        // ID
-        report.append("id = " + id + '\n');
-        // SimTime
-        report.append("time = " + simTime + '\n');
-        // Type
-        report.append("type = " + type + '\n');
-        // Road State
-        report.append("state = ");
-        report.append(getRoadState());
-
-        return report.toString();
-    }
 }

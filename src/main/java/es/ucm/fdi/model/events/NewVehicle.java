@@ -86,7 +86,7 @@ public class NewVehicle extends Event {
 	 */
 	@Override
 	public void execute(TrafficSimulation sim) throws AlreadyExistingSimObjException {
-		if ( ! sim.existsVehicle(getId()) ) {
+		if ( ! sim.getRoadMap().existsVehicleID(id) ) {
 			try {
 				Vehicle newV = newVehicle(sim);
 				sim.addVehicle(newV);
@@ -97,7 +97,7 @@ public class NewVehicle extends Event {
 		}
 		else {
 			throw new AlreadyExistingSimObjException(
-				"Vehicle with id: " + getId() + " already in simulation."
+				"Vehicle with id: " + id + " already in simulation."
 			);
 		}
 	}
@@ -115,7 +115,7 @@ public class NewVehicle extends Event {
 
 		// Deben existir todos los cruces del itinerario en el momento del evento.
 		for ( String jID : tripID ) {
-			Junction j = sim.getJunction(jID);
+			Junction j = sim.getRoadMap().getJunctionWithID(jID);
 			if ( j != null ) {
 				trip.add(j);
 			}

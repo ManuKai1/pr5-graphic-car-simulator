@@ -60,7 +60,7 @@ public class NewBikeVehicle extends NewVehicle {
 
 		// Deben existir todos los cruces del itinerario en el momento del evento.
 		for ( String jID : tripID ) {
-			Junction j = sim.getJunction(jID);
+			Junction j = sim.getRoadMap().getJunctionWithID(jID);
 			if (j != null) {
 				trip.add(j);
 			}
