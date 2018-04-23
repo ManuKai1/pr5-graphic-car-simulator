@@ -72,12 +72,13 @@ public class TrafficSimulation {
 	 */
 	private int time;
 
-	private ArrayList<Listener> listeners;
+	private List<Listener> listeners;
 	
 	public TrafficSimulation() {
 		// Listas vacías. 
 		events = new MultiTreeMap<>();
 		roadMap = new RoadMap();
+		listeners = new ArrayList<>();
 		// Tiempo inicial a 0
 		time = 0;
 	}
@@ -121,9 +122,12 @@ public class TrafficSimulation {
 				for ( Event event : events.get(time) ) {
 					try {
 						event.execute(this);
+						//Aviso a Listeners de nuevo evento
+						fireUpdateEvent(EventType.NEW_EVENT, "New Event error");
 					}
 					catch (SimulationException e1) {
 						System.err.println( e1.getMessage() );
+						fireUpdateEvent(EventType.ERROR, "Simulation Exception error");
 					}				
 				}
 			}			
@@ -141,7 +145,10 @@ public class TrafficSimulation {
 					junction.proceed();
 				}				
 			}
-
+			
+			//Aviso a Listeners de avance
+			fireUpdateEvent(EventType.ADVANCED, "Advanced error");
+			
 			// Se avanza un tick.
 			time++;
 
@@ -222,11 +229,21 @@ public class TrafficSimulation {
 	
 	// uso interno, evita tener que escribir el mismo bucle muchas veces
 	private void fireUpdateEvent(EventType type, String error) {
-		//TODO
 		UpdateEvent ue = new UpdateEvent(type);
 		for(Listener l : listeners){
 			l.update(ue, error);
 		}
+	}
+
+	
+	/**
+	 * Reinicia el simulador
+	 */
+	public void reset(){
+		events.clear();
+		roadMap.clear();
+		time = 0;
+		fireUpdateEvent(EventType.RESET, "Reset error");
 	}
 
 	/**
@@ -234,6 +251,7 @@ public class TrafficSimulation {
 	 * 
 	 * @param newVehicle <code>Vehicle</code> a añadir
 	 */
+
 	public void addVehicle(Vehicle newVehicle) {
 		// Se guarda en el inventario de objetos de simulación.
 		roadMap.addVehicle(newVehicle);
