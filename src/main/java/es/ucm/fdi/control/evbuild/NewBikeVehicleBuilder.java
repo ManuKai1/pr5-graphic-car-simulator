@@ -1,5 +1,6 @@
 package es.ucm.fdi.control.evbuild;
 
+import java.util.List;
 import java.util.ArrayList;
 
 import es.ucm.fdi.ini.IniSection;
@@ -33,78 +34,56 @@ public class NewBikeVehicleBuilder extends EventBuilder {
 	 */
 	@Override
 	Event parse(IniSection ini) {
-		boolean match = false;
-
 		// Se comprueba si es un NewBikeVehicle
-		if ( ini.getTag().equals(iniName) && ini.getValue("type").equals(type) ) {
-			match = true;
-		}
-
-		if (match) {
-			String id = ini.getValue("id");
+		if ( iniNameMatch(ini) && typeMatch(ini, type) ) {
+			String id;
 			int time = 0;
 			int maxSpeed;
 
 			// ID ok?
-			if ( ! EventBuilder.validID(id) ) {
-				throw new IllegalArgumentException("Illegal vehicle ID: " + id);
+			try{
+				id = parseID(ini, "id");
+			}
+			catch(IllegalArgumentException e){
+				throw new IllegalArgumentException(e + " in new Bike.");
 			}
 
 			// TIME ok?
-			String timeKey = ini.getValue("time");
-			if (timeKey != null) {
-				try {
-					time = Integer.parseInt(timeKey);
+			if(existsTimeKey(ini)){
+				try{
+					time = parseNoNegativeInt(ini, "time");
 				}
-				//El tiempo no era un entero
-				catch (NumberFormatException e) {
-					throw new IllegalArgumentException("Time reading failure in vehicle with ID: " + id);
-				}
-				//Comprobamos que el tiempo sea no negativo
-				if (time < 0) {
-					throw new IllegalArgumentException("Negative time in vehicle with ID: " + id);
+				catch(IllegalArgumentException e){
+					throw new IllegalArgumentException(e + 
+							" when reading time in bike with id " + id);
 				}
 			}
 
 			// MAXSPEED ok?
-			try {
-				maxSpeed = Integer.parseInt(ini.getValue("max_speed"));
+			try{
+				maxSpeed = parseNoNegativeInt(ini, "max_speed");
 			}
-			//La velocidad no era un entero
-			catch (NumberFormatException e) {
-				throw new IllegalArgumentException("Max speed reading failure in vehicle with ID: " + id);
-			}
-			//Comprobamos que la velocidad sea positiva
-			if (maxSpeed <= 0) {
-				throw new IllegalArgumentException("Non-positive speed in vehicle with ID: " + id);
+			catch(IllegalArgumentException e){
+				throw new IllegalArgumentException(e + 
+						" when reading maxSpeed in bike with id " + id);
 			}
 
 			// TRIP ok?
 			// Creación de la ruta de Junction IDs.
-			ArrayList<String> trip = new ArrayList<>();
-
-			// Array de Strings con las IDs de los vehículos.
-			String line = ini.getValue("itinerary");
-			String[] input = line.split(",");
-
-			// Comprobación de IDs.
-			for (String idS : input) {
-				if ( ! EventBuilder.validID(idS) ) {
-					throw new IllegalArgumentException("Illegal junction ID: " + idS + " in vehicle trip, with ID: " + id);
-				}
-				trip.add(idS);
+			List<String> trip;
+			try{
+				trip = parseIDList(ini, "itinerary", 2);
 			}
-
-			// Al menos 2 Junctions.
-			if (trip.size() < 2) {
-				throw new IllegalArgumentException("Less than two junctions in vehicle with ID: " + id);
+			catch(IllegalArgumentException e){
+				throw new IllegalArgumentException(e + 
+						" when reading itinerary in bike with id " + id);
 			}
-
+			
 			// New Bike Vehicle.
 			NewBikeVehicle vehicle = new NewBikeVehicle(time, id, maxSpeed, trip);
 			return vehicle;
-
 		}
+		
 		else return null;
 	}
 }

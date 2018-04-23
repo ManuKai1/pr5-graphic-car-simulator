@@ -30,76 +30,69 @@ public class NewRoadBuilder extends EventBuilder{
 	 */
 	@Override
 	Event parse(IniSection ini) {
-		boolean match = false;
 
 		// Se comprueba si es un NewRoad
-		if ( ini.getTag().equals(iniName) && ini.getValue("type") == null ) {
-			match = true;
-		}
-
-		if (match) {
-			String id = ini.getValue("id");
+		if (iniNameMatch(ini) && typeMatch(ini, null)) {
+            String id;
 			int time = 0;
 			int maxSpeed;
 			int length;
-			String src = ini.getValue("src");
-			String dest = ini.getValue("dest");
+			String src;
+			String dest;
 			
 			// ID ok?
-			if( ! EventBuilder.validID(id) ) {
-				throw new IllegalArgumentException("Illegal road ID: " + id);
+			try{
+				id = parseID(ini, "id");
+			}
+			catch(IllegalArgumentException e){
+				throw new IllegalArgumentException(e + " in new Road.");
 			}
 			
 			// TIME ok?
-			String timeKey = ini.getValue("time");
-			if(timeKey != null) {
-				try {
-					time = Integer.parseInt(timeKey);
+			if(existsTimeKey(ini)){
+				try{
+					time = parseNoNegativeInt(ini, "time");
 				}
-				//El tiempo no era un entero
-				catch (NumberFormatException e) {
-					throw new IllegalArgumentException("Time reading failure in road with ID: " + id);
-				}
-				//Comprobamos que el tiempo sea no negativo
-				if(time < 0) {
-					throw new IllegalArgumentException("Negative time in road with ID: " + id);
+				catch(IllegalArgumentException e){
+					throw new IllegalArgumentException(e + 
+							" when reading time in Road with id " + id);
 				}
 			}
 
-			// SOURCE ok?			
-			if( ! EventBuilder.validID(src) ) {
-				throw new IllegalArgumentException("Illegal source junction ID in road with ID: " + id);
+			// SOURCE ok?	
+			try{
+				src = parseID(ini, "src");
+			}
+			catch(IllegalArgumentException e){
+				throw new IllegalArgumentException(e + 
+						" when reading dest in Road with id " + id);
 			}
 			
 			// DESTINY ok?
-			if( ! EventBuilder.validID(dest) ) {
-				throw new IllegalArgumentException("Illegal destination junction ID in road with ID: " + id);
+			try{
+				dest = parseID(ini, "dest");
+			}
+			catch(IllegalArgumentException e){
+				throw new IllegalArgumentException(e + 
+						" when reading source in Road with id " + id);
 			}
 			
 			// MAXSPEED ok?
 			try {
-				maxSpeed = Integer.parseInt( ini.getValue("max_speed") );
+				maxSpeed = parsePositiveInt(ini, "max_speed");
 			}
-			// La velocidad no era un entero
-			catch (NumberFormatException e) {
-				throw new IllegalArgumentException("Max speed reading failure in road with ID: " + id);
-			}
-			//Comprobamos que la velocidad sea positiva
-			if (maxSpeed <= 0) {
-				throw new IllegalArgumentException("Non-positive speed in road with ID: " + id);
+			catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException(e + 
+						" when reading max speed in Road with id " + id);
 			}
 			
 			// LENGTH ok?
 			try {
-				length = Integer.parseInt( ini.getValue("length") );
+				length = parsePositiveInt(ini, "length");
 			}
-			//La longitud no era un entero
 			catch (NumberFormatException e) {
-				throw new IllegalArgumentException("Length reading failure in road with ID: " + id);
-			}
-			//Comprobamos que la longitud sea positiva
-			if (length <= 0) {
-				throw new IllegalArgumentException("Non-positive length in road with ID: " + id);
+				throw new IllegalArgumentException(e + 
+						" when reading length in Road with id " + id);
 			}
 			
 			// New Road.

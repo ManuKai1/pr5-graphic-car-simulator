@@ -31,37 +31,30 @@ public class NewCrowdedJunctionBuilder extends EventBuilder {
      */
     @Override
     Event parse(IniSection ini) throws IllegalArgumentException {
-        boolean match = false;
 
         // Se comprueba si es un NewCrowdedJunction
-        if ( ini.getTag().equals(iniName) && ini.getValue("type").equals(type) ) {
-            match = true;
-        }
-
-        if (match) {
+        if (iniNameMatch(ini) && typeMatch(ini, type)) {
             String id = ini.getValue("id");
             int time = 0;
 
             // ID ok?
-            if ( ! EventBuilder.validID(id) ) {
-                throw new IllegalArgumentException("Illegal junction ID: " + id);
-            }
+            try{
+				id = parseID(ini, "id");
+			}
+			catch(IllegalArgumentException e){
+				throw new IllegalArgumentException(e + " in new Crowded Junction.");
+			}
 
             // TIME ok?
-            String timeKey = ini.getValue("time");
-            if (timeKey != null) {
-                try {
-                    time = Integer.parseInt(timeKey);
-                }
-                // El tiempo no era un entero
-                catch (NumberFormatException e) {
-                    throw new IllegalArgumentException("Time reading failure in junction with ID: " + id);
-                }
-                // Comprobamos que el tiempo sea positivo
-                if (time < 0) {
-                    throw new IllegalArgumentException("Negative time in junction with ID: " + id);
-                }
-            }
+            if(existsTimeKey(ini)){
+				try{
+					time = parseNoNegativeInt(ini, "time");
+				}
+				catch(IllegalArgumentException e){
+					throw new IllegalArgumentException(e + 
+							" when reading time in Crowded Junction with id " + id);
+				}
+			}
 
             // New Crowded Junction.
             return new NewCrowdedJunction(time, id);

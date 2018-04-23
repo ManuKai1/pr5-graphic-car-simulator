@@ -479,29 +479,12 @@ public class Road extends SimObject {
 	}
 
 	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * En el caso de <code>Road</code>, comprueba además todos los atributos
-	 * correspondientes.
-	 * </p>
 	 * 
 	 * @param obj objeto a comparar
 	 * @return if <code>Road</code> equals <code>obj</code>.
 	 */
 	public boolean equals(Object obj) {
-		boolean same;
-		same = super.equals(obj);
-
-		if (same) {
-			Road other = (Road) obj;
-
-			same = ( same && length == other.length );
-			same = ( same && speedLimit == other.speedLimit );
-			same = ( same && fromJunction.equals(other.fromJunction) );
-			same = ( same && toJunction.equals(other.toJunction) );
-		}
-
-		return same;
+		return super.equals(obj);
 	}
 	
 	/**

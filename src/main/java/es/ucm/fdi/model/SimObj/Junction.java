@@ -3,8 +3,10 @@ package es.ucm.fdi.model.SimObj;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.simulation.SimulationException;
@@ -19,12 +21,12 @@ public class Junction extends SimObject {
 	/**
 	 * Mapa de <code>Roads</code> entrantes en la <code>Junction</code>.
 	 */
-	protected List<Road> incomingRoads = new ArrayList<>();
+	protected Map<String, Road> incomingRoads = new LinkedHashMap<>();
 
 	/**
 	 * Mapa de <code>Roads</code> salientes en la <code>Junction</code>.
 	 */
-	protected Map<String, Road> exitRoads = new HashMap<>();
+	protected Map<String, Road> exitRoads = new LinkedHashMap<>();
 
 	/**
 	 * Entero que mediante la operación módulo representa el semáforo encendido.
@@ -64,26 +66,29 @@ public class Junction extends SimObject {
 	 */
 	@Override
 	public void proceed() {
-		
-		if (light == -1) {			
-			// * //
-			// Primera actualización del semáforo.
-			firstLightUpdate();
-		}
-		else {
-			// 1 //
-			// Actualización de la cola de la Road con el semáforo en verde.
-			Road greenRoad = incomingRoads.get(light);
-			roadUpdate(greenRoad);
-			
-			// 2 //
-			// Actualización del tiempo de avería de los coches de la cola.
-			greenRoad.refreshWaiting();
+		if(hasIncomingRoads()){
+			if (light == -1) {			
+				// * //
+				// Primera actualización del semáforo.
+				firstLightUpdate();
+			}
+			else {
+				// 1 //
+				// Actualización de la cola de la Road con el semáforo en verde.
+				List<String> array = new ArrayList<>(incomingRoads.keySet());
+				String nextRoad = array.get(light);
+				Road greenRoad = incomingRoads.get(nextRoad);
+				roadUpdate(greenRoad);
+				
+				// 2 //
+				// Actualización del tiempo de avería de los coches de la cola.
+				greenRoad.refreshWaiting();
 
-			// 3 //
-			// Actualización del semáforo.
-			lightUpdate();		
-		}		
+				// 3 //
+				// Actualización del semáforo.
+				lightUpdate();		
+			}	
+		}	
 	}
 
 	/**
@@ -91,9 +96,10 @@ public class Junction extends SimObject {
 	 */
 	protected void firstLightUpdate() {
 		light = 0; // Suponemos que hay al menos una carretera entrante
-
+		List<String> array = new ArrayList<>(incomingRoads.keySet());
+		String nextRoad = array.get(light);
 		// El semáforo de la carretera se pone verde.
-		incomingRoads.get(light).setLight(true);
+		incomingRoads.get(nextRoad).setLight(true);
 	}
 
 	/**
@@ -120,7 +126,10 @@ public class Junction extends SimObject {
 	 * Actualiza el semáforo de la <code>Junction</code>.
 	 */
 	protected void lightUpdate() {
-		Road usedRoad = incomingRoads.get(light); // Carretera actualizada
+		//Tomamos la carretera usada
+		List<String> array = new ArrayList<>(incomingRoads.keySet());
+		String nextRoad = array.get(light);
+		Road usedRoad = incomingRoads.get(nextRoad); // Carretera actualizada
 
 		// * //
 		// La carretera actualizada se pone en rojo.
@@ -133,7 +142,8 @@ public class Junction extends SimObject {
 
 		// 2 // 
 		// La siguiente carretera se pone en verde.
-		incomingRoads.get(light).setLight(true);
+		nextRoad = array.get(light);
+		incomingRoads.get(nextRoad).setLight(true);
 	}
 	
 	/**
@@ -169,7 +179,7 @@ public class Junction extends SimObject {
 	protected String getQueuesValue() {
 		// Generación del string de queues
 		StringBuilder queues = new StringBuilder();
-		for (Road incR : incomingRoads ) {
+		for (Road incR : incomingRoads.values() ) {
 			queues.append(incR.getWaitingState());
 			queues.append(",");
 		}
@@ -183,28 +193,12 @@ public class Junction extends SimObject {
 	}
 
 	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * En el caso de <code>Junction</code>, comprueba además todos los atributos
-	 * correspondientes.
-	 * </p>
 	 * 
 	 * @param obj objeto a comparar
 	 * @return if <code>Junction</code> equals <code>obj</code>.
 	 */
 	public boolean equals(Object obj) {
-		boolean same;
-		same = super.equals(obj);
-
-		if (same) {
-			Junction other = (Junction) obj;
-
-			same = (same && light == other.light);
-			same = (same && incomingRoads.equals(other.incomingRoads));
-			same = (same && exitRoads.equals(other.exitRoads));
-		}
-
-		return same;
+		return super.equals(obj);
 	}
 	
 	/**
@@ -212,7 +206,7 @@ public class Junction extends SimObject {
 	 * 
 	 * @return Mapa de <code>Roads</code> entrantes.
 	 */
-	public List<Road> getIncomingRoads() {
+	public Map<String, Road> getIncomingRoads() {
 		return incomingRoads;
 	}
 	
@@ -251,7 +245,7 @@ public class Junction extends SimObject {
 	 * @param newRoad Nueva <code>Road</code> entrante
 	 */
 	public void addNewIncomingRoad(Road newRoad) {
-		incomingRoads.add(newRoad);
+		incomingRoads.put(newRoad.getID(), newRoad);
 	}
 	
 	
@@ -264,18 +258,16 @@ public class Junction extends SimObject {
 	 * @throws SimulationException if <code>Road</code> between <code>Junctions</code> not found
 	 */
 	public Road getRoadTo(Junction junction) throws SimulationException {
-		// Se recorren las carreteras de entrada a la intersección siguiente.
-		Iterator<Road> toIt = junction.getIncomingRoads().iterator();
-		while (toIt.hasNext()) {
-			String toID = toIt.next().getID();
-			
-			if ( exitRoads.containsKey(toID) ) {
+		String toID;
+		for (Entry<String, Road> exit : exitRoads.entrySet()) {
+			toID = exit.getKey();
+			if ( junction.incomingRoads.containsKey(toID) ) {
 				return exitRoads.get(toID);
 			}
 		}
 		
 		throw new SimulationException(
-			"Road not fot found between junctions with id: " + 
+			"Road not found between junctions with id: " + 
 			id + ", " + junction.getID()
 		);
 	}

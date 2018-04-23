@@ -18,13 +18,14 @@ import org.apache.commons.cli.ParseException;
 
 import es.ucm.fdi.control.Controller;
 import es.ucm.fdi.ini.Ini;
+import es.ucm.fdi.model.simulation.SimulationException;
 
 public class ExampleMain {
 
 	/**
 	 * Default time limit if none indicated by user.
 	 */
-	private final static Integer _timeLimitDefaultValue = 120;
+	private final static Integer _timeLimitDefaultValue = 10;
 	
 	/**
 	 * Execution time limit: number of ticks the simulator will do.
@@ -281,7 +282,13 @@ public class ExampleMain {
 		Controller control = new Controller(iniInput, os, _timeLimit);
 
 		// Ejecución
-		control.execute();
+		try {
+			control.execute();
+		} catch (SimulationException e) {
+			System.err.println(e);
+			e.printStackTrace();
+			System.err.println("Aborting execution...");
+		}
 	}
 
 	/**
@@ -311,7 +318,7 @@ public class ExampleMain {
 		// test("src/main/resources/examples/basic");
 		// test("src/main/resources/examples/advanced");
 		// test("src/main/resources/examples/err");
-		test("src/main/resources/examples/new");
+		//test("src/main/resources/examples/new");
 
 		// Start simulator from command line //
 		// start(args);

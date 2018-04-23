@@ -31,65 +31,55 @@ public class NewRobinJunctionBuilder extends EventBuilder {
      */
 	@Override
 	Event parse(IniSection ini) throws IllegalArgumentException {
-        boolean match = false;
-
+		
         // Se comprueba si es un NewRobinJunction
-        if ( ini.getTag().equals(iniName) && ini.getValue("type").equals(type) ) {
-            match = true;
-        }
-
-		if (match) {
-			String id = ini.getValue("id");
+		if (iniNameMatch(ini) && typeMatch(ini, type)) {
+			String id;
             int time = 0;
             int minTime, maxTime;
 			
-			// ID ok?
-			if ( ! EventBuilder.validID(id) ) {
-				throw new IllegalArgumentException("Illegal junction ID: " + id);
+            // ID ok?
+            try{
+				id = parseID(ini, "id");
 			}
-			
-			// TIME ok?
-			String timeKey = ini.getValue("time");
-			if (timeKey != null) {
-				try {
-					time = Integer.parseInt(timeKey);
+			catch(IllegalArgumentException e){
+				throw new IllegalArgumentException(e + " in new Robin Junction.");
+			}
+
+            // TIME ok?
+            if(existsTimeKey(ini)){
+				try{
+					time = parseNoNegativeInt(ini, "time");
 				}
-				// El tiempo no era un entero
-				catch(NumberFormatException e) {
-					throw new IllegalArgumentException("Time reading failure in junction with ID: " + id);
+				catch(IllegalArgumentException e){
+					throw new IllegalArgumentException(e + 
+							" when reading time in Robin Junction with id " + id);
 				}
-				// Comprobamos que el tiempo sea positivo
-				if (time < 0) {
-					throw new IllegalArgumentException("Negative time in junction with ID: " + id);
-				}
-            }
+			}
             
             // TIMELAPSES ok?
             // Tiempo mínimo.
             try {
-                minTime = Integer.parseInt( ini.getValue("min_time_slice") );
+                minTime = parseNoNegativeInt(ini,"min_time_slice");
             }
-            catch (NumberFormatException e) {
-                throw new IllegalArgumentException("Light lapse reading failure in junction with ID: " + id);
-            }
-            if (minTime < 0) {
-                throw new IllegalArgumentException("Negative time lapse in junction with ID: " + id);
+            catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException(e + 
+                		" when reading minimum Time in Robin Junction with ID " + id);
             }
 
             // Tiempo máximo.
             try {
-                maxTime = Integer.parseInt( ini.getValue("max_time_slice") );
+                maxTime = parseNoNegativeInt(ini,"max_time_slice");
             }
-            catch (NumberFormatException e) {
-                throw new IllegalArgumentException("Light lapse reading failure in junction with ID: " + id);
-            }
-            if (maxTime < 0) {
-                throw new IllegalArgumentException("Negative time lapse in junction with ID: " + id);
+            catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException(e + 
+                		" when reading maximum Time in Robin Junction with ID " + id);
             }
 
             // Mínimo menor que máximo.
             if (minTime > maxTime) {
-                throw new IllegalArgumentException("Not a valid time lapse in junction with ID: " + id);
+                throw new IllegalArgumentException(
+                		"Not a valid time lapse in Robin Junction ID: " + id);
             }
 			
             // New Robin Junction.

@@ -1,6 +1,7 @@
 package es.ucm.fdi.model.events;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import es.ucm.fdi.model.SimObj.CarVehicle;
 import es.ucm.fdi.model.SimObj.Junction;
@@ -40,15 +41,15 @@ public class NewCarVehicle extends NewVehicle {
 	 * @param newTime tiempo de ejecución del evento
 	 * @param ID identificador del nuevo <code>CarVehicle</code>
 	 * @param max máxima velocidad alcanzable
-	 * @param junctions ruta de <code>Junctions</code>
+	 * @param trip ruta de <code>Junctions</code>
 	 * @param res resistencia a la avería
 	 * @param breakChance probabilidad de avería
 	 * @param breakDuration duración máxima de avería
 	 * @param seed semilla aleatoria
 	 */
-	public NewCarVehicle(int newTime, String ID, int max, ArrayList<String> junctions, 
+	public NewCarVehicle(int newTime, String ID, int max, List<String> trip, 
 			int res, double breakChance, int breakDuration, long seed) {
-		super(newTime, ID, max, junctions);
+		super(newTime, ID, max, trip);
 		resistance = res;
 		faultyChance = breakChance;
 		faultDuration = breakDuration;

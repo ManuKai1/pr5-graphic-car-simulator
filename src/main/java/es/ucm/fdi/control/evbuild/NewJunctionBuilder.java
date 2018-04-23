@@ -29,37 +29,30 @@ public class NewJunctionBuilder extends EventBuilder{
 	 */
 	@Override
 	Event parse(IniSection ini) throws IllegalArgumentException {
-		boolean match = false;
 
 		// Se comprueba si es un NewJunction
-		if ( ini.getTag().equals(iniName) && ini.getValue("type") == null ) {
-			match = true;
-		}
+		if (iniNameMatch(ini) && typeMatch(ini, null)) {
+            String id = ini.getValue("id");
+            int time = 0;
 
-		if (match) {
-			String id = ini.getValue("id");
-			int time = 0;
-
-			// ID ok?
-			if ( ! EventBuilder.validID(id) ) {
-				throw new IllegalArgumentException("Illegal junction ID: " + id);
+            // ID ok?
+            try{
+				id = parseID(ini, "id");
+			}
+			catch(IllegalArgumentException e){
+				throw new IllegalArgumentException(e + " in new Junction.");
 			}
 
-			// TIME ok?
-			String timeKey = ini.getValue("time");
-			if (timeKey != null) {
-				try {
-					time = Integer.parseInt(timeKey);
+            // TIME ok?
+            if(existsTimeKey(ini)){
+				try{
+					time = parseNoNegativeInt(ini, "time");
 				}
-				// El tiempo no era un entero
-				catch(NumberFormatException e) {
-					throw new IllegalArgumentException("Time reading failure in junction with ID: " + id);
+				catch(IllegalArgumentException e){
+					throw new IllegalArgumentException(e + 
+							" when reading time in Junction with id " + id);
 				}
-				// Comprobamos que el tiempo sea positivo
-				if (time < 0) {
-					throw new IllegalArgumentException("Negative time in junction with ID: " + id);
-				}
-            }
+			}
 
 			NewJunction junction = new NewJunction(time, id);
 			return junction;

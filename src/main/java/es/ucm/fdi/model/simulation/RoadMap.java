@@ -2,6 +2,7 @@ package es.ucm.fdi.model.simulation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,9 +13,9 @@ import es.ucm.fdi.model.SimObj.Vehicle;
 public class RoadMap {
 
     // MAPA
-    private Map<String, Junction> junctionObjects = new HashMap<>();
-    private Map<String, Road> roadObjects = new HashMap<>();
-    private Map<String, Vehicle> vehicleObjects = new HashMap<>();
+    private Map<String, Junction> junctionObjects = new LinkedHashMap<>();
+    private Map<String, Road> roadObjects = new LinkedHashMap<>();
+    private Map<String, Vehicle> vehicleObjects = new LinkedHashMap<>();
 
     /**
      *

@@ -1,6 +1,7 @@
 package es.ucm.fdi.model.events;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import es.ucm.fdi.model.SimObj.BikeVehicle;
 import es.ucm.fdi.model.SimObj.Junction;
@@ -20,10 +21,10 @@ public class NewBikeVehicle extends NewVehicle {
 	 * @param newTime tiempo de ejecución del evento
 	 * @param ID identificador del nuevo <code>BikeVehicle</code>
 	 * @param max máxima velocidad alcanzable
-	 * @param junctions ruta de <code>Junctions</code>
+	 * @param trip ruta de <code>Junctions</code>
 	 */
-	public NewBikeVehicle(int newTime, String ID, int max, ArrayList<String> junctions) {
-		super(newTime, ID, max, junctions);
+	public NewBikeVehicle(int newTime, String ID, int max, List<String> trip) {
+		super(newTime, ID, max, trip);
 	}
 
 	/**

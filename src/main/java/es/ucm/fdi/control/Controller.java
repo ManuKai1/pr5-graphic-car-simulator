@@ -1,5 +1,6 @@
 package es.ucm.fdi.control;
 
+import java.io.IOException;
 import java.io.OutputStream;
 
 import es.ucm.fdi.control.evbuild.EventParser;
@@ -21,17 +22,17 @@ public class Controller {
      * Archivo <code>.ini</code> dividido en <code>IniSections</code> del que
      * se extraen los <code>Events</code> de la simulación.
      */
-    Ini iniInput;
+    private Ini iniInput;
 
     /**
      * Flujo de salida donde se vuelcan los datos del simulador tras cada tick.
      */
-    OutputStream outStream;
+    private OutputStream outStream;
 
     /**
      * Número de ticks que se ejecuta el simulador.
      */
-    int timeLimit;
+    private int timeLimit;
 
     /**
      * Constructor de <code>Controller</code> que recibe el archivo <code>.ini</code>,
@@ -51,8 +52,10 @@ public class Controller {
      * Método principal de <code>Controller</code> que crea una <code>Simulation</code>
      * y un <code>EventParser</code>, recorre las secciones de <code>iniInput</code> guardando
      * los eventos en la simulación, y ejecuta la <code>Simulation</code>.
+     * @throws IOException 
+     * @throws SimulationException 
      */
-    public void execute() {
+    public void execute() throws IOException, SimulationException {
         TrafficSimulation simulator = new TrafficSimulation();
         EventParser parser = new EventParser();
 
@@ -75,6 +78,12 @@ public class Controller {
         // 2 // 
         // Se ejecuta el simulador el número de pasos timeLimit
         // y se actualiza el OutputStream.
-        simulator.execute(timeLimit, outStream);
+        try {
+			simulator.execute(timeLimit, outStream);
+		} catch (IOException e) {
+			throw e;
+		} catch (SimulationException e) {
+			throw e;
+		}
     }
 }

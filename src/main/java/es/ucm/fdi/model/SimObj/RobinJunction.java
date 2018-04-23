@@ -1,6 +1,8 @@
 package es.ucm.fdi.model.SimObj;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import es.ucm.fdi.ini.IniSection;
@@ -129,7 +131,9 @@ public class RobinJunction extends Junction {
      */
     @Override
     protected void lightUpdate() {
-        Road usedRoad = incomingRoads.get(light);
+    	List<String> array = new ArrayList<>(incomingRoads.keySet());
+		String nextRoad = array.get(light);
+        Road usedRoad = incomingRoads.get(nextRoad);
         int roadTimeLapse = timeLapses.get(usedRoad);
 
         // Se actualiza el tiempo transcurrido con el semáforo en verde.
@@ -168,7 +172,8 @@ public class RobinJunction extends Junction {
             light = (light + 1) % numIncomingRoads;
 
             // El semáforo de la carretera se pone verde.
-            incomingRoads.get(light).setLight(true);
+    		nextRoad = array.get(light);
+            incomingRoads.get(nextRoad).setLight(true);
 
             // 3 //
             // Se resetea elapsedTime y los booleanos
@@ -233,7 +238,7 @@ public class RobinJunction extends Junction {
     protected String getQueuesValue() {
         // Generación del string de queues
         StringBuilder queues = new StringBuilder();
-        for (Road incR : incomingRoads) {
+        for (Road incR : incomingRoads.values()) {
             // Semáforo en verde.
             if (incR.isGreen()) {
                 queues.append(incR.getWaitingState(lastingLightTime(incR)));
@@ -272,7 +277,7 @@ public class RobinJunction extends Junction {
      */
     @Override
     public void addNewIncomingRoad(Road newRoad) {
-        incomingRoads.add(newRoad);
+        incomingRoads.put(newRoad.getID(), newRoad);
         timeLapses.put(newRoad, maxLightTime);
     }
 }

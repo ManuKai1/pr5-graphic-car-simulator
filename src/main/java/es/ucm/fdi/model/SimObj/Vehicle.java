@@ -223,35 +223,12 @@ public class Vehicle extends SimObject {
 	}
 
 	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * En el caso de <code>Vehicle</code>, comprueba además todos los atributos
-	 * correspondientes.
-	 * </p>
 	 * 
 	 * @param obj objeto a comparar
 	 * @return if <code>Vehicle</code> equals <code>obj</code>.
 	 */
 	public boolean equals(Object obj) {
-		boolean same;
-		same = super.equals(obj);
-
-		if (same) {
-			Vehicle other = (Vehicle) obj;
-
-			same = (same && trip.equals(other.trip));
-			same = (same && lastTripPos == other.lastTripPos);
-			same = (same && maxSpeed == other.maxSpeed);
-			same = (same && kilometrage == other.kilometrage);
-			same = (same && breakdownTime == other.breakdownTime);
-			same = (same && hasArrived == other.hasArrived);
-			same = (same && isWaiting == other.isWaiting);
-			same = (same && road.equals(other.road));
-			same = (same && location == other.location);
-			same = (same && actualSpeed == other.actualSpeed);
-		}
-
-		return same;
+		return super.equals(obj);
 	}
 	
 	

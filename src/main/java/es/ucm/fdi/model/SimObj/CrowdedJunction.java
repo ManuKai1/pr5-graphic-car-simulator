@@ -1,7 +1,9 @@
 package es.ucm.fdi.model.SimObj;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 import es.ucm.fdi.ini.IniSection;
@@ -35,7 +37,7 @@ public class CrowdedJunction extends Junction {
         super(identifier); // light: -1
 
         // Al inicio de la simulación, la duración de los semáforos es nula.
-        for ( Road inc : incomingRoads ) {
+        for ( Road inc : incomingRoads.values() ) {
             timeLapses.put(inc, 0);
         }
     }
@@ -57,7 +59,9 @@ public class CrowdedJunction extends Junction {
         // 1 // 
         // La carretera con la cola más concurrida se pone en verde.
         light = mostCrowdedRoad();
-        Road crowdedRoad = incomingRoads.get(light);
+        List<String> array = new ArrayList<>(incomingRoads.keySet());
+		String nextRoad = array.get(light);
+        Road crowdedRoad = incomingRoads.get(nextRoad);
 
         crowdedRoad.setLight(true);
         
@@ -99,7 +103,9 @@ public class CrowdedJunction extends Junction {
      */
     @Override
     protected void lightUpdate() {
-        Road usedRoad = incomingRoads.get(light);
+    	List<String> array = new ArrayList<>(incomingRoads.keySet());
+		String nextRoad = array.get(light);
+        Road usedRoad = incomingRoads.get(nextRoad);
         int roadTimeLapse = timeLapses.get(usedRoad);
 
         // Se actualiza el tiempo transcurrido con el semáforo en verde.
@@ -114,7 +120,8 @@ public class CrowdedJunction extends Junction {
             // 1 //
             // La carretera con la cola más concurrida se pone en verde.
             light = mostCrowdedRoad();
-            Road crowdedRoad = incomingRoads.get(light);
+            nextRoad = array.get(light);
+            Road crowdedRoad = incomingRoads.get(nextRoad);
 
             crowdedRoad.setLight(true);
 
@@ -141,9 +148,12 @@ public class CrowdedJunction extends Junction {
         int max = 0; // 0 vehículos
         int crowdedPos = 0; // la primera carretera
 
+        List<String> array = new ArrayList<>(incomingRoads.keySet());
+        
         // Se halla el máximo.
-        for (int i = 0; i < incomingRoads.size(); ++i) {
-            int numVehicles = incomingRoads.get(i).getNumWaitingVehicles();
+        for (int i = 0; i < array.size(); ++i) {
+            int numVehicles = incomingRoads.get(array.get(i)).
+            		getNumWaitingVehicles();
 
             if (numVehicles > max) {
                 max = numVehicles;
@@ -154,8 +164,9 @@ public class CrowdedJunction extends Junction {
         // Posiciones de las carreteras que empatan.
         HashSet<Integer> equallyCrowdedPos = new HashSet<>();
         
-        for (int i = 0; i < incomingRoads.size(); ++i) {
-            int numVehicles = incomingRoads.get(i).getNumWaitingVehicles();
+        for (int i = 0; i < array.size(); ++i) {
+            int numVehicles = incomingRoads.get(array.get(i)).
+            		getNumWaitingVehicles();
 
             if (numVehicles == max) {
                 equallyCrowdedPos.add(i);
@@ -229,7 +240,7 @@ public class CrowdedJunction extends Junction {
     protected String getQueuesValue() {
         // Generación del string de queues
         StringBuilder queues = new StringBuilder();
-        for (Road incR : incomingRoads) {
+        for (Road incR : incomingRoads.values()) {
             // Semáforo en verde.
             if (incR.isGreen()) {
                 queues.append(incR.getWaitingState(lastingLightTime(incR)));

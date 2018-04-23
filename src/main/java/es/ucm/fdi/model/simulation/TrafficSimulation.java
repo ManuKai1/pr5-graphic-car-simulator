@@ -100,8 +100,10 @@ public class TrafficSimulation {
 	 * 
 	 * @param steps número de pasos a ejecutar
 	 * @param file fichero de salida
+	 * @throws IOException 
+	 * @throws SimulationException 
 	 */
-	public void execute(int steps, OutputStream file) {
+	public void execute(int steps, OutputStream file) throws IOException, SimulationException {
 		// * //
 		// Tiempo límite en que para la simulación.
 		int timeLimit = time + steps - 1;
@@ -110,34 +112,15 @@ public class TrafficSimulation {
 		// Bucle de la simulación.
 		while (time <= timeLimit) {
 			// 1 // EVENTOS //
-			// Se ejecutan los eventos correspondientes a ese tiempo.
-			if ( events.get(time) != null ) {
-				for ( Event event : events.get(time) ) {
-					try {
-						event.execute(this);
-						//Aviso a Listeners de nuevo evento
-						fireUpdateEvent(EventType.NEW_EVENT, "New Event error");
-					}
-					catch (SimulationException e1) {
-						System.err.println( e1.getMessage() );
-						fireUpdateEvent(EventType.ERROR, "Simulation Exception error");
-					}				
-				}
-			}			
-
+			// Se ejecutan los eventos correspondientes a ese tiempo.			
+			try {
+				executeEvents();
+			} catch (SimulationException e1) {
+				throw e1;
+			}
+			
 			// 2 // SIMULACIÓN //
-			// Para cada carretera, los coches que no están esperando avanzan.
-			for ( Road road : roadMap.getRoads().values() ) {
-				road.proceed();
-			}
-
-			// Para cada cruce, avanzan los vehículos a la espera que puedan y se actualiza 
-			// el semáforo y los tiempos de avería de los vehículos a la espera.
-			for ( Junction junction : roadMap.getJunctions().values() ) {
-				if ( junction.hasIncomingRoads() ) {
-					junction.proceed();
-				}				
-			}
+			proceedAll();
 			
 			//Aviso a Listeners de avance
 			fireUpdateEvent(EventType.ADVANCED, "Advanced error");
@@ -147,36 +130,87 @@ public class TrafficSimulation {
 
 			// 3 // INFORME //
 			// Escribir un informe en OutputStream en caso de que no sea nulo
-			if (file != null) {
-				//Creación de ini
-				Ini iniFile = new Ini();
-				//Junctions:
-				for(Junction junction : roadMap.getJunctions().values() ){
-					iniFile.addsection(junction.generateIniSection(time));
-				}
-				//Roads:
-				for(Road road : roadMap.getRoads().values() ){
-					iniFile.addsection(road.generateIniSection(time));
-				}
-				//Vehicles:
-				for(Vehicle vehicle : roadMap.getVehicles().values() ){
-					iniFile.addsection(vehicle.generateIniSection(time));
-				}
-				
-				// Guardado en el outputStream
-				try{
-					iniFile.store(file);
-				}
-				catch(IOException e){
-					System.err.println(
-						"Error when saving file on time " + time + ":" + e.getMessage()
-					);
-				}
+			try{
+				generateReports(file);
+			}
+			catch(IOException e){
+				throw e;
 			}
 
 		}
 	}
+	
+	/**
+	 * Llama a los métodos de avance de carreteras
+	 * y de cruces.
+	 * @throws SimulationException
+	 */
+	private void executeEvents() throws SimulationException{
+		if ( events.get(time) != null ) {
+			for ( Event event : events.get(time) ) {
+				try {
+					event.execute(this);
+					//Aviso a Listeners de nuevo evento
+					fireUpdateEvent(EventType.NEW_EVENT, "New Event error");
+				}
+				catch (SimulationException e1) {
+					fireUpdateEvent(EventType.ERROR, "Simulation Exception error");
+					throw e1;
+				}				
+			}
+		}
+	}
+	
+	/**
+	 * Llama a los métodos de avance de carreteras
+	 * y de cruces.
+	 */
+	private void proceedAll(){
+		// Para cada carretera, los coches que no están esperando avanzan.
+		for ( Road road : roadMap.getRoads().values() ) {
+			road.proceed();
+		}
 
+		// Para cada cruce, avanzan los vehículos a la espera que puedan y se actualiza 
+		// el semáforo y los tiempos de avería de los vehículos a la espera.
+		for ( Junction junction : roadMap.getJunctions().values() ) {
+			junction.proceed();			
+		}
+	}
+	
+	/**
+	 * Genera informes de todos los SimObject.
+	 * @param file fichero de salida
+	 */
+	private void generateReports(OutputStream file) throws IOException{
+		if (file != null) {
+			//Creación de ini
+			Ini iniFile = new Ini();
+			//Junctions:
+			for(Junction junction : roadMap.getJunctions().values() ){
+				iniFile.addsection(junction.generateIniSection(time));
+			}
+			//Roads:
+			for(Road road : roadMap.getRoads().values() ){
+				iniFile.addsection(road.generateIniSection(time));
+			}
+			//Vehicles:
+			for(Vehicle vehicle : roadMap.getVehicles().values() ){
+				iniFile.addsection(vehicle.generateIniSection(time));
+			}
+			
+			// Guardado en el outputStream
+			try{
+				iniFile.store(file);
+			}
+			catch(IOException e){
+				throw new IOException(
+					"Error when saving file on time " + time + ":" + e.getMessage()
+				);
+			}
+		}
+	}
+	
 	/**
 	 * Añade tiempo de avería a los <code>Vehicles</code> con los ID de la lista.
 	 * Además comprueba que existan los <code>Vehicles</code> referenciados 
@@ -185,7 +219,7 @@ public class TrafficSimulation {
 	 * @param vehiclesID lista de IDs de los <code>Vehicles</code> a averiar
 	 * @param breakDuration duración del tiempo de avería a añadir
 	 */
-	public void makeFaulty(ArrayList<String> vehiclesID, int breakDuration) throws NonExistingSimObjException {
+	public void makeFaulty(List<String> vehiclesID, int breakDuration) throws NonExistingSimObjException {
 		for ( String id : vehiclesID ) {
 			Vehicle toBreak = roadMap.getVehicleWithID(id);
 

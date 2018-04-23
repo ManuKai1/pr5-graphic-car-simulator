@@ -1,6 +1,7 @@
 package es.ucm.fdi.model.events;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import es.ucm.fdi.model.simulation.NonExistingSimObjException;
 import es.ucm.fdi.model.simulation.TrafficSimulation;
@@ -14,7 +15,7 @@ public class FaultyVehicle extends Event {
 	/**
 	 * Lista con los IDs de los <code>Vehicles</code> que se van a averiar.
 	 */
-	private ArrayList<String> vehiclesID;
+	private List<String> vehiclesID;
 
 	/**
 	 * Duración de la avería inducida.
@@ -25,12 +26,12 @@ public class FaultyVehicle extends Event {
 	 * Constructor de <code>FaultyVehicle</code>.
 	 * 
 	 * @param newTime tiempo de ejecución del evento
-	 * @param vID <code>ArrayList</code> con los IDs de los <code>Vehicles</code> a averiar
+	 * @param vehicles <code>ArrayList</code> con los IDs de los <code>Vehicles</code> a averiar
 	 * @param dur tiempo de avería inducido
 	 */
-	public FaultyVehicle(int newTime, ArrayList<String> vID, int dur) {
+	public FaultyVehicle(int newTime, List<String> vehicles, int dur) {
 		super(newTime);
-		vehiclesID = vID;
+		vehiclesID = vehicles;
 		duration = dur;
 	}
 	

@@ -1,6 +1,7 @@
 package es.ucm.fdi.model.events;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import es.ucm.fdi.model.SimObj.Junction;
 import es.ucm.fdi.model.SimObj.Vehicle;
@@ -27,7 +28,7 @@ public class NewVehicle extends Event {
 	/**
 	 * Ruta del <code>Vehicle</code> a lo largo del simulador.
 	 */
-	protected ArrayList<String> tripID;
+	protected List<String> tripID;
 	
 	/**
 	 * Constructor de <code>NewVehicle</code>
@@ -35,13 +36,13 @@ public class NewVehicle extends Event {
 	 * @param newTime tiempo de ejecución del evento
 	 * @param ID identificador del nuevo <code>Vehicle</code>
 	 * @param max máxima velocidad alcanzable
-	 * @param junctions ruta de <code>Junctions</code>
+	 * @param trip ruta de <code>Junctions</code>
 	 */
-	public NewVehicle(int newTime, String ID, int max, ArrayList<String> junctions) {
+	public NewVehicle(int newTime, String ID, int max, List<String> trip) {
 		super(newTime);
 		id = ID;
 		maxSpeed = max;
-		tripID = junctions;
+		tripID = trip;
 	}
 	
 	/**
@@ -67,7 +68,7 @@ public class NewVehicle extends Event {
 	 * 
 	 * @return <code>ArrayList</code> con los ID de las <code>Junctions</code> de la ruta
 	 */
-	public ArrayList<String> getTripID(){
+	public List<String> getTripID(){
 		return tripID;
 	}
 
