@@ -77,4 +77,9 @@ public class Controller {
         // y se actualiza el OutputStream.
         simulator.execute(timeLimit, outStream);
     }
+
+    //Setter de outStream
+	public void setOutStream(OutputStream newOut) {
+		outStream = newOut;	
+	}
 }
