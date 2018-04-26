@@ -5,7 +5,8 @@ import es.ucm.fdi.model.simulation.NonExistingSimObjException;
 import es.ucm.fdi.model.simulation.TrafficSimulation;
 
 /**
- * Clase con métodos abstractos que sirved de base para cualquier evento del simulador.
+ * Clase con métodos abstractos que sirve de base
+ * para cualquier evento del simulador.
  */
 public abstract class Event {
 	
@@ -15,7 +16,7 @@ public abstract class Event {
 	private int time;
 	
 	/**
-	 * Constructor de <code>Event</code>.
+	 * Constructor de {@link Event}.
 	 * 
 	 * @param newTime tiempo de ejecución del evento
 	 */
@@ -37,6 +38,13 @@ public abstract class Event {
 		return time;
 	}
 	
+
+
+
+
+
+
+
 	/**
 	 * Comprueba si el <code>Event</code> es igual a un objeto dado
 	 * <code>obj</code>.

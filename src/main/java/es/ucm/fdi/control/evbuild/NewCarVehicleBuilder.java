@@ -1,156 +1,158 @@
 package es.ucm.fdi.control.evbuild;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.model.events.NewCarVehicle;
+import es.ucm.fdi.model.SimObj.CarVehicle;
 
 /**
- * Clase que construye un evento <code>NewCarVehicle</code> utilizado para
- * crear un <code>CarVehicle</code> en la simulación.
+ * Clase que construye un <code>Event</code> 
+ * {@link NewCarVehicle} utilizado para crear un 
+ * {@link CarVehicle} durante la simulación.
+ * Hereda de {@link EventBuilder}.
  */
 public class NewCarVehicleBuilder extends EventBuilder {
 
-	private final String type = "car";
+	/**
+	 * Etiqueta utilizada en las <code>IniSections</code>
+	 * para representar este tipo de eventos.
+	 */
+	private static final String SECTION_TAG = "new_vehicle";
 
 	/**
-	 * Constructor de <code>NewCarVehicleBuilder</code> que pasa
-	 * el parámetro <code>new_vehicle</code> al constructor de la
-	 * superclase.
+	 * Valor que debería almacenar la clave <code>type</code>
+	 * de una <code>IniSection</code> que represente a un
+	 * <code>CarVehicle</code>.
+	 */
+	private static final String TYPE = "car";
+
+
+	/**
+	 * Constructor de {@link NewCarVehicleBuilder} que 
+	 * pasa el atributo <code>SECTION_TAG</code> al 
+	 * constructor de la superclase.
 	 */
 	public NewCarVehicleBuilder() {
-		super("new_vehicle");
+		super(SECTION_TAG);
 	}
 
 	/**
-	 * Método de <code>parsing</code> de <code>NewCarVehicleBuilder</code> que comprueba
-	 * si la <code>IniSection</code> pasada como argumento representa un <code>NewCarVehicle</code>
+	 * Método de parsing que comprueba si la 
+	 * <code>IniSection</code> pasada como argumento 
+	 * representa un evento <code>NewCarVehicle</code>
 	 * y si sus parámetros son correctos.
 	 * 
-	 * @param ini <code>IniSection</code> a parsear.
-	 * @return <code>NewCarVehicle</code> o <code>null</code>.
+	 * @param ini 	<code>IniSection</code> a parsear
+	 * @return 		<code>NewCarVehicle</code> event or 
+	 * 				<code>null</code> if parsing failed
+	 * 
+	 * @throws IllegalArgumentException if <code>ini</code> represents 
+	 *	 								the searched event but its 
+	 *									arguments are not valid
 	 */
 	@Override
-	Event parse(IniSection ini) {
-		boolean match = false;
-
+	Event parse(IniSection ini)
+			throws IllegalArgumentException {
 		// Se comprueba si es un NewCarVehicle
-		if ( ini.getTag().equals(iniName) && ini.getValue("type").equals(type) ) {
-			match = true;
-		}
-
-		if (match) {
-			String id = ini.getValue("id");
+		if ( iniNameMatch(ini) && typeMatch(ini, TYPE) ) {
+			String id;
 			int time = 0;
-			int maxSpeed;
-			int resistance;
+			int maxSpeed, resistance, faultDuration;
 			double faultyChance;
-			int faultDuration;
 			long seed;
 
-
-
 			// ID ok?
-			if ( ! EventBuilder.validID(id) ) {
-				throw new IllegalArgumentException("Illegal vehicle ID: " + id);
+			try {
+				id = parseID(ini, "id");
+			}
+			catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException( 
+					e + " in new Car."
+				);
 			}
 
 			// TIME ok?
-			String timeKey = ini.getValue("time");
-			if (timeKey != null) {
+			if ( existsTimeKey(ini) ) {
 				try {
-					time = Integer.parseInt(timeKey);
+					time = parseNoNegativeInt(ini, "time");
 				}
-				// El tiempo no era un entero
-				catch (NumberFormatException e) {
-					throw new IllegalArgumentException("Time reading failure in vehicle with ID: " + id);
-				}
-				// Comprobamos que el tiempo sea no negativo
-				if (time < 0) {
-					throw new IllegalArgumentException("Negative time in vehicle with ID: " + id);
+				catch (IllegalArgumentException e) {
+					throw new IllegalArgumentException(
+						e + " when reading time " +
+						"in car with id " + id
+					);
 				}
 			}
-
+			
 			// MAXSPEED ok?
 			try {
-				maxSpeed = Integer.parseInt(ini.getValue("max_speed"));
+				maxSpeed = parseNoNegativeInt(ini, "max_speed");
 			}
-			//La velocidad no era un entero
-			catch (NumberFormatException e) {
-				throw new IllegalArgumentException("Max speed reading failure in vehicle with ID: " + id);
-			}
-			//Comprobamos que la velocidad sea positiva
-			if (maxSpeed <= 0) {
-				throw new IllegalArgumentException("Non-positive speed in vehicle with ID: " + id);
+			catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException(
+					e + " when reading maxSpeed "+ 
+					"in car with id " + id
+				);
 			}
 
 			// TRIP ok?
 			// Creación de la ruta de Junction IDs.
-			ArrayList<String> trip = new ArrayList<>();
-
-			// Array de Strings con las IDs de los vehículos.
-			String line = ini.getValue("itinerary");
-			String[] input = line.split(",");
-
-			// Comprobación de IDs.
-			for (String idS : input) {
-				if ( ! EventBuilder.validID(idS) ) {
-					throw new IllegalArgumentException("Illegal junction ID: " + idS + " in vehicle trip, with ID: " + id);
-				}
-				trip.add(idS);
+			List<String> trip;
+			try {
+				trip = parseIDList(ini, "itinerary", 2);
 			}
-
-			// Al menos 2 Junctions.
-			if (trip.size() < 2) {
-				throw new IllegalArgumentException("Less than two junctions in vehicle with ID: " + id);
+			catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException(
+					e + " when reading itinerary "+ 
+					"in car with id " + id
+				);
 			}
 
 			// RESISTANCE ok?
 			try {
-				resistance = Integer.parseInt( ini.getValue("resistance") );
+				resistance = parsePositiveInt(ini, "resistance");
 			}
-			//La resistencia no era un entero
-			catch (NumberFormatException e) {
-				throw new IllegalArgumentException("Resistance reading failure in car with ID: " + id);
-			}
-			if (resistance <= 0) {
-				throw new IllegalArgumentException("Resistance is not positive in car with ID: " + id);
+			catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException(
+					e + " when reading resistance " +
+					"in car with id " + id
+				);
 			}
 
 			// FAULTY_CHANCE ok?
 			try {
-				faultyChance = Double.parseDouble(ini.getValue("fault_probability"));
+				faultyChance = parseProbability(ini, "fault_probability");
 			}
-			//La probabilidad de avería no era un real
-			catch (NumberFormatException e) {
-				throw new IllegalArgumentException("Fault probability reading failure in car with ID: " + id);
-			}
-			if (faultyChance < 0 || faultyChance > 1) {
-				throw new IllegalArgumentException("Fault probability is out of bounds [0,1] in car with ID: " + id);
+			catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException(
+					e +" when reading faulty chance "+
+					"in car with id " + id
+				);
 			}
 
 			// FAULT_DURATION ok?
 			try {
-				faultDuration = Integer.parseInt(ini.getValue("max_fault_duration"));
+				faultDuration = parsePositiveInt(ini, "max_fault_duration");
 			}
 			//La duración de avería no era un entero
-			catch (NumberFormatException e) {
-				throw new IllegalArgumentException("Fault duration reading failure in car with ID: " + id);
-			}
-			if (faultDuration <= 0) {
-				throw new IllegalArgumentException("Fault duration is a non-positive number in car with ID: " + id);
+			catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException(
+					e + " when reading fault duration "
+					+ "in car with id " + id
+				);
 			}
 
 			// SEED ok?
-			String seedKey = ini.getValue("seed");
-			if (seedKey != null) {
+			if ( existsSeedKey(ini) ) {
 				try {
-					seed = Long.parseLong(seedKey);
+					seed = parseLong(ini, "seed");
 				}
-				//La semilla no era un long
 				catch (NumberFormatException e) {
-					throw new IllegalArgumentException("Seed reading failure in car with ID: " + id);
+					throw new IllegalArgumentException(
+						"Seed reading failure in car with ID: " + id
+					);
 				}
 			}
 			else {
@@ -158,9 +160,11 @@ public class NewCarVehicleBuilder extends EventBuilder {
 			}
 
 			// New Car Vehicle.
-			return new NewCarVehicle(time, id, maxSpeed, trip, resistance, faultyChance, faultDuration, seed);
+			return 	new NewCarVehicle(time, id, maxSpeed, trip, resistance, 
+							faultyChance, faultDuration, seed);
 		}
-		else return null;
+		else 
+			return null;
 	}
 
 }

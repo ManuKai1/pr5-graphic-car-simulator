@@ -5,8 +5,9 @@ import es.ucm.fdi.model.simulation.AlreadyExistingSimObjException;
 import es.ucm.fdi.model.simulation.TrafficSimulation;
 
 /**
- * <code>Event</code> que representa la creación de una <code>RobinJunction</code>
- * en la simulación.
+ * {@link Event} que representa la creación de una 
+ * {@link RobinJunction} en la simulación. Heradad
+ * de {@link NewJunction}
  */
 public class NewRobinJunction extends NewJunction {
     
@@ -21,7 +22,7 @@ public class NewRobinJunction extends NewJunction {
     private int maxTime;
 
     /**
-     * Constructor de <code>NewRobinJunction</code>.
+     * Constructor de {@link NewRobinJunction}.
      * 
      * @param newTime tiempo de ejecución del evento.
      * @param ID identificador de la nueva <code>RobinJunction</code>.
@@ -42,7 +43,9 @@ public class NewRobinJunction extends NewJunction {
      * </p>
      * 
      * @param sim la simulación sobre la que se ejecuta el evento.
-     * @throws AlreadyExistingSimObjException if <code>Vehicle</code> ID already registered
+     * 
+     * @throws AlreadyExistingSimObjException   if <code>Vehicle</code> 
+     *                                          ID already registered
      */
     @Override
     public void execute(TrafficSimulation sim) throws AlreadyExistingSimObjException {
@@ -55,13 +58,13 @@ public class NewRobinJunction extends NewJunction {
     }
 
     /**
-     * Método que genera una nueva <code>RobinJunction</code> a partir de los actributos
-     * del <code>Event</code>.
+     * Método que genera una nueva <code>RobinJunction</code>ç
+     * a partir de los actributos del <code>Event</code>.
      * 
      * @return <code>RobinJunction</code> with indicated attributes
      */
     @Override
     protected RobinJunction newJunction() {
-        return ( new RobinJunction(id, minTime, maxTime) );
+        return  new RobinJunction(id, minTime, maxTime);
     }
 }

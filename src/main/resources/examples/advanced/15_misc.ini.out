@@ -47,7 +47,7 @@ queues =
 [junction_report]
 id = j3
 time = 2
-queues = (r1,green:0,[]),(r2,red,[])
+queues = (r1,red,[]),(r2,green:1,[])
 type = mc
 
 [junction_report]
@@ -169,7 +169,7 @@ queues =
 [junction_report]
 id = j3
 time = 4
-queues = (r1,green:0,[]),(r2,red,[])
+queues = (r1,red,[]),(r2,green:1,[])
 type = mc
 
 [junction_report]
@@ -291,7 +291,7 @@ queues =
 [junction_report]
 id = j3
 time = 6
-queues = (r1,green:0,[]),(r2,red,[])
+queues = (r1,red,[]),(r2,green:1,[])
 type = mc
 
 [junction_report]
@@ -413,7 +413,7 @@ queues =
 [junction_report]
 id = j3
 time = 8
-queues = (r1,green:0,[]),(r2,red,[])
+queues = (r1,red,[]),(r2,green:1,[])
 type = mc
 
 [junction_report]
@@ -535,7 +535,7 @@ queues =
 [junction_report]
 id = j3
 time = 10
-queues = (r1,green:0,[]),(r2,red,[])
+queues = (r1,red,[]),(r2,green:1,[])
 type = mc
 
 [junction_report]

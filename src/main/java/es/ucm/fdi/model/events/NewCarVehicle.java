@@ -1,6 +1,7 @@
 package es.ucm.fdi.model.events;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import es.ucm.fdi.model.SimObj.CarVehicle;
 import es.ucm.fdi.model.SimObj.Junction;
@@ -9,18 +10,21 @@ import es.ucm.fdi.model.simulation.NonExistingSimObjException;
 import es.ucm.fdi.model.simulation.TrafficSimulation;
 
 /**
- * <code>Event</code> que representa la creación de un nuevo <code>CarVehicle</code>
- * en la simulación. Hereda de <code>NewVehicle</code>
+ * {@link Event} que representa la creación de un nuevo 
+ * {@link CarVehicle} en la simulación. Hereda de 
+ * {@link NewVehicle}
  */
 public class NewCarVehicle extends NewVehicle {
 	
 	/**
-	 * <code>Integer</code> que representa la resistencia a las averías.
+	 * <code>Integer</code> que representa 
+	 * la resistencia a las averías.
 	 */
 	private int resistance;
 
 	/**
-	 * Probabilidad de avería del <code>CarVehicle</code>
+	 * Probabilidad de avería del 
+	 * <code>CarVehicle</code>
 	 */
 	private double faultyChance;
 	
@@ -35,20 +39,20 @@ public class NewCarVehicle extends NewVehicle {
 	private long randomSeed;
 	
 	/**
-	 * Constructor de <code>NewCarVehicle</code>.
+	 * Constructor de {@link NewCarVehicle}.
 	 * 
-	 * @param newTime tiempo de ejecución del evento
-	 * @param ID identificador del nuevo <code>CarVehicle</code>
-	 * @param max máxima velocidad alcanzable
-	 * @param junctions ruta de <code>Junctions</code>
-	 * @param res resistencia a la avería
-	 * @param breakChance probabilidad de avería
+	 * @param newTime 		tiempo de ejecución del evento
+	 * @param ID 			identificador del nuevo <code>CarVehicle</code>
+	 * @param max 			máxima velocidad alcanzable
+	 * @param trip 			ruta de <code>Junctions</code>
+	 * @param res 			resistencia a la avería
+	 * @param breakChance 	probabilidad de avería
 	 * @param breakDuration duración máxima de avería
-	 * @param seed semilla aleatoria
+	 * @param seed 			semilla aleatoria
 	 */
-	public NewCarVehicle(int newTime, String ID, int max, ArrayList<String> junctions, 
+	public NewCarVehicle(int newTime, String ID, int max, List<String> trip, 
 			int res, double breakChance, int breakDuration, long seed) {
-		super(newTime, ID, max, junctions);
+		super(newTime, ID, max, trip);
 		resistance = res;
 		faultyChance = breakChance;
 		faultDuration = breakDuration;
@@ -58,38 +62,46 @@ public class NewCarVehicle extends NewVehicle {
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * El <code>NewCarVehicle</code> crea un nuevo objeto <code>CarVehicle</code> en la 
-	 * simulación, derivado de un <code>Vehicle</code>
+	 * El <code>NewCarVehicle</code> crea un nuevo objeto 
+	 * <code>CarVehicle</code> en la simulación, derivado 
+	 * de un <code>Vehicle</code>.
 	 * </p>
 	 * 
-	 * @param sim la simulación sobre la que se ejecuta el evento.
-	 * @throws AlreadyExistingSimObjException if <code>Vehicle</code> ID already registered
+	 * @param sim la simulación sobre la que se ejecuta el evento
+	 * 
+	 * @throws AlreadyExistingSimObjException 	if <code>Vehicle</code>
+	 * 											ID already registered
 	 */
 	@Override
-	public void execute(TrafficSimulation sim) throws AlreadyExistingSimObjException{
+	public void execute(TrafficSimulation sim) 
+			throws AlreadyExistingSimObjException {
 		try {
 			super.execute(sim);
 		}
-		catch (AlreadyExistingSimObjException e ) {
+		catch ( AlreadyExistingSimObjException e ) {
 			throw e;
 		}
 	}
 	
 	/**
-	 * Método que genera un nuevo <code>CarVehicle</code> a partir de los atributos del
-	 * <code>Event<code>.
+	 * Método que genera un nuevo <code>CarVehicle</code> 
+	 * a partir de los atributos del <code>Event<code>.
 	 * 
-	 * @param sim la simulación sobre la que se ejecuta el evento
-	 * @return <code>CarVehicle</code> con los datos del <code>Event</code>
-	 * @throws NonExistingSimObjException si alguna <code>Junction</code> en la ruta no está registrada
+	 * @param sim 	la simulación sobre la que se ejecuta el evento
+	 * @return 		<code>CarVehicle</code> con los datos del <code>Event</code>
+	 * 
+	 * @throws NonExistingSimObjException 	si alguna <code>Junction</code> 
+	 * 										en la ruta no está registrada
 	 */
 	@Override
-	protected CarVehicle newVehicle(TrafficSimulation sim) throws NonExistingSimObjException {
+	protected CarVehicle newVehicle(TrafficSimulation sim) 
+			throws NonExistingSimObjException {
 		ArrayList<Junction> trip = new ArrayList<Junction>();
 
-		// Deben existir todos los cruces del itinerario en el momento del evento.
+		// Deben existir todos los cruces del itinerario 
+		// en el momento del evento.
 		for ( String jID : tripID ) {
-			Junction j = sim.getJunction(jID);
+			Junction j = sim.getRoadMap().getJunctionWithID(jID);
 			if (j != null) {
 				trip.add(j);
 			}
@@ -102,6 +114,7 @@ public class NewCarVehicle extends NewVehicle {
 			}
 		}
 
-		return ( new CarVehicle(id, trip, maxSpeed, resistance, faultyChance, faultDuration, randomSeed) );
+		return	new CarVehicle(id, trip, maxSpeed, resistance, faultyChance,
+						faultDuration, randomSeed);
 	}	
 }

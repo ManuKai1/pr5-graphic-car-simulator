@@ -1,6 +1,7 @@
 package es.ucm.fdi.model.events;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import es.ucm.fdi.model.SimObj.BikeVehicle;
 import es.ucm.fdi.model.SimObj.Junction;
@@ -9,35 +10,40 @@ import es.ucm.fdi.model.simulation.NonExistingSimObjException;
 import es.ucm.fdi.model.simulation.TrafficSimulation;
 
 /**
- * <code>Event</code> que representa la creación de un nuevo <code>BikeVehicle</code>
- * en la simulación. Hereda de <code>NewVehicle</code>
+ * {@link Event} que representa la creación de un nuevo
+ * {@link BikeVehicle} en la simulación. Hereda de 
+ * {@link NewVehicle}.
  */
 public class NewBikeVehicle extends NewVehicle {
 
 	/**
-	 * Constructor de <code>NewBikeVehicle</code>.
+	 * Constructor de {@link BikeVehicle}
 	 * 
-	 * @param newTime tiempo de ejecución del evento
-	 * @param ID identificador del nuevo <code>BikeVehicle</code>
-	 * @param max máxima velocidad alcanzable
-	 * @param junctions ruta de <code>Junctions</code>
+	 * @param newTime 	tiempo de ejecución del evento
+	 * @param ID 		identificador del nuevo <code>BikeVehicle</code>
+	 * @param max 		máxima velocidad alcanzable
+	 * @param trip 		ruta de <code>Junctions</code>
 	 */
-	public NewBikeVehicle(int newTime, String ID, int max, ArrayList<String> junctions) {
-		super(newTime, ID, max, junctions);
+	public NewBikeVehicle(int newTime, String ID, int max, List<String> trip) {
+		super(newTime, ID, max, trip);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * El <code>NewBikeVehicle</code> crea un nuevo objeto <code>BikeVehicle</code> en la 
-	 * simulación, derivado de un <code>Vehicle</code>
+	 * El <code>NewBikeVehicle</code> crea un nuevo objeto
+	 * <code>BikeVehicle</code> en la simulación, derivado
+	 * de un <code>Vehicle</code>.
 	 * </p>
 	 * 
-	 * @param sim la simulación sobre la que se ejecuta el evento.
-	 * @throws AlreadyExistingSimObjException if <code>Vehicle</code> ID already registered
+	 * @param sim la simulación sobre la que se ejecuta el evento
+	 * 
+	 * @throws AlreadyExistingSimObjException 	if <code>Vehicle</code> 
+	 * 											ID already registered
 	 */
 	@Override
-	public void execute(TrafficSimulation sim) throws AlreadyExistingSimObjException {
+	public void execute(TrafficSimulation sim) 
+			throws AlreadyExistingSimObjException {
 		try {
 			super.execute(sim);
 		} 
@@ -47,20 +53,24 @@ public class NewBikeVehicle extends NewVehicle {
 	}
 	
 	/**
-	 * Método que genera un nuevo <code>BikeVehicle</code> a partir de los atributos del
-	 * <code>Event<code>.
+	 * Método que genera un nuevo <code>BikeVehicle</code>
+	 * a partir de los atributos del <code>Event<code>.
 	 * 
-	 * @param sim la simulación sobre la que se ejecuta el evento
-	 * @return <code>BikeVehicle</code> con los datos del <code>Event</code>
-	 * @throws NonExistingSimObjException si alguna <code>Junction</code> en la ruta no está registrada
+	 * @param sim 	la simulación sobre la que se ejecuta el evento
+	 * @return 		<code>BikeVehicle</code> con los datos del <code>Event</code>
+	 * 
+	 * @throws NonExistingSimObjException 	si alguna <code>Junction</code>
+	 * 										en la ruta no está registrada
 	 */
 	@Override
-	protected BikeVehicle newVehicle(TrafficSimulation sim) throws NonExistingSimObjException {
+	protected BikeVehicle newVehicle(TrafficSimulation sim) 
+			throws NonExistingSimObjException {
 		ArrayList<Junction> trip = new ArrayList<Junction>();
 
-		// Deben existir todos los cruces del itinerario en el momento del evento.
+		// Deben existir todos los cruces del 
+		// itinerario en el momento del evento.
 		for ( String jID : tripID ) {
-			Junction j = sim.getJunction(jID);
+			Junction j = sim.getRoadMap().getJunctionWithID(jID);
 			if (j != null) {
 				trip.add(j);
 			}
@@ -73,6 +83,6 @@ public class NewBikeVehicle extends NewVehicle {
 			}
 		}
 		
-		return ( new BikeVehicle( getId(), trip, maxSpeed ) );
+		return	new BikeVehicle( getId(), trip, maxSpeed );
 	}
 }

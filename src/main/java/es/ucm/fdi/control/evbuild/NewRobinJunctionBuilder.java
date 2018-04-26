@@ -5,96 +5,117 @@ import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.model.events.NewRobinJunction;
 
 /**
- * Clase que construye un evento <code>NewRobinJunction</code> utilizado para
- * crear un <code>RobinJunction</code> en la simulación.
+ * Clase que construye un <code>Event</code> 
+ * {@link NewRobinJunction} utilizado para crear una
+ * {@link RobinJunction} durante la simulación.
+ * Hereda de {@link EventBuilder}.
  */
 public class NewRobinJunctionBuilder extends EventBuilder {
     
-    private final String type = "rr";
+    /**
+     * Etiqueta utilizada en las <code>IniSections</code>
+     * para representar este tipo de eventos.
+     */
+    private static final String SECTION_TAG = "new_junction";
 
     /**
-     * Constructor de <code>NewRobinJunctionBuilder</code> que pasa
-     * el parámetro <code>new_junction</code> al constructor de la
-     * superclase.
+     * Valor que debería almacenar la clave <code>type</code>
+     * de una <code>IniSection</code> que represente a una
+     * <code>RobinJunction</code>.
+     */
+    private static final String TYPE = "rr";
+
+    /**
+     * Constructor de {@link NewRobinJunctionBuilder} que 
+     * pasa el atributo <code>SECTION_TAG</code> al 
+     * constructor de la superclase.
      */
     public NewRobinJunctionBuilder() {
-		super("new_junction");
+		super(SECTION_TAG);
     }
     
     /**
-     * Método de <code>parsing</code> de <code>NewRobinJunctionBuilder</code> que comprueba
-     * si la <code>IniSection</code> pasada como argumento representa un <code>NewRobinJunction</code>
+     * Método de parsing que comprueba si la 
+     * <code>IniSection</code> pasada como argumento 
+     * representa un evento <code>NewRobinJunction</code>
      * y si sus parámetros son correctos.
      * 
-     * @param ini <code>IniSection</code> a parsear.
-     * @return <code>NewRobinJunction</code> o <code>null</code>.
+     * @param ini 	<code>IniSection</code> a parsear
+     * @return 		<code>NewRobinJunction</code> event or 
+     * 				<code>null</code> if parsing failed
+     * 
+     * @throws IllegalArgumentException if <code>ini</code> represents 
+     *	 								the searched event but its 
+     *									arguments are not valid
      */
 	@Override
-	Event parse(IniSection ini) throws IllegalArgumentException {
-        boolean match = false;
-
+	Event parse(IniSection ini) 
+            throws IllegalArgumentException {
+		
         // Se comprueba si es un NewRobinJunction
-        if ( ini.getTag().equals(iniName) && ini.getValue("type").equals(type) ) {
-            match = true;
-        }
-
-		if (match) {
-			String id = ini.getValue("id");
+		if ( iniNameMatch(ini) && typeMatch(ini, TYPE) ) {
+			String id;
             int time = 0;
             int minTime, maxTime;
 			
-			// ID ok?
-			if ( ! EventBuilder.validID(id) ) {
-				throw new IllegalArgumentException("Illegal junction ID: " + id);
+            // ID ok?
+            try {
+				id = parseID(ini, "id");
 			}
-			
-			// TIME ok?
-			String timeKey = ini.getValue("time");
-			if (timeKey != null) {
+			catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException(
+                    e + " in new Robin Junction."
+                );
+			}
+
+            // TIME ok?
+            if ( existsTimeKey(ini) ) {
 				try {
-					time = Integer.parseInt(timeKey);
+					time = parseNoNegativeInt(ini, "time");
 				}
-				// El tiempo no era un entero
-				catch(NumberFormatException e) {
-					throw new IllegalArgumentException("Time reading failure in junction with ID: " + id);
+				catch (IllegalArgumentException e ){
+					throw new IllegalArgumentException(
+                        e + " when reading time " +
+                        "in Robin Junction with id " + id
+                    );
 				}
-				// Comprobamos que el tiempo sea positivo
-				if (time < 0) {
-					throw new IllegalArgumentException("Negative time in junction with ID: " + id);
-				}
-            }
+			}
             
             // TIMELAPSES ok?
             // Tiempo mínimo.
             try {
-                minTime = Integer.parseInt( ini.getValue("min_time_slice") );
+                minTime = parseNoNegativeInt(ini,"min_time_slice");
             }
-            catch (NumberFormatException e) {
-                throw new IllegalArgumentException("Light lapse reading failure in junction with ID: " + id);
-            }
-            if (minTime < 0) {
-                throw new IllegalArgumentException("Negative time lapse in junction with ID: " + id);
+            catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException(
+                    e + " when reading minimum Time " +
+                    "in Robin Junction with ID " + id
+                );
             }
 
             // Tiempo máximo.
             try {
-                maxTime = Integer.parseInt( ini.getValue("max_time_slice") );
+                maxTime = parseNoNegativeInt(ini,"max_time_slice");
             }
-            catch (NumberFormatException e) {
-                throw new IllegalArgumentException("Light lapse reading failure in junction with ID: " + id);
-            }
-            if (maxTime < 0) {
-                throw new IllegalArgumentException("Negative time lapse in junction with ID: " + id);
+            catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException(
+                    e + " when reading maximum Time "+
+                    "in Robin Junction with ID " + id
+                );
             }
 
             // Mínimo menor que máximo.
             if (minTime > maxTime) {
-                throw new IllegalArgumentException("Not a valid time lapse in junction with ID: " + id);
+                throw new IllegalArgumentException(
+                	"Not a valid time lapse " + 
+                    " in Robin Junction ID: " + id
+                );
             }
 			
             // New Robin Junction.
 			return new NewRobinJunction(time, id, minTime, maxTime);
 		}
-		else return null;
+		else 
+            return null;
 	}
 }
