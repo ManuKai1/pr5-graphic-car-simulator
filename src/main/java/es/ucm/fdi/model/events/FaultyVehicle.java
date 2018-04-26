@@ -1,20 +1,22 @@
 package es.ucm.fdi.model.events;
 
-import java.util.ArrayList;
+import java.util.List;
 
+import es.ucm.fdi.model.SimObj.Vehicle;
 import es.ucm.fdi.model.simulation.NonExistingSimObjException;
 import es.ucm.fdi.model.simulation.TrafficSimulation;
 
 /**
- * <code>Event</code> que representa la avería de uno o varios <code>Vehicle</code> 
- * en la simulación.
+ * {@link Event} que representa la avería de uno o varios 
+ * {@link Vehicle} en la simulación.
  */
 public class FaultyVehicle extends Event {
 
 	/**
-	 * Lista con los IDs de los <code>Vehicles</code> que se van a averiar.
+	 * Lista con los IDs de los <code>Vehicles</code>
+	 * que se van a averiar.
 	 */
-	private ArrayList<String> vehiclesID;
+	private List<String> vehiclesID;
 
 	/**
 	 * Duración de la avería inducida.
@@ -22,26 +24,28 @@ public class FaultyVehicle extends Event {
 	private int duration;
 	
 	/**
-	 * Constructor de <code>FaultyVehicle</code>.
+	 * Constructor de {@link FaultyVehicle}.
 	 * 
-	 * @param newTime tiempo de ejecución del evento
-	 * @param vID <code>ArrayList</code> con los IDs de los <code>Vehicles</code> a averiar
-	 * @param dur tiempo de avería inducido
+	 * @param newTime 	tiempo de ejecución del evento
+	 * @param vehicles 	<code>List</code> con los IDs de
+	 * 						los <code>Vehicles</code> a averiar
+	 * @param dur 		tiempo de avería inducido
 	 */
-	public FaultyVehicle(int newTime, ArrayList<String> vID, int dur) {
+	public FaultyVehicle(int newTime, List<String> vehicles, int dur) {
 		super(newTime);
-		vehiclesID = vID;
+		vehiclesID = vehicles;
 		duration = dur;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * El <code>FaultyVehicleEvent</code> produce la avería de una colección 
-	 * de <code>Vehicles</code> dentro de la simulación.
+	 * El <code>FaultyVehicleEvent</code> produce la avería 
+	 * de una colección de <code>Vehicles</code> dentro de 
+	 * la simulación.
 	 * </p> <p>
-	 * La ejecución del evento puede fallar por la ausencia de un <code>SimObj</code>
-	 * no registrado en la simulación.
+	 * La ejecución del evento puede fallar por la ausencia
+	 * de un <code>SimObj</code> no registrado en la simulación.
 	 * </p>
 	 * 
 	 * @param sim la simulación sobre la que se ejecuta el evento.
@@ -56,15 +60,23 @@ public class FaultyVehicle extends Event {
 		}
 	}
 	
+
+
+
+
+
+
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * En el caso de <code>FaultyVehicle</code>, comprueba también que la lista de
-	 * vehículos a averiar y el tiempo de avería sean iguales.
+	 * En el caso de <code>FaultyVehicle</code>, comprueba
+	 * también que la lista de <code>Vehicles</code> a averiar 
+	 * y el tiempo de avería sean iguales.
 	 * </p>
 	 * 
-	 * @param obj objeto a comparar
-	 * @return if <code>FaultyVehicleEvent</code> equals <code>obj</code>
+	 * @param obj 	objeto a comparar
+	 * @return 		if <code>FaultyVehicleEvent</code> 
+	 * 					equals <code>obj</code>
 	 */
 	@Override
 	public boolean equals(Object obj) {

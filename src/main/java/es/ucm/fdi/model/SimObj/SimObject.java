@@ -1,8 +1,14 @@
 package es.ucm.fdi.model.SimObj;
 
+import es.ucm.fdi.ini.IniSection;
+import es.ucm.fdi.model.SimObj.Junction;
+import es.ucm.fdi.model.SimObj.Road;
+import es.ucm.fdi.model.SimObj.Vehicle;
+
 /**
- * Clase base que representa un objeto cualquiera de la simulación, a saber:
- * <code>Junctions</code>, <code>Roads</code> y <code>Vehicles</code>.
+ * Clase base que representa un objeto cualquiera
+ * de la simulación, a saber: {@link Junction Junctions}, 
+ * {@link Road Roads} y {@link Vehicle Vehicles}
  */
 public abstract class SimObject { 
 
@@ -12,14 +18,15 @@ public abstract class SimObject {
 	protected String id;	
 
 	/**
-	 * Método de avance de cualquier objetio de la simulación. Ocurre en
-	 * un tick.
+	 * Método de avance de cualquier objeto de la 
+	 * simulación. Ocurre en un tick.
 	 */
 	public abstract void proceed();
-	public abstract String getReport(int simTime);
+
+	public abstract IniSection generateIniSection(int simTime);
 
 	/**
-	 * Constructor de <code>SimObject</code>.
+	 * Constructor de {@link SimObject}.
 	 * 
 	 * @param identifier identificador del objeto
 	 */

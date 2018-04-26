@@ -1,8 +1,8 @@
 package es.ucm.fdi.model.simulation;
 
 /**
- * Excepción utilizada cuando se procede a introducir un elemento en 
- * la simulación que ya existe y es equivalente.
+ * Excepción utilizada cuando se procede a introducir
+ * un nuevo elemento en la simulación que ya existe.
  */
 public class AlreadyExistingSimObjException extends SimulationException {
 

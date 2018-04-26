@@ -59,29 +59,22 @@ public class TrafficSimulation {
 	 * ejecución de un evento, Event para añadir listas de eventos
 	 * que se ejecutan en ese tiempo.
 	 */
-	private MultiTreeMap<Integer, Event> events;
+	private MultiTreeMap<Integer, Event> events = new MultiTreeMap<>();
 
 	/**
 	 * Mapa de simulación que relaciona Junction con sus carreteras entrantes
 	 * y salientes.
 	 */
-	RoadMap roadMap;
+	RoadMap roadMap = new RoadMap();
 
 	/**
 	 * Tiempo actual de la simulación.
 	 */
-	private int time;
+	private int time = 0;
 
-	private List<Listener> listeners;
+	private List<Listener> listeners = new ArrayList<>();
 	
-	public TrafficSimulation() {
-		// Listas vacías. 
-		events = new MultiTreeMap<>();
-		roadMap = new RoadMap();
-		listeners = new ArrayList<>();
-		// Tiempo inicial a 0
-		time = 0;
-	}
+	public TrafficSimulation() {}
 	
 	/**
 	 * Añade un evento al mapa de <code>Events</code>> de la simulación, 
@@ -89,12 +82,15 @@ public class TrafficSimulation {
 	 * de la simulación.
 	 * 
 	 * @param e <code>Event</code> a añadir
-	 * @throws SimulationException if event time lower thar sim time
+	 * @throws IllegalArgumentException	 if event time lower thar sim time
 	 */
-	public void pushEvent(Event e) throws SimulationException {
+	public void pushEvent(Event e) 
+			throws IllegalArgumentException {
 		// Comprueba el tiempo.
 		if( e.getTime() < time ) {
-			throw new SimulationException("Event time is lower than current time.");
+			throw new IllegalArgumentException(
+				"Event time is lower than current time."
+			);
 		}
 
 		// Añade el evento al mapa.
@@ -107,8 +103,14 @@ public class TrafficSimulation {
 	 * 
 	 * @param steps número de pasos a ejecutar
 	 * @param file fichero de salida
+	 * 
+	 * @throws SimulationException 	if an error ocurred while
+	 * 								executing an event
+	 * @throws IOException 			if an IO error ocurred during
+	 * 								reports generation
 	 */
-	public void execute(int steps, OutputStream file) {
+	public void execute(int steps, OutputStream file) 
+			throws IOException, SimulationException {
 		// * //
 		// Tiempo límite en que para la simulación.
 		int timeLimit = time + steps - 1;
@@ -117,34 +119,15 @@ public class TrafficSimulation {
 		// Bucle de la simulación.
 		while (time <= timeLimit) {
 			// 1 // EVENTOS //
-			// Se ejecutan los eventos correspondientes a ese tiempo.
-			if ( events.get(time) != null ) {
-				for ( Event event : events.get(time) ) {
-					try {
-						event.execute(this);
-						//Aviso a Listeners de nuevo evento
-						fireUpdateEvent(EventType.NEW_EVENT, "New Event error");
-					}
-					catch (SimulationException e1) {
-						System.err.println( e1.getMessage() );
-						fireUpdateEvent(EventType.ERROR, "Simulation Exception error");
-					}				
-				}
-			}			
-
+			// Se ejecutan los eventos correspondientes a ese tiempo.			
+			try {
+				executeEvents();
+			} catch (SimulationException e1) {
+				throw e1;
+			}
+			
 			// 2 // SIMULACIÓN //
-			// Para cada carretera, los coches que no están esperando avanzan.
-			for ( Road road : roadMap.getRoads() ) {
-				road.proceed();
-			}
-
-			// Para cada cruce, avanzan los vehículos a la espera que puedan y se actualiza 
-			// el semáforo y los tiempos de avería de los vehículos a la espera.
-			for ( Junction junction : roadMap.getJunctions() ) {
-				if ( junction.hasIncomingRoads() ) {
-					junction.proceed();
-				}				
-			}
+			proceedAll();
 			
 			//Aviso a Listeners de avance
 			fireUpdateEvent(EventType.ADVANCED, "Advanced error");
@@ -154,36 +137,103 @@ public class TrafficSimulation {
 
 			// 3 // INFORME //
 			// Escribir un informe en OutputStream en caso de que no sea nulo
-			if (file != null) {
-				//Creación de ini
-				Ini iniFile = new Ini();
-				//Junctions:
-				for(Junction junction : roadMap.getJunctions()){
-					iniFile.addsection(junction.generateIniSection(time));
-				}
-				//Roads:
-				for(Road road : roadMap.getRoads()){
-					iniFile.addsection(road.generateIniSection(time));
-				}
-				//Vehicles:
-				for(Vehicle vehicle : roadMap.getVehicles()){
-					iniFile.addsection(vehicle.generateIniSection(time));
-				}
-				
-				// Guardado en el outputStream
-				try{
-					iniFile.store(file);
-				}
-				catch(IOException e){
-					System.err.println(
-						"Error when saving file on time " + time + ":" + e.getMessage()
-					);
-				}
+			try {
+				generateReports(file);
+			}
+			catch (IOException e) {
+				throw e;
 			}
 
 		}
 	}
+	
+	/**
+	 * Llama a los métodos de avance de carreteras
+	 * y de cruces.
+	 * 
+	 * @throws SimulationException	if event tried to create
+	 * 								a SimObj with an already
+	 * 								existing ID
+	 * @throws SimulationException	if event tried to interact
+	 * 								with a non-existint SimObj
+	 */
+	private void executeEvents() throws SimulationException{
+		if ( events.get(time) != null ) {
+			for ( Event event : events.get(time) ) {
+				try {
+					event.execute(this);
+					
+					//Aviso a Listeners de nuevo evento
+					fireUpdateEvent(EventType.NEW_EVENT, "New Event error"); //???
+				}
+				catch (AlreadyExistingSimObjException e1) {
+					fireUpdateEvent(EventType.ERROR, "Simulation Exception error");
+					
+					throw new SimulationException(
+						"Simulation error:\n" + e1
+					);
+				}
+				catch (NonExistingSimObjException e2) {
+					fireUpdateEvent(EventType.ERROR, "Simulation Exception error");
+					
+					throw new SimulationException(
+						"Simulation error:\n" + e2
+					);
+				}		
+			}
+		}
+	}
+	
+	/**
+	 * Llama a los métodos de avance de carreteras
+	 * y de cruces.
+	 */
+	private void proceedAll(){
+		// Para cada carretera, los coches que no están esperando avanzan.
+		for ( Road road : roadMap.getRoads().values() ) {
+			road.proceed();
+		}
 
+		// Para cada cruce, avanzan los vehículos a la espera que puedan y se actualiza 
+		// el semáforo y los tiempos de avería de los vehículos a la espera.
+		for ( Junction junction : roadMap.getJunctions().values() ) {
+			junction.proceed();			
+		}
+	}
+	
+	/**
+	 * Genera informes de todos los SimObject.
+	 * @param file fichero de salida
+	 */
+	private void generateReports(OutputStream file) throws IOException{
+		if (file != null) {
+			//Creación de ini
+			Ini iniFile = new Ini();
+			//Junctions:
+			for(Junction junction : roadMap.getJunctions().values() ){
+				iniFile.addsection(junction.generateIniSection(time));
+			}
+			//Roads:
+			for(Road road : roadMap.getRoads().values() ){
+				iniFile.addsection(road.generateIniSection(time));
+			}
+			//Vehicles:
+			for(Vehicle vehicle : roadMap.getVehicles().values() ){
+				iniFile.addsection(vehicle.generateIniSection(time));
+			}
+			
+			// Guardado en el outputStream
+			try{
+				iniFile.store(file);
+			}
+			catch(IOException e){
+				throw new IOException(
+					"Error when saving file on time " + time + ":" + e.getMessage()
+				);
+			}
+		}
+	}
+	
 	/**
 	 * Añade tiempo de avería a los <code>Vehicles</code> con los ID de la lista.
 	 * Además comprueba que existan los <code>Vehicles</code> referenciados 
@@ -192,9 +242,9 @@ public class TrafficSimulation {
 	 * @param vehiclesID lista de IDs de los <code>Vehicles</code> a averiar
 	 * @param breakDuration duración del tiempo de avería a añadir
 	 */
-	public void makeFaulty(ArrayList<String> vehiclesID, int breakDuration) throws NonExistingSimObjException {
+	public void makeFaulty(List<String> vehiclesID, int breakDuration) throws NonExistingSimObjException {
 		for ( String id : vehiclesID ) {
-			Vehicle toBreak = getVehicle(id);
+			Vehicle toBreak = roadMap.getVehicleWithID(id);
 
 			if ( toBreak != null ) {
 				toBreak.setBreakdownTime(breakDuration);
@@ -278,56 +328,9 @@ public class TrafficSimulation {
 	}
 
 	/**
-	 * Busca en el mapa si hay un <code>Vehicle</code> con el mismo ID.
-	 * 
-	 * @param id id a buscar
-	 * @return si hay un <code>Vehicle</code> con el id dado
+	 * @return el RoadMap del simulador
 	 */
-	public boolean existsVehicle(String id) {
-		return roadMap.existsVehicleID(id);
+	public RoadMap getRoadMap(){
+		return roadMap;
 	}
-
-	/**
-	 * Busca en el mapa si hay una <code>Junction</code> con el mismo ID.
-	 * 
-	 * @param id id a buscar
-	 * @return si hay un <code>Junction</code> con el id dado
-	 */
-	public boolean existsJunction(String id) {
-		return roadMap.existsJunctionID(id);
-	}
-
-	/**
-	 * Busca en el mapa si hay una <code>Road</code> con el mismo ID.
-	 * 
-	 * @param id id a buscar
-	 * @return si hay una <code>Road</code> con el id dado
-	 */
-	public boolean existsRoad(String id) {
-		return roadMap.existsRoadID(id);
-	}
-
-	/**
-	 * Busca en el mapa un <code>Vehicle</code>> con el mismo ID. 
-	 * Devuelve ese <code>Vehicle</code> si lo encuentra o <code>null</code> 
-	 * en caso contrario.
-	 * 
-	 * @param id id a buscar
-	 * @return <code>Vehicle</code> con ese id si existe o <code>null</code>
-	 */
-	private Vehicle getVehicle(String id) {
-		return roadMap.getVehicleWithID(id);
-	}
-
-	/**
-	 * Busca en el mapa una <code>Junction</code> con el mismo ID. 
-	 * Devuelve esa <code>Junction</code> si lo encuentra o <code>null</code> 
-	 * en caso contrario.
-	 * 
-	 * @param id id a buscar
-	 * @return <code>Junction</code> buscad si existeo <code>null</code>
-	 */
-	public Junction getJunction(String id) {
-		return roadMap.getJunctionWithID(id);
-	}	
 }

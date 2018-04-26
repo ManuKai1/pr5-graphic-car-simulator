@@ -3,10 +3,12 @@ package es.ucm.fdi.launcher;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -18,13 +20,14 @@ import org.apache.commons.cli.ParseException;
 
 import es.ucm.fdi.control.Controller;
 import es.ucm.fdi.ini.Ini;
+import es.ucm.fdi.model.simulation.SimulationException;
 
 public class ExampleMain {
 
 	/**
 	 * Default time limit if none indicated by user.
 	 */
-	private final static Integer _timeLimitDefaultValue = 120;
+	private final static Integer _TIMELIMIT_DEFAULT = 10;
 	
 	/**
 	 * Execution time limit: number of ticks the simulator will do.
@@ -122,7 +125,7 @@ public class ExampleMain {
 			Option.builder("t")
 			.longOpt("ticks")
 			.hasArg()
-			.desc("Ticks to execute the simulator's main loop (default value is " + _timeLimitDefaultValue + ").")
+			.desc("Ticks to execute the simulator's main loop (default value is " + _TIMELIMIT_DEFAULT + ").")
 			.build()
 		);
 
@@ -175,7 +178,7 @@ public class ExampleMain {
 	 * Updates the number of steps indicated by the command line and stored in attribute
 	 * <code>_timeLimit</code>.
 	 * </p> <p>
-	 * If no value is indicated, automatically set up to <code>_timeLimitDefaultValue</code>.
+	 * If no value is indicated, automatically set up to <code>_TIMELIMIT_DEFAULT</code>.
 	 * </p>
 	 * 
 	 * @param line <code>CommandLine</code> introduced
@@ -183,7 +186,7 @@ public class ExampleMain {
 	 */
 	private static void parseStepsOption(CommandLine line) throws ParseException {
 		// Si no se ha introducido ningún valor, se toma por defecto.
-		String t = line.getOptionValue("t", _timeLimitDefaultValue.toString());
+		String t = line.getOptionValue("t", _TIMELIMIT_DEFAULT.toString());
 
 		// Se comprueba que el valor introducido sea válido.
 		try {
@@ -208,7 +211,7 @@ public class ExampleMain {
 	 * @param path <code>String</code> with the directory path
 	 * @throws IOException if failure in reading/writing files.
 	 */
-	private static void test(String path) throws IOException {
+	static void test(String path) throws IOException {
 		// Directorio.
 		File dir = new File(path);
 
@@ -233,7 +236,7 @@ public class ExampleMain {
 				file.getAbsolutePath(), 
 				file.getAbsolutePath() + ".out", 
 				file.getAbsolutePath() + ".eout",
-				_timeLimitDefaultValue
+				_TIMELIMIT_DEFAULT
 			);
 		}
 	}
@@ -280,8 +283,30 @@ public class ExampleMain {
 		// Controlador
 		Controller control = new Controller(iniInput, os, _timeLimit);
 
-		// Ejecución
-		control.execute();
+		// Ejecución y captura de excepciones
+		try {
+			control.execute();
+		}
+		catch (ParserConfigurationException e1) {
+			System.err.println(e1);
+			e1.printStackTrace();
+			System.err.println("Aborting execution...");
+		}
+		catch (IllegalArgumentException e2) {
+			System.err.println(e2);
+			e2.printStackTrace();
+			System.err.println("Aborting execution...");
+		} 
+		catch (SimulationException e3) {
+			System.err.println(e3);
+			e3.printStackTrace();
+			System.err.println("Aborting execution...");
+		}
+		catch (IOException e4) {
+			System.err.println(e4);
+			e4.printStackTrace();
+			System.err.println("Aborting execution...");
+		}
 	}
 
 	/**
@@ -309,9 +334,9 @@ public class ExampleMain {
 
 		// Simulation testing //
 		// test("src/main/resources/examples/basic");
-		// test("src/main/resources/examples/advanced");
+		 test("src/main/resources/examples/advanced");
 		// test("src/main/resources/examples/err");
-		test("src/main/resources/examples/new");
+		//test("src/main/resources/examples/new");
 
 		// Start simulator from command line //
 		// start(args);

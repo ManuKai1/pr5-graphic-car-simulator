@@ -3,110 +3,134 @@ package es.ucm.fdi.control.evbuild;
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.model.events.NewDirtRoad;
+import es.ucm.fdi.model.SimObj.DirtRoad;
 
 /**
- * Clase que construye un evento <code>NewDirtRoad</code> utilizado para
- * crear un <code>DirtRoad</code> en la simulación.
+ * Clase que construye un <code>Event</code> 
+ * {@link NewDirtRoad} utilizado para crear una 
+ * {@link DirtRoad} durante la simulación.
+ * Hereda de {@link EventBuilder}.
  */
 public class NewDirtRoadBuilder extends EventBuilder {
 
-    private final String type = "dirt";
+
+	/**
+	 * Etiqueta utilizada en las <code>IniSections</code>
+	 * para representar este tipo de eventos.
+	 */
+	private static final String SECTION_TAG = "new_road";
+
+	/**
+	 * Valor que debería almacenar la clave <code>type</code>
+	 * de una <code>IniSection</code> que represente a una
+	 * <code>DirtRoad</code>.
+	 */
+	private static final String TYPE = "dirt";
 
     /**
-     * Constructor de <code>NewDirtRoadBuilder</code> que pasa
-     * el parámetro <code>new_road</code> al constructor de la
-     * superclase.
-     */
+	 * Constructor de {@link NewDirtRoadBuilder} que 
+	 * pasa el atributo <code>SECTION_TAG</code> al 
+	 * constructor de la superclase.
+	 */
     public NewDirtRoadBuilder() {
-        super("new_road");
+        super(SECTION_TAG);
     }
 
     /**
-     * Método de <code>parsing</code> de <code>NewDirtRoadBuilder</code> que comprueba
-     * si la <code>IniSection</code> pasada como argumento representa un <code>NewDirtRoad</code>
-     * y si sus parámetros son correctos.
-     * 
-     * @param ini <code>IniSection</code> a parsear.
-     * @return <code>NewDirtRoad</code> o <code>null</code>.
-     */
+	 * Método de parsing que comprueba si la 
+	 * <code>IniSection</code> pasada como argumento 
+	 * representa un evento <code>NewDirtRoad</code>
+	 * y si sus parámetros son correctos.
+	 * 
+	 * @param ini 	<code>IniSection</code> a parsear
+	 * @return 		<code>NewDirtRoad</code> event or 
+	 * 				<code>null</code> if parsing failed
+	 * 
+	 * @throws IllegalArgumentException if <code>ini</code> represents 
+	 *	 								the searched event but its 
+	 *									arguments are not valid
+	 */
     @Override
     Event parse(IniSection ini) {
-        boolean match = false;
-
-        if (ini.getTag().equals(iniName) && ini.getValue("type").equals(type) ) {
-            match = true;
-        }
-
-        if (match) {
-            String id = ini.getValue("id");
+        if (iniNameMatch(ini) && typeMatch(ini, TYPE)) {
+            String id;
 			int time = 0;
-			int maxSpeed;
-			int length;
-			String src = ini.getValue("src");
-			String dest = ini.getValue("dest");
+			int maxSpeed, length;
+			String src, dest;
 			
 			// ID ok?
-			if( ! EventBuilder.validID(id) ) {
-				throw new IllegalArgumentException("Illegal road ID: " + id);
+			try {
+				id = parseID(ini, "id");
+			}
+			catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException(
+					e + " in new Dirt Road."
+				);
 			}
 			
 			// TIME ok?
-			String timeKey = ini.getValue("time");
-			if(timeKey != null) {
+			if ( existsTimeKey(ini) ) {
 				try {
-					time = Integer.parseInt(timeKey);
+					time = parseNoNegativeInt(ini, "time");
 				}
-				//El tiempo no era un entero
-				catch (NumberFormatException e) {
-					throw new IllegalArgumentException("Time reading failure in road with ID: " + id);
-				}
-				//Comprobamos que el tiempo sea no negativo
-				if(time < 0) {
-					throw new IllegalArgumentException("Negative time in road with ID: " + id);
+				catch (IllegalArgumentException e) {
+					throw new IllegalArgumentException(
+						e + " when reading time " + 
+						"in Dirt Road with id " + id
+					);
 				}
 			}
 
-			// SOURCE ok?			
-			if( ! EventBuilder.validID(src) ) {
-				throw new IllegalArgumentException("Illegal source junction ID in road with ID: " + id);
+			// SOURCE ok?	
+			try {
+				src = parseID(ini, "src");
+			}
+			catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException(
+					e + " when reading dest " +
+					"in Dirt Road with id " + id
+				);
 			}
 			
 			// DESTINY ok?
-			if( ! EventBuilder.validID(dest) ) {
-				throw new IllegalArgumentException("Illegal destination junction ID in road with ID: " + id);
+			try {
+				dest = parseID(ini, "dest");
+			}
+			catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException(
+					e + " when reading source " +
+					"in Dirt Road with id " + id
+				);
 			}
 			
 			// MAXSPEED ok?
 			try {
-				maxSpeed = Integer.parseInt( ini.getValue("max_speed") );
+				maxSpeed = parsePositiveInt(ini, "max_speed");
 			}
-			// La velocidad no era un entero
-			catch (NumberFormatException e) {
-				throw new IllegalArgumentException("Max speed reading failure in road with ID: " + id);
-			}
-			//Comprobamos que la velocidad sea positiva
-			if (maxSpeed <= 0) {
-				throw new IllegalArgumentException("Non-positive speed in road with ID: " + id);
+			catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException(
+					e + " when reading max speed " +
+					"in Dirt Road with id " + id
+				);
 			}
 			
 			// LENGTH ok?
 			try {
-				length = Integer.parseInt( ini.getValue("length") );
+				length = parsePositiveInt(ini, "length");
 			}
-			//La longitud no era un entero
 			catch (NumberFormatException e) {
-				throw new IllegalArgumentException("Length reading failure in road with ID: " + id);
-			}
-			//Comprobamos que la longitud sea positiva
-			if (length <= 0) {
-				throw new IllegalArgumentException("Non-positive length in road with ID: " + id);
+				throw new IllegalArgumentException(
+					e + " when reading length " +
+					"in Dirt Road with id " + id
+				);
 			}
 			
 			// New Road.
-			NewDirtRoad road = new NewDirtRoad(time, id, length, maxSpeed, src, dest);
-			return road;
+			return 	new NewDirtRoad(time, id, length, 
+							maxSpeed, src, dest);
 
         } 
-        else return null;
+        else 
+			return null;
     }
 }

@@ -1,108 +1,122 @@
 package es.ucm.fdi.model.SimObj;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.simulation.SimulationException;
 
 /**
- * Clase que representa una intersección como un objeto de simulación.
+ * Clase que representa un cruce como un objeto
+ * de simulación. Hereda de {@link SimObject}
  */
 public class Junction extends SimObject {
 	
+	/**
+	 * Etiqueta que encabeza el informe de una
+	 * <code>Junction</code> cualquiera.
+	 */
 	protected final String REPORT_TITLE = "[junction_report]";
 
 	/**
-	 * Lista de <code>Roads</code> entrantes en la <code>Junction</code>.
+	 * Mapa de <code>Roads</code> entrantes
+	 * en la <code>Junction</code>.
 	 */
-	protected ArrayList<Road> incomingRoads;
+	protected Map<String, Road> incomingRoads = new LinkedHashMap<>();
 
 	/**
-	 * Lista de <code>Roads</code> salientes en la <code>Junction</code>.
+	 * Mapa de <code>Roads</code> salientes 
+	 * en la <code>Junction</code>.
 	 */
-	protected ArrayList<Road> exitRoads;
+	protected Map<String, Road> exitRoads = new LinkedHashMap<>();
 
 	/**
-	 * Entero que mediante la operación módulo representa el semáforo encendido.
+	 * Entero que mediante la operación módulo
+	 * representa el semáforo encendido.
 	 */
-	protected int light;	
+	protected int light = -1;	
 	
 	/**
-	 * Constructor de <code>Junction</code>.
+	 * Constructor de {@link Junction}.
 	 * 
 	 * @param identifier identificador del objeto
 	 */
 	public Junction(String identifier) {
 		super(identifier);
-
-		// Listas vacías.
-		incomingRoads = new ArrayList<>();
-		exitRoads = new ArrayList<>();
-
-		// Todos los semáforos en rojo al principio.
-		light = -1;
 	}
 
-	/**
-	 * Método de AVANCE de Junction. Provoca el paso de los vehículos 
-	 * de la carretera entrante con el semáforo en verde. Finalmente, 
-	 * se actualiza el semáforo circular.
-	 */
 	/**
 	 * {@inheritDoc}
 	 * Método de AVANCE de <code>Junction</code>.
 	 * <p>
-	 * * En la primera iteración tras la creación de la <code>Junction</code>, se
-	 * produce la primera actualización del semáforo con <code>firstLightUpdate()</code>.
+	 * En la primera iteración tras la creación de 
+	 * la <code>Junction</code>, se produce la primera 
+	 * actualización del semáforo con {@link #firstLightUpdate()}
 	 * </p> <p>
-	 * En primer lugar, se actualiza en <code>roadUpdate(Road)</code> la cola de
-	 * la <code>greenRoad</code> con el semáforo en verde.
+	 * En primer lugar, se actualiza en {@link #roadUpdate(Road)}
+	 * la cola de la <code>greenRoad</code> con el semáforo en verde.
 	 * </p> <p>
-	 * En segundo lugar, se actualiza el tiempo de avería de los <code>Vehicles</code>
-	 * averiados en la cola de espera con <code>refreshWaiting()</code>.
+	 * En segundo lugar, se actualiza el tiempo de avería de los 
+	 * <code>Vehicles</code> averiados en la cola de espera con 
+	 * {@link #refreshWaiting()}
 	 * </p> <p> 
-	 * Finalmente, se actualiza el semáforo de la <code>Junction</code> mediante
-	 * <code>lightUpdate()</code>.
+	 * Finalmente, se actualiza el semáforo de la <code>Junction</code>
+	 * mediante {@link #lightUpdate()}
 	 * </p>
 	 */
 	@Override
 	public void proceed() {
-		
-		if (light == -1) {			
-			// * //
-			// Primera actualización del semáforo.
-			firstLightUpdate();
-		}
-		else {
-			// 1 //
-			// Actualización de la cola de la Road con el semáforo en verde.
-			Road greenRoad = incomingRoads.get(light);
-			roadUpdate(greenRoad);
-			
-			// 2 //
-			// Actualización del tiempo de avería de los coches de la cola.
-			greenRoad.refreshWaiting();
+		// Si no tiene carreteras entrantes no necesita
+		// ningún control de semáforo
+		if (hasIncomingRoads()) {
+			if (light == -1) {			
+				// * //
+				// Primera actualización del semáforo.
+				firstLightUpdate();
+			}
+			else {
+				// 1 //
+				// Actualización de la cola de la Road con el semáforo en verde.
+				List<String> array = new ArrayList<>(incomingRoads.keySet());
+				String nextRoadID = array.get(light);
+				Road greenRoad = incomingRoads.get(nextRoadID);
 
-			// 3 //
-			// Actualización del semáforo.
-			lightUpdate();		
-		}		
+				roadUpdate(greenRoad);
+				
+				// 2 //
+				// Actualización del tiempo de avería de los coches de la cola.
+				greenRoad.refreshWaiting();
+
+				// 3 //
+				// Actualización del semáforo.
+				lightUpdate();		
+			}	
+		}	
 	}
 
 	/**
-	 * Actualiza el semáforo en el primer tick de la simulación.
+	 * Actualiza el semáforo en el primer tick 
+	 * de la simulación.
 	 */
 	protected void firstLightUpdate() {
 		light = 0; // Suponemos que hay al menos una carretera entrante
-
+		
+		List<String> array = new ArrayList<>(incomingRoads.keySet());
+		String nextRoadID = array.get(light);
+		
 		// El semáforo de la carretera se pone verde.
-		incomingRoads.get(light).setLight(true);
+		incomingRoads.get(nextRoadID).setLight(true);
 	}
 
 	/**
-	 * Actualiza la cola de la <code>Road</code> con el semáforo en verde.
+	 * Actualiza la cola de la <code>Road</code> 
+	 * con el semáforo en verde.
 	 * 
-	 * @param greenRoad <code>Road</code> con el semáforo en verde
+	 * @param greenRoad 	<code>Road</code> con 
+	 * 						el semáforo en verde
 	 */
 	protected void roadUpdate(Road greenRoad) {
 		// Si no hay vehículos esperando, no ocurre nada.
@@ -123,7 +137,10 @@ public class Junction extends SimObject {
 	 * Actualiza el semáforo de la <code>Junction</code>.
 	 */
 	protected void lightUpdate() {
-		Road usedRoad = incomingRoads.get(light); // Carretera actualizada
+		// Tomamos la carretera usada
+		List<String> array = new ArrayList<>(incomingRoads.keySet());
+		String nextRoad = array.get(light);
+		Road usedRoad = incomingRoads.get(nextRoad); // Carretera actualizada
 
 		// * //
 		// La carretera actualizada se pone en rojo.
@@ -136,15 +153,18 @@ public class Junction extends SimObject {
 
 		// 2 // 
 		// La siguiente carretera se pone en verde.
-		incomingRoads.get(light).setLight(true);
+		nextRoad = array.get(light);
+		incomingRoads.get(nextRoad).setLight(true);
 	}
 	
 	/**
-	 * Genera una <code>IniSection</code> que informa de los atributos de la
-	 * <code>Junction</code> en el tiempo del simulador.
+	 * Genera una <code>IniSection</code> que informa de los 
+	 * atributos de la <code>Junction</code> en el 
+	 * tiempo del simulador.
 	 * 
-	 * @param simTime tiempo del simulador
-	 * @return <code>IniSection</code> con información de la <code>Junction</code>
+	 * @param simTime 	tiempo del simulador
+	 * @return 			<code>IniSection</code> con información
+	 * 					de la <code>Junction</code>
 	 */
 	public IniSection generateIniSection(int simTime) {
 		// 1 //
@@ -164,15 +184,15 @@ public class Junction extends SimObject {
 	}
 
 	/**
-	 * Genera un <code>StringBuilder</code> con la información sobre las
-	 * colas de la <code>Junction</code>.
+	 * Genera un <code>StringBuilder</code> con la información
+	 * sobre las colas de la <code>Junction</code>.
 	 * 
 	 * @return <code>String</code> con las colas.
 	 */
 	protected String getQueuesValue() {
 		// Generación del string de queues
 		StringBuilder queues = new StringBuilder();
-		for (Road incR : incomingRoads) {
+		for (Road incR : incomingRoads.values() ) {
 			queues.append(incR.getWaitingState());
 			queues.append(",");
 		}
@@ -184,56 +204,33 @@ public class Junction extends SimObject {
 
 		return queues.toString();
 	}
-
-	/**
-	 * {@inheritDoc}
-	 * <p>
-	 * En el caso de <code>Junction</code>, comprueba además todos los atributos
-	 * correspondientes.
-	 * </p>
-	 * 
-	 * @param obj objeto a comparar
-	 * @return if <code>Junction</code> equals <code>obj</code>.
-	 */
-	public boolean equals(Object obj) {
-		boolean same;
-		same = super.equals(obj);
-
-		if (same) {
-			Junction other = (Junction) obj;
-
-			same = (same && light == other.light);
-			same = (same && incomingRoads.equals(other.incomingRoads));
-			same = (same && exitRoads.equals(other.exitRoads));
-		}
-
-		return same;
-	}
 	
 	/**
-	 * Devuelve la lista de <code>Roads</code> entrantes
+	 * Devuelve la Mapa de <code>Roads</code> entrantes
 	 * 
-	 * @return lista de <code>Roads</code> entrantes.
+	 * @return Mapa de <code>Roads</code> entrantes.
 	 */
-	public ArrayList<Road> getIncomingRoads() {
+	public Map<String, Road> getIncomingRoads() {
 		return incomingRoads;
 	}
 	
 	/**
-	 * Comprueba si la <code>Junction</code> tiene <code>Roads</code> entrantes.
+	 * Comprueba si la <code>Junction</code>
+	 * tiene <code>Roads</code> entrantes.
 	 * 
-	 * @return si <code>incomingRoads</code> no es vacía
+	 * @return 	si el número de mapeos clave-valor de 
+	 * 			<code>incomingRoads</code> no es nulo
 	 */
 	public boolean hasIncomingRoads() {
 		return (incomingRoads.size() > 0);
 	}
 
 	/**
-	 * Devuelve la lista de <code>Roads</code> salientes
+	 * Devuelve el Mapa de <code>Roads</code> salientes
 	 * 
-	 * @return lista de <code>Roads</code> salientes
+	 * @return mapa de <code>Roads</code> salientes
 	 */
-	public ArrayList<Road> getExitRoads() {
+	public Map<String, Road> getExitRoads() {
 		return exitRoads;
 	}
 
@@ -244,7 +241,7 @@ public class Junction extends SimObject {
 	 * @param newRoad Nueva <code>Road</code> saliente
 	 */
 	public void addNewExitRoad(Road newRoad) {
-		exitRoads.add(newRoad);
+		exitRoads.put(newRoad.getID(), newRoad);
 	}
 
 	/**
@@ -254,52 +251,35 @@ public class Junction extends SimObject {
 	 * @param newRoad Nueva <code>Road</code> entrante
 	 */
 	public void addNewIncomingRoad(Road newRoad) {
-		incomingRoads.add(newRoad);
+		incomingRoads.put(newRoad.getID(), newRoad);
 	}
 	
-
 	
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	/**
-	* WARNING: No se utiliza. Si se pretende utilizar, revisar el código del
-	* método, pues seguramente contenga fallos.
-	*/
-	@Override
-	public String getReport(int simTime) {
-		StringBuilder report = new StringBuilder();
-		// TITLE
-		report.append(REPORT_TITLE + '\n');
-		// ID
-		report.append("id = " + id);
-		// SimTime
-		report.append("time = " + simTime);
-		// Colas de espera
-		report.append("queues = ");
-		for (Road incR : incomingRoads) {
-			report.append(incR.getWaitingState());
-			report.append(",");
+	 * Método que devuelve la <code>Road</code> entre dos 
+	 * <code>Junctions</code>. La junction de origen 
+	 * es la actual.
+	 * 
+	 * @param toJunction 	<code>Junction</code> de destino
+	 * @return 				<code>Road</code> entre las dos 
+	 * 						<code>Junctions</code>
+	 * 
+	 * @throws SimulationException 	if <code>Road</code> between 
+	 * 								<code>Junctions</code> not 
+	 * 								found
+	 */
+	public Road getRoadTo(Junction junction) throws SimulationException {
+		String toID;
+		for (Entry<String, Road> exit : exitRoads.entrySet()) {
+			toID = exit.getKey();
+			if ( junction.incomingRoads.containsKey(toID) ) {
+				return exitRoads.get(toID);
+			}
 		}
-
-		// Borrado de última coma
-		if (report.length() > 0) {
-			report.deleteCharAt(report.length() - 1);
-		}
-
-		return report.toString();
+		
+		throw new SimulationException(
+			"Road not found between junctions with id: " + 
+			id + ", " + junction.getID()
+		);
 	}
 }
