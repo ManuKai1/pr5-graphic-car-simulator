@@ -4,20 +4,29 @@ package es.ucm.fdi.control.evbuild;
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.model.events.NewRoad;
+import es.ucm.fdi.model.SimObj.Road;
 
 /**
- * Clase que construye un evento <code>NewRoad</code> utilizado para
- * crear un <code>Road</code> en la simulación.
+ * Clase que construye un <code>Event</code> 
+ * {@link NewRoad} utilizado para crear una
+ * {@link Road} durante la simulación.
+ * Hereda de {@link EventBuilder}.
  */
-public class NewRoadBuilder extends EventBuilder{
+public class NewRoadBuilder extends EventBuilder {
 	
+	/**
+	 * Etiqueta utilizada en las <code>IniSections</code>
+	 * para representar este tipo de eventos.
+	 */
+	private static final String SECTION_TAG = "new_road";
+
 	/**
 	 * Constructor de <code>NewRoadBuilder</code> que pasa
 	 * el parámetro <code>new_road</code> al constructor de la
 	 * superclase.
 	 */
-	public NewRoadBuilder(){
-		super("new_road");
+	public NewRoadBuilder() {
+		super(SECTION_TAG);
 	}
 	
 	/**
@@ -32,49 +41,55 @@ public class NewRoadBuilder extends EventBuilder{
 	Event parse(IniSection ini) {
 
 		// Se comprueba si es un NewRoad
-		if (iniNameMatch(ini) && typeMatch(ini, null)) {
+		if ( iniNameMatch(ini) && typeMatch(ini, null) ) {
             String id;
 			int time = 0;
-			int maxSpeed;
-			int length;
-			String src;
-			String dest;
+			int maxSpeed, length;
+			String src, dest;
 			
 			// ID ok?
-			try{
+			try {
 				id = parseID(ini, "id");
 			}
-			catch(IllegalArgumentException e){
-				throw new IllegalArgumentException(e + " in new Road.");
+			catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException(
+					e + " in new Road."
+				);
 			}
 			
 			// TIME ok?
-			if(existsTimeKey(ini)){
-				try{
+			if ( existsTimeKey(ini) ) {
+				try {
 					time = parseNoNegativeInt(ini, "time");
 				}
-				catch(IllegalArgumentException e){
-					throw new IllegalArgumentException(e + 
-							" when reading time in Road with id " + id);
+				catch (IllegalArgumentException e) {
+					throw new IllegalArgumentException(
+						e + " when reading time " +
+						"in Road with id " + id
+					);
 				}
 			}
 
 			// SOURCE ok?	
-			try{
+			try {
 				src = parseID(ini, "src");
 			}
-			catch(IllegalArgumentException e){
-				throw new IllegalArgumentException(e + 
-						" when reading dest in Road with id " + id);
+			catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException(
+					e + " when reading dest "+
+					"in Road with id " + id
+				);
 			}
 			
 			// DESTINY ok?
-			try{
+			try {
 				dest = parseID(ini, "dest");
 			}
-			catch(IllegalArgumentException e){
-				throw new IllegalArgumentException(e + 
-						" when reading source in Road with id " + id);
+			catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException(
+					e + " when reading source "+ 
+					"in Road with id " + id
+				);
 			}
 			
 			// MAXSPEED ok?
@@ -82,8 +97,10 @@ public class NewRoadBuilder extends EventBuilder{
 				maxSpeed = parsePositiveInt(ini, "max_speed");
 			}
 			catch (IllegalArgumentException e) {
-				throw new IllegalArgumentException(e + 
-						" when reading max speed in Road with id " + id);
+				throw new IllegalArgumentException(
+					e + " when reading max speed "+
+					"in Road with id " + id
+				);
 			}
 			
 			// LENGTH ok?
@@ -91,15 +108,17 @@ public class NewRoadBuilder extends EventBuilder{
 				length = parsePositiveInt(ini, "length");
 			}
 			catch (NumberFormatException e) {
-				throw new IllegalArgumentException(e + 
-						" when reading length in Road with id " + id);
+				throw new IllegalArgumentException(
+					e + " when reading length "+
+					"in Road with id " + id
+				);
 			}
 			
 			// New Road.
-			NewRoad road = new NewRoad(time, id, length, maxSpeed, src, dest);
-			return road;			
+			return 	new NewRoad(time, id, length, 
+							maxSpeed, src, dest);
 		}
-		else return null;
+		else 
+			return null;
 	}
-
 }

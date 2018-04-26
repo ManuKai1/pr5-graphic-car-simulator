@@ -82,12 +82,15 @@ public class TrafficSimulation {
 	 * de la simulación.
 	 * 
 	 * @param e <code>Event</code> a añadir
-	 * @throws SimulationException if event time lower thar sim time
+	 * @throws IllegalArgumentException	 if event time lower thar sim time
 	 */
-	public void pushEvent(Event e) throws SimulationException {
+	public void pushEvent(Event e) 
+			throws IllegalArgumentException {
 		// Comprueba el tiempo.
 		if( e.getTime() < time ) {
-			throw new SimulationException("Event time is lower than current time.");
+			throw new IllegalArgumentException(
+				"Event time is lower than current time."
+			);
 		}
 
 		// Añade el evento al mapa.
@@ -100,10 +103,14 @@ public class TrafficSimulation {
 	 * 
 	 * @param steps número de pasos a ejecutar
 	 * @param file fichero de salida
-	 * @throws IOException 
-	 * @throws SimulationException 
+	 * 
+	 * @throws SimulationException 	if an error ocurred while
+	 * 								executing an event
+	 * @throws IOException 			if an IO error ocurred during
+	 * 								reports generation
 	 */
-	public void execute(int steps, OutputStream file) throws IOException, SimulationException {
+	public void execute(int steps, OutputStream file) 
+			throws IOException, SimulationException {
 		// * //
 		// Tiempo límite en que para la simulación.
 		int timeLimit = time + steps - 1;
@@ -130,10 +137,10 @@ public class TrafficSimulation {
 
 			// 3 // INFORME //
 			// Escribir un informe en OutputStream en caso de que no sea nulo
-			try{
+			try {
 				generateReports(file);
 			}
-			catch(IOException e){
+			catch (IOException e) {
 				throw e;
 			}
 
@@ -143,20 +150,36 @@ public class TrafficSimulation {
 	/**
 	 * Llama a los métodos de avance de carreteras
 	 * y de cruces.
-	 * @throws SimulationException
+	 * 
+	 * @throws SimulationException	if event tried to create
+	 * 								a SimObj with an already
+	 * 								existing ID
+	 * @throws SimulationException	if event tried to interact
+	 * 								with a non-existint SimObj
 	 */
 	private void executeEvents() throws SimulationException{
 		if ( events.get(time) != null ) {
 			for ( Event event : events.get(time) ) {
 				try {
 					event.execute(this);
+					
 					//Aviso a Listeners de nuevo evento
-					fireUpdateEvent(EventType.NEW_EVENT, "New Event error");
+					fireUpdateEvent(EventType.NEW_EVENT, "New Event error"); //???
 				}
-				catch (SimulationException e1) {
+				catch (AlreadyExistingSimObjException e1) {
 					fireUpdateEvent(EventType.ERROR, "Simulation Exception error");
-					throw e1;
-				}				
+					
+					throw new SimulationException(
+						"Simulation error:\n" + e1
+					);
+				}
+				catch (NonExistingSimObjException e2) {
+					fireUpdateEvent(EventType.ERROR, "Simulation Exception error");
+					
+					throw new SimulationException(
+						"Simulation error:\n" + e2
+					);
+				}		
 			}
 		}
 	}

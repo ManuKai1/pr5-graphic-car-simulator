@@ -7,8 +7,8 @@ import es.ucm.fdi.model.simulation.NonExistingSimObjException;
 import es.ucm.fdi.model.simulation.TrafficSimulation;
 
 /**
- * <code>Event</code> que representa la creación de una <code>Road</code>
- * en la simulación.
+ * {@link Event} que representa la creación de una
+ * {@link Road} en la simulación.
  */
 public class NewRoad extends Event {
 	
@@ -23,31 +23,35 @@ public class NewRoad extends Event {
 	protected int length;
 
 	/**
-	 * Límite de velocidad de los <code>Vehicles</code> en la <code>Road</code>.
+	 * Límite de velocidad de los <code>Vehicles</code>
+	 * en la <code>Road</code>.
 	 */
 	protected int speedLimit;
 
 	/**
-	 * <code>Junction</code> donde empieza la <code>Road</code>.
+	 * <code>Junction</code> donde empieza
+	 * la <code>Road</code>.
 	 */
 	protected String fromJunctionID;
 
 	/**
-	 * <code>Junction</code> donde acaba la <code>Road</code>.
+	 * <code>Junction</code> donde acaba
+	 * la <code>Road</code>.
 	 */
 	protected String toJunctionID;	
 
 	/**
-	 * Constructor de <code>NewRoad</code>
+	 * Constructor de {@link NewRoad}.
 	 * 
-	 * @param newTime tiempo de ejecución del evento
-	 * @param ID identificador de la nueva <code>Road</code>
-	 * @param max longitud de la vía
-	 * @param lim límite de velocidad
-	 * @param fromID <code>Junction</code> donde empieza
-	 * @param toID <code>Junction</code> donde acaba
+	 * @param newTime 	tiempo de ejecución del evento
+	 * @param ID 		identificador de la nueva <code>Road</code>
+	 * @param max 		longitud de la vía
+	 * @param lim 		límite de velocidad
+	 * @param fromID 	<code>Junction</code> donde empieza
+	 * @param toID 		<code>Junction</code> donde acaba
 	 */
-	public NewRoad(int newTime, String ID, int lgth, int lim, String fromID, String toID) {
+	public NewRoad(int newTime, String ID, int lgth, 
+			int lim, String fromID, String toID) {
 		super(newTime);
 		id = ID;
 		fromJunctionID = fromID;
@@ -59,18 +63,23 @@ public class NewRoad extends Event {
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * El <code>NewRoad</code> crea una nueva <code>Road</code> 
-	 * dentro de la simulación.
+	 * El <code>NewRoad</code> crea una nueva
+	 * <code>Road</code>  dentro de la simulación.
 	 * </p> <p>
-	 * La ejecución del evento puede fallar por la presencia de un <code>SimObj</code>
-	 * ya registrado en la simulación con el ID de la nueva <code>Road</code>.
+	 * La ejecución del evento puede fallar por la 
+	 * presencia de un <code>SimObj</code> ya 
+	 * registrado en la simulación con el ID de la 
+	 * nueva <code>Road</code>.
 	 * </p>
 	 * 
-	 * @param sim la simulación sobre la que se ejecuta el evento.
-	 * @throws AlreadyExistingSimObjException if <code>Road</code> ID already registered 
+	 * @param sim la simulación sobre la que se ejecuta el evento
+	 * 
+	 * @throws AlreadyExistingSimObjException 	if <code>Road</code> 
+	 * 											ID already registered 
 	 */
 	@Override
-	public void execute(TrafficSimulation sim) throws AlreadyExistingSimObjException, NonExistingSimObjException {
+	public void execute(TrafficSimulation sim) 
+			throws AlreadyExistingSimObjException, NonExistingSimObjException {
 		if ( ! sim.getRoadMap().existsRoadID(id) ) {
 			try {
 				sim.addRoad( newRoad(sim) );			
@@ -87,20 +96,23 @@ public class NewRoad extends Event {
 	}
 
 	/**
-	 * Método que genera una nueva <code>Road</code> a partir de los atributos del
-	 * <code>Event<code>.
+	 * Método que genera una nueva <code>Road</code>
+	 * a partir de los atributos del <code>Event<code>.
 	 * 
-	 * @param sim la simulación sobre la que se ejecuta el evento
-	 * @return <code>Road</code> con los datos del <code>Event</code>
-	 * @throws NonExistingSimObjException si alguna de las 2 <code>Junctions</code> no está registrada
+	 * @param sim 	la simulación sobre la que se ejecuta el evento
+	 * @return 		<code>Road</code> con los datos del <code>Event</code>
+	 * 
+	 * @throws NonExistingSimObjException 	si alguna de las 2 <code>Junctions</code> 
+	 * 										no está registrada
 	 */
-	protected Road newRoad(TrafficSimulation sim) throws NonExistingSimObjException {
-		Junction fromJunction, toJunction;
-		fromJunction = sim.getRoadMap().getJunctionWithID(fromJunctionID);
-		toJunction = sim.getRoadMap().getJunctionWithID(toJunctionID);
+	protected Road newRoad(TrafficSimulation sim) 
+			throws NonExistingSimObjException {
+		Junction fromJunction = sim.getRoadMap().getJunctionWithID(fromJunctionID);
+		Junction toJunction = sim.getRoadMap().getJunctionWithID(toJunctionID);
 
 		if ( fromJunction != null && toJunction != null ) {
-			return new Road(id, length, speedLimit, fromJunction, toJunction);
+			return 	new Road(id, length, speedLimit, 
+							fromJunction, toJunction);
 		}
 		else {
 			throw new NonExistingSimObjException(
@@ -113,12 +125,14 @@ public class NewRoad extends Event {
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * En el caso de <code>NewRoad</code>, comprueba también que los IDs, la longitud,
-	 * el límite de velocidad y las <code>Junctions</code> de entrada y salida son iguales.
+	 * En el caso de <code>NewRoad</code>, comprueba
+	 * también que los IDs, la longitud, el límite de
+	 * velocidad y las <code>Junctions</code> de entrada
+	 * y salida son iguales.
 	 * </p>
 	 * 
-	 * @param obj objeto a comparar
-	 * @return if <code>NewRoad</code> equals <code>obj</code>
+	 * @param obj 	objeto a comparar
+	 * @return 		if <code>NewRoad</code> equals <code>obj</code>
 	 */
 	@Override
 	public boolean equals(Object obj) {

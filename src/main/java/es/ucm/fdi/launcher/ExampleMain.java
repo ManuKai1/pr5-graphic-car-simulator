@@ -25,7 +25,7 @@ public class ExampleMain {
 	/**
 	 * Default time limit if none indicated by user.
 	 */
-	private final static Integer _timeLimitDefaultValue = 10;
+	private final static Integer _TIMELIMIT_DEFAULT = 10;
 	
 	/**
 	 * Execution time limit: number of ticks the simulator will do.
@@ -123,7 +123,7 @@ public class ExampleMain {
 			Option.builder("t")
 			.longOpt("ticks")
 			.hasArg()
-			.desc("Ticks to execute the simulator's main loop (default value is " + _timeLimitDefaultValue + ").")
+			.desc("Ticks to execute the simulator's main loop (default value is " + _TIMELIMIT_DEFAULT + ").")
 			.build()
 		);
 
@@ -176,7 +176,7 @@ public class ExampleMain {
 	 * Updates the number of steps indicated by the command line and stored in attribute
 	 * <code>_timeLimit</code>.
 	 * </p> <p>
-	 * If no value is indicated, automatically set up to <code>_timeLimitDefaultValue</code>.
+	 * If no value is indicated, automatically set up to <code>_TIMELIMIT_DEFAULT</code>.
 	 * </p>
 	 * 
 	 * @param line <code>CommandLine</code> introduced
@@ -184,7 +184,7 @@ public class ExampleMain {
 	 */
 	private static void parseStepsOption(CommandLine line) throws ParseException {
 		// Si no se ha introducido ningún valor, se toma por defecto.
-		String t = line.getOptionValue("t", _timeLimitDefaultValue.toString());
+		String t = line.getOptionValue("t", _TIMELIMIT_DEFAULT.toString());
 
 		// Se comprueba que el valor introducido sea válido.
 		try {
@@ -234,7 +234,7 @@ public class ExampleMain {
 				file.getAbsolutePath(), 
 				file.getAbsolutePath() + ".out", 
 				file.getAbsolutePath() + ".eout",
-				_timeLimitDefaultValue
+				_TIMELIMIT_DEFAULT
 			);
 		}
 	}

@@ -1,87 +1,110 @@
 package es.ucm.fdi.control.evbuild;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.model.events.NewVehicle;
+import es.ucm.fdi.model.SimObj.Vehicle;
 
 /**
- * Clase que construye un evento <code>NewVehicle</code> utilizado para
- * crear un <code>Vehicle</code> en la simulación.
+ * Clase que construye un <code>Event</code> 
+ * {@link NewVehicle} utilizado para crear un 
+ * {@link Vehicle} durante la simulación.
+ * Hereda de {@link EventBuilder}.
  */
-public class NewVehicleBuilder extends EventBuilder{
+public class NewVehicleBuilder extends EventBuilder {
 
 	/**
-	 * Constructor de <code>NewVehicleBuilder</code> que pasa
-	 * el parámetro <code>new_vehicle</code> al constructor de la
-	 * superclase.
+	 * Etiqueta utilizada en las <code>IniSections</code>
+	 * para representar este tipo de eventos.
+	 */
+	private static final String SECTION_TAG = "new_vehicle";
+
+	/**
+	 * Constructor de {@link NewVehicleBuilder} que 
+	 * pasa el atributo <code>SECTION_TAG</code> al 
+	 * constructor de la superclase.
 	 */
 	public NewVehicleBuilder(){
-		super("new_vehicle");
+		super(SECTION_TAG);
 	}
 	
 	/**
-	 * Método de <code>parsing</code> de <code>NewVehicleBuilder</code> que comprueba
-	 * si la <code>IniSection</code> pasada como argumento representa un <code>NewVehicle</code>
+	 * Método de parsing que comprueba si la 
+	 * <code>IniSection</code> pasada como argumento 
+	 * representa un evento <code>NewVehicle</code>
 	 * y si sus parámetros son correctos.
 	 * 
-	 * @param ini <code>IniSection</code> a parsear.
-	 * @return <code>NewVehicle</code> o <code>null</code>.
+	 * @param ini 	<code>IniSection</code> a parsear
+	 * @return 		<code>NewVehicle</code> event or 
+	 * 				<code>null</code> if parsing failed
+	 * 
+	 * @throws IllegalArgumentException if <code>ini</code> represents 
+	 *	 								the searched event but its 
+	 *									arguments are not valid
 	 */
 	@Override
-	Event parse(IniSection ini) {
+	Event parse(IniSection ini) 
+			throws IllegalArgumentException {
 		
 		//Se comprueba que es un NewVehicle
-		if (iniNameMatch(ini) && typeMatch(ini, null)) {
+		if ( iniNameMatch(ini) && typeMatch(ini, null) ) {
 			String id;
 			int time = 0;
 			int maxSpeed;
 
 			// ID ok?
-			try{
+			try {
 				id = parseID(ini, "id");
 			}
-			catch(IllegalArgumentException e){
-				throw new IllegalArgumentException(e + " in new Vehicle.");
+			catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException(
+					e + " in new Vehicle."
+				);
 			}
 
 			// TIME ok?
-			if(existsTimeKey(ini)){
-				try{
+			if ( existsTimeKey(ini) ) {
+				try {
 					time = parseNoNegativeInt(ini, "time");
 				}
-				catch(IllegalArgumentException e){
-					throw new IllegalArgumentException(e + 
-							" when reading time in Vehicle with id " + id);
+				catch (IllegalArgumentException e) {
+					throw new IllegalArgumentException(
+						e + " when reading time " +
+						"in Vehicle with id " + id
+					);
 				}
 			}
 
 			// MAXSPEED ok?
-			try{
+			try {
 				maxSpeed = parseNoNegativeInt(ini, "max_speed");
 			}
-			catch(IllegalArgumentException e){
-				throw new IllegalArgumentException(e + 
-						" when reading maxSpeed in Vehicle with id " + id);
+			catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException(
+					e + " when reading maxSpeed " +
+					"in Vehicle with id " + id
+				);
 			}
 
 			// TRIP ok?
 			// Creación de la ruta de Junction IDs.
 			List<String> trip;
-			try{
+			try {
 				trip = parseIDList(ini, "itinerary", 2);
 			}
-			catch(IllegalArgumentException e){
-				throw new IllegalArgumentException(e + 
-						" when reading itinerary in Vehicle with id " + id);
+			catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException(
+					e + " when reading itinerary "+
+					"in Vehicle with id " + id
+				);
 			}
 
 			// New Vehicle.
-			NewVehicle vehicle = new NewVehicle(time, id, maxSpeed, trip);
-			return vehicle;
+			return 	new NewVehicle(time, id, maxSpeed, trip);
 		}
-		else return null;
+		else 
+			return null;
 	}
 }

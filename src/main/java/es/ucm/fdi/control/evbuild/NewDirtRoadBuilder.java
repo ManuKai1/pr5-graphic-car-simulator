@@ -3,77 +3,104 @@ package es.ucm.fdi.control.evbuild;
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.model.events.NewDirtRoad;
+import es.ucm.fdi.model.SimObj.DirtRoad;
 
 /**
- * Clase que construye un evento <code>NewDirtRoad</code> utilizado para
- * crear un <code>DirtRoad</code> en la simulación.
+ * Clase que construye un <code>Event</code> 
+ * {@link NewDirtRoad} utilizado para crear una 
+ * {@link DirtRoad} durante la simulación.
+ * Hereda de {@link EventBuilder}.
  */
 public class NewDirtRoadBuilder extends EventBuilder {
 
-    private final String type = "dirt";
+
+	/**
+	 * Etiqueta utilizada en las <code>IniSections</code>
+	 * para representar este tipo de eventos.
+	 */
+	private static final String SECTION_TAG = "new_road";
+
+	/**
+	 * Valor que debería almacenar la clave <code>type</code>
+	 * de una <code>IniSection</code> que represente a una
+	 * <code>DirtRoad</code>.
+	 */
+	private static final String TYPE = "dirt";
 
     /**
-     * Constructor de <code>NewDirtRoadBuilder</code> que pasa
-     * el parámetro <code>new_road</code> al constructor de la
-     * superclase.
-     */
+	 * Constructor de {@link NewDirtRoadBuilder} que 
+	 * pasa el atributo <code>SECTION_TAG</code> al 
+	 * constructor de la superclase.
+	 */
     public NewDirtRoadBuilder() {
-        super("new_road");
+        super(SECTION_TAG);
     }
 
     /**
-     * Método de <code>parsing</code> de <code>NewDirtRoadBuilder</code> que comprueba
-     * si la <code>IniSection</code> pasada como argumento representa un <code>NewDirtRoad</code>
-     * y si sus parámetros son correctos.
-     * 
-     * @param ini <code>IniSection</code> a parsear.
-     * @return <code>NewDirtRoad</code> o <code>null</code>.
-     */
+	 * Método de parsing que comprueba si la 
+	 * <code>IniSection</code> pasada como argumento 
+	 * representa un evento <code>NewDirtRoad</code>
+	 * y si sus parámetros son correctos.
+	 * 
+	 * @param ini 	<code>IniSection</code> a parsear
+	 * @return 		<code>NewDirtRoad</code> event or 
+	 * 				<code>null</code> if parsing failed
+	 * 
+	 * @throws IllegalArgumentException if <code>ini</code> represents 
+	 *	 								the searched event but its 
+	 *									arguments are not valid
+	 */
     @Override
     Event parse(IniSection ini) {
-        if (iniNameMatch(ini) && typeMatch(ini, type)) {
+        if (iniNameMatch(ini) && typeMatch(ini, TYPE)) {
             String id;
 			int time = 0;
-			int maxSpeed;
-			int length;
-			String src;
-			String dest;
+			int maxSpeed, length;
+			String src, dest;
 			
 			// ID ok?
-			try{
+			try {
 				id = parseID(ini, "id");
 			}
-			catch(IllegalArgumentException e){
-				throw new IllegalArgumentException(e + " in new Dirt Road.");
+			catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException(
+					e + " in new Dirt Road."
+				);
 			}
 			
 			// TIME ok?
-			if(existsTimeKey(ini)){
-				try{
+			if ( existsTimeKey(ini) ) {
+				try {
 					time = parseNoNegativeInt(ini, "time");
 				}
-				catch(IllegalArgumentException e){
-					throw new IllegalArgumentException(e + 
-							" when reading time in Dirt Road with id " + id);
+				catch (IllegalArgumentException e) {
+					throw new IllegalArgumentException(
+						e + " when reading time " + 
+						"in Dirt Road with id " + id
+					);
 				}
 			}
 
 			// SOURCE ok?	
-			try{
+			try {
 				src = parseID(ini, "src");
 			}
-			catch(IllegalArgumentException e){
-				throw new IllegalArgumentException(e + 
-						" when reading dest in Dirt Road with id " + id);
+			catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException(
+					e + " when reading dest " +
+					"in Dirt Road with id " + id
+				);
 			}
 			
 			// DESTINY ok?
-			try{
+			try {
 				dest = parseID(ini, "dest");
 			}
-			catch(IllegalArgumentException e){
-				throw new IllegalArgumentException(e + 
-						" when reading source in Dirt Road with id " + id);
+			catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException(
+					e + " when reading source " +
+					"in Dirt Road with id " + id
+				);
 			}
 			
 			// MAXSPEED ok?
@@ -81,8 +108,10 @@ public class NewDirtRoadBuilder extends EventBuilder {
 				maxSpeed = parsePositiveInt(ini, "max_speed");
 			}
 			catch (IllegalArgumentException e) {
-				throw new IllegalArgumentException(e + 
-						" when reading max speed in Dirt Road with id " + id);
+				throw new IllegalArgumentException(
+					e + " when reading max speed " +
+					"in Dirt Road with id " + id
+				);
 			}
 			
 			// LENGTH ok?
@@ -90,15 +119,18 @@ public class NewDirtRoadBuilder extends EventBuilder {
 				length = parsePositiveInt(ini, "length");
 			}
 			catch (NumberFormatException e) {
-				throw new IllegalArgumentException(e + 
-						" when reading length in Dirt Road with id " + id);
+				throw new IllegalArgumentException(
+					e + " when reading length " +
+					"in Dirt Road with id " + id
+				);
 			}
 			
 			// New Road.
-			NewDirtRoad road = new NewDirtRoad(time, id, length, maxSpeed, src, dest);
-			return road;
+			return 	new NewDirtRoad(time, id, length, 
+							maxSpeed, src, dest);
 
         } 
-        else return null;
+        else 
+			return null;
     }
 }
