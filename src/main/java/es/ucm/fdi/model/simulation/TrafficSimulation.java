@@ -62,6 +62,11 @@ public class TrafficSimulation {
 	private MultiTreeMap<Integer, Event> events = new MultiTreeMap<>();
 
 	/**
+	 * Lista con los listeners registrados en el simulador.
+	 */
+	private List<Listener> listeners = new ArrayList<>();
+
+	/**
 	 * Mapa de simulación que relaciona Junction con sus carreteras entrantes
 	 * y salientes.
 	 */
@@ -71,8 +76,6 @@ public class TrafficSimulation {
 	 * Tiempo actual de la simulación.
 	 */
 	private int time = 0;
-
-	private List<Listener> listeners = new ArrayList<>();
 	
 	public TrafficSimulation() {}
 	
@@ -123,6 +126,7 @@ public class TrafficSimulation {
 			try {
 				executeEvents();
 			} catch (SimulationException e1) {
+				fireUpdateEvent(EventType.ERROR, "Simulation Exception error");
 				throw e1;
 			}
 			
@@ -164,18 +168,14 @@ public class TrafficSimulation {
 					event.execute(this);
 					
 					//Aviso a Listeners de nuevo evento
-					fireUpdateEvent(EventType.NEW_EVENT, "New Event error"); //???
+					fireUpdateEvent(EventType.NEW_EVENT, "New Event error");
 				}
 				catch (AlreadyExistingSimObjException e1) {
-					fireUpdateEvent(EventType.ERROR, "Simulation Exception error");
-					
 					throw new SimulationException(
 						"Simulation error:\n" + e1
 					);
 				}
 				catch (NonExistingSimObjException e2) {
-					fireUpdateEvent(EventType.ERROR, "Simulation Exception error");
-					
 					throw new SimulationException(
 						"Simulation error:\n" + e2
 					);
@@ -205,20 +205,20 @@ public class TrafficSimulation {
 	 * Genera informes de todos los SimObject.
 	 * @param file fichero de salida
 	 */
-	private void generateReports(OutputStream file) throws IOException{
+	private void generateReports(OutputStream file) throws IOException {
 		if (file != null) {
 			//Creación de ini
 			Ini iniFile = new Ini();
 			//Junctions:
-			for(Junction junction : roadMap.getJunctions().values() ){
+			for (Junction junction : roadMap.getJunctions().values() ) {
 				iniFile.addsection(junction.generateIniSection(time));
 			}
 			//Roads:
-			for(Road road : roadMap.getRoads().values() ){
+			for (Road road : roadMap.getRoads().values() ) {
 				iniFile.addsection(road.generateIniSection(time));
 			}
 			//Vehicles:
-			for(Vehicle vehicle : roadMap.getVehicles().values() ){
+			for (Vehicle vehicle : roadMap.getVehicles().values() ) {
 				iniFile.addsection(vehicle.generateIniSection(time));
 			}
 			
@@ -226,7 +226,7 @@ public class TrafficSimulation {
 			try{
 				iniFile.store(file);
 			}
-			catch(IOException e){
+			catch (IOException e) {
 				throw new IOException(
 					"Error when saving file on time " + time + ":" + e.getMessage()
 				);
@@ -255,45 +255,6 @@ public class TrafficSimulation {
 				);
 			}
 		}
-	}
-	
-	/**
-	 *  Añade un listener a la lista (además, implementa registered).
-	 *  @param l es el listener a añadir
-	 */
-	public void addSimulatorListener(Listener l) {
-		listeners.add(l);
-		UpdateEvent ue = new UpdateEvent(EventType.REGISTERED);
-		// evita pseudo-recursividad
-		// Error?
-		SwingUtilities.invokeLater(()->l.update(ue,"Registered error."));
-	}
-	
-	/**
-	 *  Elimina un listener de la lista.
-	 *  @param l es el listener a eliminar
-	 */
-	public void removeListener(Listener l) {
-		listeners.remove(l);
-	}
-	
-	// uso interno, evita tener que escribir el mismo bucle muchas veces
-	private void fireUpdateEvent(EventType type, String error) {
-		UpdateEvent ue = new UpdateEvent(type);
-		for(Listener l : listeners){
-			l.update(ue, error);
-		}
-	}
-
-	
-	/**
-	 * Reinicia el simulador
-	 */
-	public void reset(){
-		events.clear();
-		roadMap.clear();
-		time = 0;
-		fireUpdateEvent(EventType.RESET, "Reset error");
 	}
 
 	/**
@@ -332,5 +293,57 @@ public class TrafficSimulation {
 	 */
 	public RoadMap getRoadMap(){
 		return roadMap;
+	}
+
+	/**
+	 * 
+	 */
+	public int getCurrentTime() {
+		return time;
+	}
+
+
+
+
+
+	/**
+	 *  Añade un listener a la lista (además, implementa registered).
+	 *  @param l es el listener a añadir
+	 */
+	public void addSimulatorListener(Listener l) {
+		listeners.add(l);
+		UpdateEvent ue = new UpdateEvent(EventType.REGISTERED);
+		// evita pseudo-recursividad
+		// Error?
+		SwingUtilities.invokeLater(() -> l.update(ue, "Registered error."));
+	}
+
+	/**
+	 *  Elimina un listener de la lista.
+	 *  @param l es el listener a eliminar
+	 */
+	public void removeListener(Listener l) {
+		listeners.remove(l);
+	}
+
+	/**
+	 * Método de uso interno que informa a todos los
+	 * listeners registrados de un EventType en simulación.
+	 */
+	private void fireUpdateEvent(EventType type, String error) {
+		UpdateEvent ue = new UpdateEvent(type);
+		for (Listener l : listeners) {
+			l.update(ue, error);
+		}
+	}
+
+	/**
+	 * Reinicia el simulador
+	 */
+	public void reset() {
+		events.clear();
+		roadMap.clear();
+		time = 0;
+		fireUpdateEvent(EventType.RESET, "Reset error");
 	}
 }

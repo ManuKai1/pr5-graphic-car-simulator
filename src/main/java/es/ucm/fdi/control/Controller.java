@@ -2,8 +2,7 @@ package es.ucm.fdi.control;
 
 import java.io.IOException;
 import java.io.OutputStream;
-
-import javax.xml.parsers.ParserConfigurationException;
+import org.apache.commons.cli.ParseException;
 
 import es.ucm.fdi.control.evbuild.EventParser;
 import es.ucm.fdi.ini.Ini;
@@ -21,7 +20,7 @@ import es.ucm.fdi.model.simulation.TrafficSimulation;
  * <code>.ini</code> que almacena los {@link Event Events}.
  * </p> <p>
  * El simulador se actualiza durante un tiempo determinado
- * {@link #timeLimit}, volcando los resultados en un flujo
+ * {@link #batchTimeLimit}, volcando los resultados en un flujo
  * de salida {@link #outStream}.
  * </p>
  */
@@ -41,9 +40,15 @@ public class Controller {
     private OutputStream outStream;
 
     /**
-     * Número de ticks que se ejecuta el simulador.
+     * Número de ticks que se ejecuta el simulador en modo
+     * batch.
      */
-    private int timeLimit;
+    private int batchTimeLimit;
+
+    /**
+     * Simulación a la que el controlador tiene acceso.
+     */
+    private TrafficSimulation simulator;
 
     /**
      * Constructor de {@link Controller} que recibe 
@@ -59,7 +64,8 @@ public class Controller {
     public Controller(Ini in, OutputStream out, int time) {
         iniInput = in;
         outStream = out;
-        timeLimit = time;
+        batchTimeLimit = time;
+        simulator = new TrafficSimulation();
     }
 
     /**
@@ -75,7 +81,7 @@ public class Controller {
      * 3. Ejecuta la <code>TrafficSimulation</code>.
      * </p> 
      *
-     * @throws ParserConfigurationException     if event parsing failed (no matching
+     * @throws ParseException     if event parsing failed (no matching
      *                                          event or invalid data)
      * @throws IllegalArgumentException         if event time is lower than
      *                                          sim time
@@ -84,8 +90,7 @@ public class Controller {
      * @throws IOException                      if an error ocurred during report generation
      *                                          in the simulation
      */
-    public void execute() throws ParserConfigurationException, IOException, SimulationException {
-        TrafficSimulation simulator = new TrafficSimulation();
+    public void executeBatch() throws ParseException, IOException, SimulationException {
         EventParser parser = new EventParser();
 
         // 1 //
@@ -99,7 +104,7 @@ public class Controller {
                 
         	}
             catch(IllegalArgumentException e) {
-            	throw new ParserConfigurationException(
+            	throw new ParseException(
                     "Event parsing failed:\n" + e
                 );
             }
@@ -113,10 +118,10 @@ public class Controller {
         }
 
         // 2 // 
-        // Se ejecuta el simulador el número de pasos timeLimit
+        // Se ejecuta el simulador el número de pasos batchTimeLimit
         // y se actualiza el OutputStream.
         try {
-			simulator.execute(timeLimit, outStream);
+			simulate(batchTimeLimit);
 		}
         catch (SimulationException e) {
             throw e;
@@ -126,8 +131,58 @@ public class Controller {
 		} 
     }
 
-    public void setOutputStream(JTextAreaOutputStream report) {
+    public void simulate(int time) 
+            throws SimulationException, IOException {
 
+        try {
+			simulator.execute(time, outStream);
+		}
+        catch (SimulationException e) {
+            throw e;
+        } 
+        catch (IOException e) {
+			throw e;
+		} 
+    }
+
+    public void setIniInput(Ini newIni) {
+        iniInput = newIni;
+    }
+
+    public void reset() throws ParseException {
+        simulator = new TrafficSimulation();
+        EventParser parser = new EventParser();
+
+        // Recorre las secciones del archivo .ini de entrada
+        // y construye y guarda los eventos en el simulador.
+        for ( IniSection sec : iniInput.getSections() ) {
+        	Event ev;
+            
+            try {
+        		ev = parser.parse(sec);
+                
+        	}
+            catch(IllegalArgumentException e) {
+            	throw new ParseException(
+                    "Event parsing failed:\n" + e
+                );
+            }
+
+            try {
+                simulator.pushEvent(ev);   
+            }
+            catch (IllegalArgumentException e) {
+                throw e; // Illegal time
+            }            
+        }
+    }
+
+    public int getExecutionTime() {
+        return simulator.getCurrentTime();
+    }
+
+    public int getBatchTimeLimit() {
+        return batchTimeLimit;
     }
 
     //Setter de outStream
