@@ -5,31 +5,39 @@ import java.util.ArrayList;
 import es.ucm.fdi.ini.IniSection;
 
 /**
- * Clase que representa un camino como un objeto de simulación.
- * Hereda de <code>Road</code>.
+ * Clase que representa un camino de tierra como 
+ * un objeto de simulación. Hereda de {@link Road}.
  */
 public class DirtRoad extends Road {
 
-    private String type = "dirt";
+    /**
+     * Información sobre el tipo de <code>Road</code> 
+     * que debe ponerse como valor en la clave 
+     * <code>type</code> de la <code>IniSection</code> 
+     * generada.
+     */
+    private String TYPE = "dirt";
 
     /**
-     * Constructor de <code>DirtRoad</code>.
+     * Constructor de {@link DirtRoad}.
      * 
-     * @param identifier identificador del objeto
-     * @param len longitud de la vía
-     * @param spLimit límite de velocidad
-     * @param fromJ <code>Junction</code> donde empieza
-     * @param toJ <code>Junction</code> donde acaba
+     * @param identifier    identificador del objeto
+     * @param len           longitud de la vía
+     * @param spLimit       límite de velocidad
+     * @param fromJ         <code>Junction</code> donde empieza
+     * @param toJ           <code>Junction</code> donde acaba
      */
-    public DirtRoad(String identifier, int len, int spLimit, Junction fromJ, Junction toJ) {
+    public DirtRoad(String identifier, int len, int spLimit,
+            Junction fromJ, Junction toJ) {
         super(identifier, len, spLimit, fromJ, toJ);
     }
 
     /**
-     * Calcula la velocidad base de la <code>DirtRoad</code>: el límite de
-     * velocidad <code>speedLimit</code>.
+     * Calcula la velocidad base de la <code>DirtRoad</code>: 
+     * el límite de velocidad <code>speedLimit</code>.
      * 
-     * @return la velocidad base de la <code>DirtRoad</code>.
+     * @return  la velocidad base de 
+     *          la <code>DirtRoad</code>.
      */
     @Override
     protected int getBaseSpeed() {
@@ -38,14 +46,17 @@ public class DirtRoad extends Road {
 
     /**
      * <p>
-     * Modifica la velocidad que llevarán los <code>Vehicles</code> en la
-     * <code>DirtRoad</code> previo avance.
+     * Modifica la velocidad que llevarán los 
+     * <code>Vehicles</code> en la <code>DirtRoad</code> 
+     * previo avance.
      * </p> <p>
-     * En la <code>DirtRoad</code>, el <code>reductionFactor</code> aumenta en uno
-     * por cada <code>Vehicle</code> averiado delante de un <code>Vehicle</code>.
+     * En la <code>DirtRoad</code>, el <code>reductionFactor</code> 
+     * aumenta en uno por cada <code>Vehicle</code> averiado 
+     * delante de un <code>Vehicle</code>.
      * </p>
      * 
-     * @param onRoad lista de <code>Vehicles</code> en <code>DirtRoad</code>.
+     * @param onRoad    lista de <code>Vehicles</code> 
+     *                  en <code>DirtRoad</code>.
      */
     @Override
     protected void vehicleSpeedModifier(ArrayList<Vehicle> onRoad) {
@@ -67,11 +78,13 @@ public class DirtRoad extends Road {
     }
 
     /**
-     * Genera una <code>IniSection</code> que informa de los atributos de la
-     * <code>DirtRoad</code> en el tiempo del simulador.
+     * Genera una <code>IniSection</code> que informa de los 
+     * atributos de la <code>DirtRoad</code> en el 
+     * tiempo del simulador.
      * 
-     * @param simTime tiempo del simulador
-     * @return <code>IniSection</code> con información de la <code>DirtRoad</code>
+     * @param simTime   tiempo del simulador
+     * @return          <code>IniSection</code> con información
+     *                  de la <code>DirtRoad</code>
      */
     @Override
     public IniSection generateIniSection(int simTime) {
@@ -85,7 +98,7 @@ public class DirtRoad extends Road {
         // Se generan los datos en el informe.
         section.setValue("id", id);
         section.setValue("time", simTime);
-        section.setValue("type", type);
+        section.setValue("type", TYPE);
         section.setValue("state", getRoadState().toString());
 
         return section;
@@ -96,10 +109,9 @@ public class DirtRoad extends Road {
     * PERO LA COMPARACIÓN ES CORRECTA POR SECCIONES.
     public IniSection generateIniSection(int simTime) {
         IniSection section = super.generateIniSection(simTime);
-        section.setValue("type", type);
+        section.setValue("type", TYPE);
         
         return section;
     }
     */
-
 }

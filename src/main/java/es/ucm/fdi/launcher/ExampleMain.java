@@ -3,10 +3,12 @@ package es.ucm.fdi.launcher;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -209,7 +211,7 @@ public class ExampleMain {
 	 * @param path <code>String</code> with the directory path
 	 * @throws IOException if failure in reading/writing files.
 	 */
-	private static void test(String path) throws IOException {
+	static void test(String path) throws IOException {
 		// Directorio.
 		File dir = new File(path);
 
@@ -281,12 +283,28 @@ public class ExampleMain {
 		// Controlador
 		Controller control = new Controller(iniInput, os, _timeLimit);
 
-		// Ejecución
+		// Ejecución y captura de excepciones
 		try {
 			control.execute();
-		} catch (SimulationException e) {
-			System.err.println(e);
-			e.printStackTrace();
+		}
+		catch (ParserConfigurationException e1) {
+			System.err.println(e1);
+			e1.printStackTrace();
+			System.err.println("Aborting execution...");
+		}
+		catch (IllegalArgumentException e2) {
+			System.err.println(e2);
+			e2.printStackTrace();
+			System.err.println("Aborting execution...");
+		} 
+		catch (SimulationException e3) {
+			System.err.println(e3);
+			e3.printStackTrace();
+			System.err.println("Aborting execution...");
+		}
+		catch (IOException e4) {
+			System.err.println(e4);
+			e4.printStackTrace();
 			System.err.println("Aborting execution...");
 		}
 	}
@@ -316,7 +334,7 @@ public class ExampleMain {
 
 		// Simulation testing //
 		// test("src/main/resources/examples/basic");
-		// test("src/main/resources/examples/advanced");
+		 test("src/main/resources/examples/advanced");
 		// test("src/main/resources/examples/err");
 		//test("src/main/resources/examples/new");
 

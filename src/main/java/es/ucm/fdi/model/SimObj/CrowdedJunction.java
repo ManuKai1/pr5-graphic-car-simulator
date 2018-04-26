@@ -9,17 +9,24 @@ import java.util.Map;
 import es.ucm.fdi.ini.IniSection;
 
 /**
- * Clase que representa una intersección inteligente, que modifica
- * la duración y el orden del semáforo según el tamaño de las colas de
- * las <code>incomingRoads</code>, como un objeto de simulación.
+ * Clase que representa una intersección inteligente, 
+ * que modifica la duración y el orden del semáforo 
+ * según el tamaño de las colas de las <code>incomingRoads</code>, 
+ * como un objeto de simulación. Hereda de {@link Junction}
  */
 public class CrowdedJunction extends Junction {
 
-    private final String type = "mc"; // most-crowded
+    /**
+     * Información sobre el tipo de <code>Junction</code> 
+     * que debe ponerse como valor en la clave 
+     * <code>type</code> de la <code>IniSection</code> 
+     * generada.
+     */
+    private static final String TYPE = "mc"; // most-crowded
 
     /**
-     * Mapa de <code>incomingRoads</code> a sus respectivos intervalos 
-     * de duración de sus semáforos.
+     * Mapa de <code>incomingRoads</code> a sus respectivos 
+     * intervalos de duración de sus semáforos.
      */
     protected Map<Road, Integer> timeLapses = new HashMap<>();
 
@@ -29,14 +36,15 @@ public class CrowdedJunction extends Junction {
     protected int elapsedTime = 0;
 
     /**
-     * Constructor de <code>CrowdedJunction</code>.
+     * Constructor de {@link CrowdedJunction}.
      * 
      * @param identifier identificador del objeto
      */
     public CrowdedJunction(String identifier) {
         super(identifier); // light: -1
 
-        // Al inicio de la simulación, la duración de los semáforos es nula.
+        // Al inicio de la simulación, la duración 
+        // de los semáforos es nula.
         for ( Road inc : incomingRoads.values() ) {
             timeLapses.put(inc, 0);
         }
@@ -45,13 +53,15 @@ public class CrowdedJunction extends Junction {
     /**
      * {@inheritDoc}
      * <p>
-     * En una <code>CrowdedJunction</code>, el primer semáforo que se pone en verde
-     * es el de la <code>Road</code> con más <code>Vehicles</code> en la cola de
-     * espera.
+     * En una <code>CrowdedJunction</code>, el primer semáforo que 
+     * se pone en verde es el de la <code>Road</code> con más 
+     * <code>Vehicles</code> en la cola de espera.
      * </p> <p>
-     * Normalmente, al inicio de la simulación, no habrá ningún <code>Vehicle</code>
-     * esperando, para lo cual se sigue el orden establecido en <code>incomingRoads</code>
-     * y se actualiza la <code>Road</code> con <code>timeLapse = 1</code>.
+     * Normalmente, al inicio de la simulación, no habrá ningún 
+     * <code>Vehicle</code> esperando, para lo cual se sigue el 
+     * orden establecido en <code>incomingRoads</code> y se 
+     * actualiza la <code>Road</code> con 
+     * <code>timeLapse = 1</code>.
      * </p>
      */
     @Override
@@ -71,17 +81,20 @@ public class CrowdedJunction extends Junction {
         int newTimeLapse = Math.max( (numWaiting / 2) , 1 );
         timeLapses.put(crowdedRoad, newTimeLapse);
 
-        // No se actualiza elapsedTime, pues no había ningún semáforo en verde.
+        // No se actualiza elapsedTime, 
+        // pues no había ningún semáforo en verde.
     }
 
     /**
      * {@inheritDoc}
      * <p>
-     * En una <code>CrowdedJunction</code>, el cruce de un <code>Vehicle</code> (si es
-     * posible) es análogo al de una <code>Junction</code> común.
+     * En una <code>CrowdedJunction</code>, el cruce de 
+     * un <code>Vehicle</code> (si es posible) es análogo 
+     * al de una <code>Junction</code> común.
      * </p>
      * 
-     * @param greenRoad <code>Road</code> con el semáforo en verde.
+     * @param greenRoad     <code>Road</code> con 
+     *                      el semáforo en verde.
      */
     @Override
     protected void roadUpdate(Road greenRoad) {
@@ -91,12 +104,14 @@ public class CrowdedJunction extends Junction {
     /**
      * {@inheritDoc}
      * <p>
-     * En una <code>CrowdedJunction</code>, se comprueba si el semáforo de la
-     * <code>usedRoad</code> ha agotado su <code>timeLapse</code>.
+     * En una <code>CrowdedJunction</code>, se comprueba si 
+     * el semáforo de la <code>usedRoad</code> ha agotado 
+     * su <code>timeLapse</code>.
      * </p> <p>
-     * Si es así: se pone en rojo, se busca la <code>Road</code> con la cola más
-     * concurrida y se pone en verde, se actualiza su <code>timeLapse</code> con 
-     * <code>mostCrowdedRoad()</code>, y se resetea <code>elapsedTime</code>.
+     * Si es así: se pone en rojo, se busca la <code>Road</code> 
+     * con la cola más concurrida y se pone en verde, se actualiza 
+     * su <code>timeLapse</code> con {@link #mostCrowdedRoad()},
+     * y se resetea <code>elapsedTime</code>.
      * </p> <p>
      * Si no, no ocurre nada y se actualiza <code>elapsedTime</code>.
      * </p> 
@@ -126,7 +141,8 @@ public class CrowdedJunction extends Junction {
             crowdedRoad.setLight(true);
 
             // 2 //
-            // Se actualiza su timeLapse respecto al número de vehículos esperando.
+            // Se actualiza su timeLapse respecto 
+            // al número de vehículos esperando.
             int numWaiting = crowdedRoad.getNumWaitingVehicles();
             int newTimeLapse = Math.max((numWaiting / 2), 1);
             timeLapses.put(crowdedRoad, newTimeLapse);
@@ -138,11 +154,14 @@ public class CrowdedJunction extends Junction {
     }
 
     /**
-     * Busca la carretera más concurrida y devuelve su posición en la lista
-     * <code>incomingRoads</code>. En caso de empate, devuelve la posición menor:
-     * la de la primera <code>Road</code> en registrarse en la <code>Junction</code>.
+     * Busca la carretera más concurrida y devuelve su 
+     * posición en la lista <code>incomingRoads</code>. 
+     * En caso de empate, devuelve la posición menor:
+     * la de la primera <code>Road</code> en registrarse
+     * en la <code>Junction</code>.
      * 
-     * @return posición de la <code>Road</code> más concurrida
+     * @return  posición de la <code>Road</code> 
+     *          más concurrida
      */
     private int mostCrowdedRoad() {
         int max = 0; // 0 vehículos
@@ -175,8 +194,9 @@ public class CrowdedJunction extends Junction {
 
         // Si hay empate, se sigue el orden de eventos
         if (equallyCrowdedPos.size() > 1) {
-            // Si hay empate, de seguro el semáforo en verde no estará en la Road
-            // que se acaba de poner en rojo (light).
+            // Si hay empate, de seguro el semáforo en verde 
+            // no estará en la Road que se acaba de poner 
+            // en rojo (light).
             crowdedPos = ( (light + 1) % incomingRoads.size() );
 
             if ( ! equallyCrowdedPos.contains(crowdedPos) ) {
@@ -190,12 +210,14 @@ public class CrowdedJunction extends Junction {
     /**
      * {@inheritDoc}
      * <p>
-     * En una <code>CrowdedJunction</code> se incluye además <code>type</code> y
-     * se incluye el tiempo restante del semáforo de la <code>Road</code> en verde.
+     * En una <code>CrowdedJunction</code> se incluye además 
+     * <code>type</code> y se incluye el tiempo restante del 
+     * semáforo de la <code>Road</code> en verde.
      * </p>
      * 
-     * @param simTime tiempo del simulador
-     * @return informe <code>IniSection</code> de la <code>CrowdedJunction</code>
+     * @param simTime   tiempo del simulador
+     * @return          informe <code>IniSection</code> de 
+     *                  la <code>CrowdedJunction</code>
      */
     @Override
     public IniSection generateIniSection(int simTime) {
@@ -210,7 +232,7 @@ public class CrowdedJunction extends Junction {
         section.setValue("id", id);
         section.setValue("time", simTime);
         section.setValue("queues", getQueuesValue());
-        section.setValue("type", type);
+        section.setValue("type", TYPE);
 
         return section;
     }
@@ -221,7 +243,7 @@ public class CrowdedJunction extends Junction {
     public IniSection generateIniSection(int simTime) {
         // Se utiliza getQueuesValue() de RobinJunction.
         IniSection section = super.generateIniSection(simTime);         
-        section.setValue("type", type);
+        section.setValue("type", TYPE);
     
     	return section;
     }
@@ -230,11 +252,12 @@ public class CrowdedJunction extends Junction {
     /**
      * {@inheritDoc}
      * <p>
-     * En una <code>CrowdedJunction</code> se incluye el tiempo restante del semáforo
-     * de la <code>Road</code> en verde.
+     * En una <code>CrowdedJunction</code> se incluye el 
+     * tiempo restante del semáforo de la <code>Road</code> 
+     * en verde.
      * </p>
      * 
-     * @return <code>String</code> con las colas.
+     * @return  <code>String</code> con las colas
      */
     @Override
     protected String getQueuesValue() {
@@ -259,13 +282,16 @@ public class CrowdedJunction extends Junction {
     }
 
     /**
-    * Devuelve el tiempo restante del semáforo de cualquier <code>Road</code>
-    * con respecto a <code>elapsedTime</code>. El método no comprueba que la
-    * <code>Road</code> esté en verde.
-    * 
-    * @param road <code>Road</code> de la que se quiere conocer el tiempo del semáforo.
-    * @return tiempo restante del semáforo.
-    */
+     * Devuelve el tiempo restante del semáforo de 
+     * cualquier <code>Road</code> con respecto a 
+     * <code>elapsedTime</code>. No se comprueba 
+     * que la <code>Road</code> esté en verde.
+     * 
+     * @param road  <code>Road</code> de la que 
+     *              se quiere conocer el tiempo 
+     *              del semáforo
+     * @return      tiempo restante del semáforo.
+     */
     private int lastingLightTime(Road road) {
         return ( timeLapses.get(road) - elapsedTime );
     }

@@ -1,71 +1,78 @@
 package es.ucm.fdi.model.SimObj;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.simulation.SimulationException;
 
 /**
- * Clase que representa un vehículo como un objeto de simulación
+ * Clase que representa un coche como un objeto
+ * de simulación. Hereda de {@link SimObject}
  */
 public class Vehicle extends SimObject {
 
 	/**
-	 * Etiqueta que encabeza el informe de un <code>Vehicle</code> cualquiera.
+	 * Etiqueta que encabeza el informe de un
+	 * <code>Vehicle</code> cualquiera.
 	 */
 	protected final String REPORT_TITLE = "[vehicle_report]";
 	
 	/**
-	 * Ruta del <code>Vehicle</code> en forma de lista de <code>Junctions</code>.
+	 * Ruta del <code>Vehicle</code> en forma de
+	 * lista de <code>Junctions</code>.
 	 */
 	protected List<Junction> trip;
 
 	/**
-	 * Última posición en la lista que representa la ruta, de forma que
-	 * <code>trip.get(lastTripPos)</code> es la última <code>Junction</code> por
-	 * la que ha pasado el <code>Vehicle</code>.
+	 * Última posición en la lista que representa la ruta,
+	 * de forma que <code>trip.get(lastTripPos)</code> es 
+	 * la última <code>Junction</code> por la que ha pasado
+	 * el <code>Vehicle</code>.
 	 */
 	protected int lastTripPos = 0;
 
 	/**
-	 * Máxima velocidad que puede alcanzar el <code>Vehicle</code> en 
-	 * cualquier vía.
+	 * Máxima velocidad que puede alcanzar el <code>Vehicle</code> 
+	 * en cualquier vía.
 	 */
 	protected int maxSpeed;
 
 	/**
-	 * Distancia recorrida por el <code>Vehicle</code> desde que empezo la
-	 * simulación.
+	 * Distancia recorrida por el <code>Vehicle</code> desde 
+	 * que empezo la simulación.
 	 */
 	protected int kilometrage = 0;
 
 	/**
-	 * Tiempo restante hasta la recuperación de un <code>Vehicle</code> averiado. Si 
-	 * <code>breakdownTime = 0</code>, no está averiado.
+	 * Tiempo restante hasta la recuperación de un <code>Vehicle</code>
+	 * averiado. Si <code>breakdownTime = 0</code>, no está averiado.
 	 */
 	protected int breakdownTime = 0;
 
 	/**
-	 * Booleano que indica si el <code>Vehicle</code> ha llegado a si destino, es
-	 * decir, a la última <code>Junction</code> de <code>trip</code>.
+	 * Booleano que indica si el <code>Vehicle</code>
+	 * ha llegado a si destino, es decir, a la última 
+	 * <code>Junction</code> de <code>trip</code>.
 	 */
 	protected boolean hasArrived = false;
 
 	/**
-	 * Booleano que indica si un <code>Vehicle</code> está esperando en la cola
-	 * de una <code>Road</code> para cruzar una <code>Junction</code>.
+	 * Booleano que indica si un <code>Vehicle</code>
+	 * está esperando en la cola de una <code>Road</code>
+	 * para cruzar una <code>Junction</code>.
 	 */
 	protected boolean isWaiting = false;
 
 	/**
-	 * <code>Road</code> en la que se encuentra el <code>Vehicle</code>.
+	 * <code>Road</code> en la que se encuentra el 
+	 * <code>Vehicle</code>.
 	 */
 	protected Road road;
 
 	/**
-	 * Localización del <code>Vehicle</code> dentro de la <code>road</code>.
+	 * Localización del <code>Vehicle</code>
+	 * dentro de la <code>road</code>.
 	 */
 	protected int location = 0;
 
@@ -76,11 +83,11 @@ public class Vehicle extends SimObject {
 
 
 	/**
-	 * Constructor de <code>Vehicle</code>.
+	 * Constructor de {@link Vehicle}.
 	 * 
-	 * @param identifier identificador del objeto
-	 * @param trp ruta de <code>Junctions</code>
-	 * @param max máxima velocidad alcanzable
+	 * @param identifier 	identificador del objeto
+	 * @param trp 			ruta de <code>Junctions</code>
+	 * @param max 			máxima velocidad alcanzable
 	 */
 	public Vehicle(String identifier, ArrayList<Junction> trp, int max) {
 		super(identifier);
@@ -104,13 +111,15 @@ public class Vehicle extends SimObject {
 	 * {@inheritDoc}
 	 * Método de AVANCE de <code>Vehicle</code>:
 	 * <p>
-	 * En primer lugar, comprueba si el <code>Vehicle</code> está averiado. Si lo está, 
-	 * se reduce su <code>breakdownTime</code> y no avanza. Si no lo está, se comprueba 
-	 * si llegaría al final de la <code>Road</code> en este tick.
+	 * En primer lugar, comprueba si el <code>Vehicle</code> está averiado. 
+	 * Si lo está, se reduce su <code>breakdownTime</code> y no avanza. 
+	 * Si no lo está, se comprueba si llegaría al final de la
+	 * <code>Road</code> en este tick.
 	 * </p> <p>
-	 * Si es así, se le hace esperar en la <code>Junction</code>, en la cola 
-	 * correspondiente a su <code>Road</code>. Si no, se modifica su 
-	 * <code>location</code> sumándola su <code>actualSpeed</code>.
+	 * Si es así, se le hace esperar en la <code>Junction</code>,
+	 * en la cola correspondiente a su <code>Road</code>. 
+	 * Si no, se modifica su  <code>location</code> sumándola 
+	 * su <code>actualSpeed</code>.
 	 * </p>
 	 */
 	@Override
@@ -134,8 +143,8 @@ public class Vehicle extends SimObject {
 
 	/**
 	 * <p>
-	 * Saca a <code>Vehicle</code> de <code>road.vehiclesOnRoad</code> y lo
-	 * introduce en <code>road.arrivalsToWaiting</code>.
+	 * Saca a <code>Vehicle</code> de <code>road.vehiclesOnRoad</code>
+	 * y lo introduce en <code>road.arrivalsToWaiting</code>.
 	 * </p> <p>
 	 * Queda a la espera de ser introducido en la cola del cruce 
 	 * <code>road.waiting</code> una vez se hayan movido todos los 
@@ -160,11 +169,11 @@ public class Vehicle extends SimObject {
 
 	/**
 	 * <p>
-	 * Mueve el <code>Vehicle</code> a la siguiente <code>Road</code> que le 
-	 * corresponde según su <code>trip</code>.
+	 * Mueve el <code>Vehicle</code> a la siguiente <code>Road</code> 
+	 * que le  corresponde según su <code>trip</code>.
 	 * </p> <p>
-	 * El método falla si no encuentra ninguna <code>Road</code> entre las dos 
-	 * <code>Junctions</code>
+	 * El método falla si no encuentra ninguna <code>Road</code>
+	 * entre las dos <code>Junctions</code>
 	 */
 	public void moveToNextRoad() {
 		int waitingPos = lastTripPos + 1; // Cruce donde estaba esperando
@@ -199,8 +208,9 @@ public class Vehicle extends SimObject {
 	 * Genera una <code>IniSection</code> que informa de los atributos del
 	 * <code>Vehicle</code> en el timmpo del simulador.
 	 * 
-	 * @param simTime tiempo del simulador
-	 * @return <code>IniSection</code> con información del <code>Vehicle</code>
+	 * @param simTime 	tiempo del simulador
+	 * @return 			<code>IniSection</code> con información
+	 * 					del <code>Vehicle</code>
 	 */
 	public IniSection generateIniSection(int simTime) {
 		// 1 //
@@ -221,16 +231,6 @@ public class Vehicle extends SimObject {
 		
 		return section;
 	}
-
-	/**
-	 * 
-	 * @param obj objeto a comparar
-	 * @return if <code>Vehicle</code> equals <code>obj</code>.
-	 */
-	public boolean equals(Object obj) {
-		return super.equals(obj);
-	}
-	
 	
 	/**
 	 * Añade más tiempo de avería al ya existente.
@@ -242,11 +242,13 @@ public class Vehicle extends SimObject {
 	}	
 	
 	/**
-	 * Modifica la velocidad del <code>Vehicle</code> como el mínimo entre
-	 * la velocidad permitida por la <code>Road</code> y la velocidad máxima 
-	 * alcanzable por <code>Vehicle</code>.
+	 * Modifica la velocidad del <code>Vehicle</code> como 
+	 * el mínimo entre la velocidad permitida por la 
+	 * <code>Road</code> y la velocidad máxima alcanzable 
+	 * por <code>Vehicle</code>.
 	 * 
-	 * @param roadSpeed velocidad permitida por la <code>Road</code>
+	 * @param roadSpeed 	velocidad permitida por 
+	 * 						la <code>Road</code>
 	 */
 	public void setSpeed(int roadSpeed) {
 		if (breakdownTime == 0 ) {
@@ -258,7 +260,8 @@ public class Vehicle extends SimObject {
 	}	
 	
 	/**
-	 * Devuelve el tiempo restante de avería del <code>Vehicle</code>
+	 * Devuelve el tiempo restante de avería 
+	 * del <code>Vehicle</code>
 	 * 
 	 * @return tiempo de avería
 	 */
@@ -267,35 +270,41 @@ public class Vehicle extends SimObject {
 	}
 	
 	/**
-	 * Devuelve si el <code>Vehicle</code> está esperando en la cola de la
-	 * <code>Road</code> para cruzar una <code>Junction</code>.
+	 * Devuelve si el <code>Vehicle</code> está 
+	 * esperando en la cola de la <code>Road</code> 
+	 * para cruzar una <code>Junction</code>.
 	 * 
-	 * @return si <code>Vehicle</code> está esperando.
+	 * @return 	si <code>Vehicle</code> 
+	 * 			está esperando.
 	 */
 	public boolean getIsWaiting() {
 		return isWaiting;
 	}
 	
 	/**
-	 * Devuelve la <code>Road</code> en la que se encuentra el <code>Vehicle</code>.
+	 * Devuelve la <code>Road</code> en la que 
+	 * se encuentra el <code>Vehicle</code>.
 	 * 
-	 * @return la <code>Road</code> del <code>Vehicle</code>.
+	 * @return 	la <code>Road</code> del <code>Vehicle</code>.
 	 */
 	public Road getRoad() {
 		return road;
 	}
 
 	/**
-	 * Devuelve la localización del <code>Vehicle</code> en la <code>Road</code>.
+	 * Devuelve la localización del <code>Vehicle</code>
+	 * en la <code>Road</code>.
 	 * 
-	 * @return la localización del <code>Vehicle</code>
+	 * @return 	la localización del 
+	 * 			<code>Vehicle</code>
 	 */
 	public int getLocation() {
 		return location;
 	}
 	
 	/**
-	 * Devuelve si el <code>Vehicle</code> está averiado.
+	 * Devuelve si el <code>Vehicle</code> 
+	 * está averiado.
 	 * 
 	 * @return si hay avería
 	 */

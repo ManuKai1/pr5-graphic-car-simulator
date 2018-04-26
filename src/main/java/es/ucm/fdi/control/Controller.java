@@ -75,14 +75,14 @@ public class Controller {
      * 3. Ejecuta la <code>TrafficSimulation</code>.
      * </p> 
      *
-     * @throws IllegalArgumentException if event parsing failed (no matching
-     *                                  event or invalid data)
-     * @throws IllegalArgumentException if event time is lower than
-     *                                  sim time
-     * @throws SimulationException      if an error ocurred during the execution
-     *                                  of events in the simulation
-     * @throws IOException              if an error ocurred during report generation
-     *                                  in the simulation
+     * @throws ParserConfigurationException     if event parsing failed (no matching
+     *                                          event or invalid data)
+     * @throws IllegalArgumentException         if event time is lower than
+     *                                          sim time
+     * @throws SimulationException              if an error ocurred during the execution
+     *                                          of events in the simulation
+     * @throws IOException                      if an error ocurred during report generation
+     *                                          in the simulation
      */
     public void execute() throws ParserConfigurationException, IOException, SimulationException {
         TrafficSimulation simulator = new TrafficSimulation();
@@ -124,5 +124,9 @@ public class Controller {
         catch (IOException e) {
 			throw e;
 		} 
+    }
+
+    public void setOutputStream(JTextAreaOutputStream report) {
+
     }
 }
