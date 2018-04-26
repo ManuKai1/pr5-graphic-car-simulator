@@ -75,9 +75,9 @@ public class ExampleMain {
 		CommandLineParser parser = new DefaultParser();
 		try {
 			CommandLine line = parser.parse(cmdLineOptions, args);
+			parseModeOption(line);
 			parseHelpOption(line, cmdLineOptions);
 			parseInFileOption(line);
-			parseModeOption(line);
 			parseOutFileOption(line);
 			parseStepsOption(line);
 
@@ -182,7 +182,9 @@ public class ExampleMain {
 	private static void parseInFileOption(CommandLine line) throws ParseException {
 		_inFile = line.getOptionValue("i");
 		if (_inFile == null) {
-			throw new ParseException("An events file is missing");
+			if(!_mode.equals("gui")){
+				throw new ParseException("An events file is missing");
+			}
 		}
 	}
 
@@ -200,7 +202,7 @@ public class ExampleMain {
 			_mode = _MODE_DEFAULT;
 		}
 
-		if (_mode != "batch" && _mode != "gui") {
+		if (!_mode.equals("batch") && !_mode.equals("gui")) {
 			throw new ParseException("Not a valid execution mode.");
 		}
 	}
@@ -300,7 +302,11 @@ public class ExampleMain {
 		_timeLimit = timeLimit;
 
 		// Ejecución en batch.
-		startBatchMode();
+		try {
+			startBatchMode();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		// Comprobación del resultado.
 		boolean equalOutput = ( new Ini(_outFile) ).equals( new Ini(expectedOutFile) );
@@ -317,7 +323,7 @@ public class ExampleMain {
 	 * 
 	 * @throws IOException if failure in reading/writing files.
 	 */
-	private static void startBatchMode() throws IOException {		
+	private static void startBatchMode() throws Exception {		
 		// Argumentos
 		Ini iniInput = new Ini(_inFile);
 		File outFile = new File(_outFile);
@@ -330,60 +336,37 @@ public class ExampleMain {
 		try {
 			control.executeBatch();
 		}
-		catch (ParseException e1) {
-			System.err.println(e1);
-			e1.printStackTrace();
-			System.err.println("Aborting execution...");
-		}
-		catch (IllegalArgumentException e2) {
-			System.err.println(e2);
-			e2.printStackTrace();
-			System.err.println("Aborting execution...");
-		} 
-		catch (SimulationException e3) {
-			System.err.println(e3);
-			e3.printStackTrace();
-			System.err.println("Aborting execution...");
-		}
-		catch (IOException e4) {
-			System.err.println(e4);
-			e4.printStackTrace();
-			System.err.println("Aborting execution...");
+		catch (Exception e) {
+			throw e;
 		}
 	}
 
 	/**
 	 * Run the <code>Simulator</code> in <code>GUI</code> mode.
-	 * 
-	 * 
+	 * @throws Exception 
 	 */
-	private static void startGUIMode() throws IOException {
+	private static void startGUIMode() throws Exception{
 		// Argumentos
-		Ini iniInput = new Ini(_inFile);
-		File outFile = new File(_outFile);
-		OutputStream os = new FileOutputStream(outFile);
+		Ini iniInput = null;
+		if(_inFile != null){
+			iniInput = new Ini(_inFile);
+		}
 
-		// Controlador
-		Controller control = new Controller(iniInput, os, _timeLimit);
-
-		// Simulación 
-		TrafficSimulation sim = new TrafficSimulation();
+		// Controlador de salida nula
+		Controller control = new Controller(iniInput, null, _timeLimit);
 
 		// Interfaz gráfica
 		try {
 			SwingUtilities.invokeAndWait(
 				new Runnable() {
 					public void run() {
-						new SimWindow(sim, control, _inFile);
+						new SimWindow(control, _inFile);
 					}
 				}
 			);
 		}
-		catch (InterruptedException e) {
-
-		}
-		catch (InvocationTargetException e2) {
-
+		catch (Exception e) {
+			throw e;
 		}
 		
 	}
@@ -392,19 +375,25 @@ public class ExampleMain {
 	 * Runs the <code>Simulator</code> in <code>command line</code> mode.
 	 * 
 	 * @param args simulation arguments
-	 * @throws IOException if failure in reading/writing files.
 	 */
-	private static void start(String[] args) throws IOException {
-		parseArgs(args);
-
-		switch (_mode) {
+	private static void start(String[] args) {
+		try	{
+			parseArgs(args);
+			switch (_mode) {
 			case "batch" : 
 				startBatchMode();
 				break;
 			case "gui":
 				startGUIMode();
 				break;
+			}
 		}
+		catch(Exception e){
+			e.printStackTrace();
+			System.err.println("Aborting execution...");
+		}
+
+		
 	}
 
 	public static void main(String[] args) throws IOException, InvocationTargetException, InterruptedException {
@@ -418,14 +407,7 @@ public class ExampleMain {
 		* -i resources/examples/events/basic/ex1.ini -o ex1.out -t 20
 		* --help
 		*/
-
-		// Simulation testing //
-		// test("src/main/resources/examples/basic");
-		 test("src/main/resources/examples/advanced");
-		// test("src/main/resources/examples/err");
-		//test("src/main/resources/examples/new");
-
-		// Start simulator from command line //
-		// start(args);
+		
+		start(args);
 	}
 }

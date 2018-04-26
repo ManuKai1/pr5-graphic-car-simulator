@@ -189,4 +189,8 @@ public class Controller {
 	public void setOutStream(OutputStream newOut) {
 		outStream = newOut;	
 	}
+
+	public TrafficSimulation getSimulator() {
+		return simulator;
+	}
 }

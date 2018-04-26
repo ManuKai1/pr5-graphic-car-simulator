@@ -14,6 +14,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -23,6 +24,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
+import javax.swing.SpinnerNumberModel;
 
 import org.apache.commons.cli.ParseException;
 
@@ -34,6 +36,15 @@ import es.ucm.fdi.model.simulation.TrafficSimulation.Listener;
 import es.ucm.fdi.model.simulation.TrafficSimulation.UpdateEvent;
 
 public class SimWindow extends JFrame implements Listener {
+	
+	//Para la ventana
+	private final int DEF_HEIGHT = 1000, DEF_WIDTH = 1000;
+	
+	//Para el spinner
+	private final int INITIAL_STEPS = 1;
+	private final int MIN_TIME = 1;
+	private final int MAX_TIME = 500;
+	
 	//Faltaría separación de atributos
 	private Controller control;
 	private OutputStream reports;
@@ -45,33 +56,22 @@ public class SimWindow extends JFrame implements Listener {
 	private JPanel contentPanel4;
 	private JPanel contentPanel5;
 	
+	private JMenuBar menuBar = new JMenuBar();
+	private JMenu fileMenu = new JMenu("File");
+	private JMenu simulatorMenu = new JMenu("Simulator");
+	private JMenu reportsMenu = new JMenu("Reports");
 	
-	private JMenu fileMenu;
-	private JMenu simulatorMenu;
-	private JMenu reportsMenu;
-	private JToolBar toolBar;
+	private JToolBar toolBar = new JToolBar();
 	
-	private JFileChooser fc;
+	private JFileChooser fileChooser = new JFileChooser();;
 	private File currentFile;
 	
-	private JButton loadButton;
-	private JButton saveButton;
-	private JButton clearEventsButton;
-	private JButton checkInEventsButton;
-	private JButton runButton;
-	private JButton stopButton;
-	private JButton resetButton;
-	private JButton generateReportsButton;
-	private JButton saveReportsButton;
-	private JButton clearReportsButton;
-	private JButton quitButton;
+	private JSpinner stepsSpinner = new JSpinner();
 	
-	private JSpinner stepsSpinner;
-	
-	private JTextField timeViewer;
+	private JTextField timeViewer = new JTextField("" + 0);
 	
 	private JTextArea eventsTextArea;
-	private JTextArea reportTextArea;
+	private JTextArea reportsTextArea;
 	
 	//Tablas
 	private SimTable eventsTable;
@@ -79,22 +79,108 @@ public class SimWindow extends JFrame implements Listener {
 	private SimTable roadsTable;
 	private SimTable junctionsTable;
 	
+	//Creaciones de acciones
+	//Recordar activarlas y desactivarlas
+	private SimulatorAction load =
+			new SimulatorAction("Load Events", "open.png", 
+					"Load an events file",
+					KeyEvent.VK_L, "Control + Shift + L", 
+					() -> loadFile());
+	
+	private SimulatorAction save =
+			new SimulatorAction("Save Events", "save.png", 
+					"Save an events file",
+					KeyEvent.VK_S, "Control + Shift + S", 
+					() -> saveFile(eventsTextArea));
+	
+	private SimulatorAction clear = 
+			new SimulatorAction("Clear Events", "clear.png",
+					"Clear event zone",
+					KeyEvent.VK_C, "Control + Shift + C", 
+					() -> clearEvents());
+	
+	private SimulatorAction insertEvents = 
+			new SimulatorAction("Insert Events", "events.png",
+					"Add events to simulation",
+					KeyEvent.VK_E, "Control + Shift + E", 
+					() -> eventsToSim());
+	
+	private SimulatorAction run =
+			new SimulatorAction("Run", "play.png", 
+					"Run the simulator",
+					KeyEvent.VK_P, "Control + Shift + P", 
+					() -> runSimulator());
+
+	private SimulatorAction reset =
+			new SimulatorAction("Reset", "reset.png",
+					"Reset the simulator",
+					KeyEvent.VK_R, "Control + Shift + R", 
+					() -> resetSimulator());
+	
+	private SimulatorAction generateRep =
+			new SimulatorAction("Generate Reports", "report.png",
+					"Report generator",
+					KeyEvent.VK_G, "Control + Shift + G", 
+					() -> generateReports());
+	
+	private SimulatorAction clearRep =
+			new SimulatorAction("Clear Reports", "delete_report.png",
+					"Clears reports",
+					KeyEvent.VK_D, "Control + Shift + D", 
+					() -> clearReports());
+	
+	private SimulatorAction saveRep =
+			new SimulatorAction("Save Reports", "save_report.png",
+					"Save reports to file",
+					KeyEvent.VK_F, "Control + Shift + F", 
+					() -> saveFile(reportsTextArea));
+	
+	private SimulatorAction exit =
+			new SimulatorAction("Exit", "exit.png",
+					"Exit the simulator",
+					KeyEvent.VK_ESCAPE, "Control + Shift + ESC", 
+					() -> quit());
+	
 	//Opcional
 	//private ReportDialog reportDialog;
 	
-	public SimWindow(TrafficSimulation simulator, Controller ctrl, String inFileName) {
+	public SimWindow(Controller ctrl, String inFileName) {
 		super("Traffic Simulator");
 		control = ctrl;
 		currentFile = inFileName != null ? new File(inFileName) : null;
-		//reports = new JTextAreaOutputStream(reportTextArea,null);
-		//ctrl.setOutStream(reports);
+		//control.setOutStream(reports);
 		initGUI();
-		//simulator.addSimulatorListener(this);
+		control.getSimulator().addSimulatorListener(this);
 	}
 	
+	private Object clearReports() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private Object generateReports() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private Object runSimulator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private Object eventsToSim() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private Object clearEvents() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 	private void addComponentsToLayout(){
 		addMenuBar(); // barra de menus
-		addToolBar(); // barra de herramientas
+		//addToolBar(); // barra de herramientas
 		// addEventsEditor(); // editor de eventos
 		// addEventsView(); // cola de eventos
 		// addReportsArea(); // zona de informes
@@ -134,193 +220,95 @@ public class SimWindow extends JFrame implements Listener {
 		this.setContentPane(mainPanel);
 		
 		initPanels();
-		
-		fc = new JFileChooser();
 	
 		addComponentsToLayout();
 		
 		// Añade configuraciones de la ventana principal
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(1000, 1000);
+		setSize(DEF_WIDTH, DEF_HEIGHT);
 		setVisible(true);
 	}
 
-	private void addMenuBar() {
-		JMenuBar menu = new JMenuBar();
-
-		JMenu file = getFileMenu();
-		file.setMnemonic(KeyEvent.VK_F);
-		menu.add(file);
-
-		JMenu sim = getSimulatorMenu();
-		sim.setMnemonic(KeyEvent.VK_S);
-		menu.add(sim);
-
-
-
-
-
-		JMenu report = new JMenu("Reports");
-	}
-
-	private JMenu getFileMenu() {
-		JMenu file = new JMenu("File");
-
-		// Cargar archivo de eventos.
-		JMenuItem loadEv = getLoadEventsMenuItem();
-		file.add(loadEv);
-
-		// Guardar archivo de eventos.
-		JMenuItem saveEv = getSaveEventsMenuItem();
-		saveEv.add(saveEv);
-
-		file.addSeparator();
-
-		// Guardar archivo de informes.
-		JMenuItem saveRep = getSaveReportMenuItem();
-		file.add(saveRep);
-
-		file.addSeparator();
-
-		// Salir.
-		JMenuItem exit = getExitMenuItem();
-		file.add(exit);		
-
-
-		return file;
-	}
-
-	private JMenuItem getLoadEventsMenuItem() {
-		JMenuItem loadEv = new JMenuItem("Load Events");
-		loadEv.setMnemonic(KeyEvent.VK_L);
-
-		loadEv.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// ACCIÓN: Cargar un fichero de eventos.
-				Ini loadFile = null;
-
-				//
-				try {
-					loadFile = new Ini(getLoadFile());
-				} catch (IOException exc) {
-					JOptionPane.showMessageDialog(new JFrame(), // ?
-						"Could not recognise the selected file as "+ 
-						"a valid simulation events file. Simulation " + 
-						"will clear.",
-						"Error de lectura", JOptionPane.WARNING_MESSAGE
-					);
-
-					clearSimulation();			
-				}
-
-				if (loadFile != null) {
-					// Se cambia el archivo de entrada del controlador.
-					control.setIniInput(loadFile);
-
-					// Se reinicia la simulación.
-					try {
-						control.reset();
-					} catch (ParseException exc) {
-						JOptionPane.showMessageDialog(new JFrame(),
-							"There was an error during events parsing. " + 
-							"Simulation will clear.",
-							"Error de parsing", 
-							JOptionPane.WARNING_MESSAGE
-						);
-
-						clearSimulation();
-					}
-				}
-
-				// Si loadFile == null, no se ha elegido ningún
-				// archivo -> No se hace nada.				
-			}
-		});
-
-		return loadEv;
-	}
-
 	/**
-	 * Método que devuelve la ruta del archivo elegido
-	 * para ser abierto en el simulador. Si el usuario no
-	 * elige ningún archivo, se devuelve <code>null</code>.
+	 * Función que crea 
+	 * la barra de menú.
 	 */
-	private String getLoadFile() {
-		JFileChooser fileLoader = new JFileChooser();
+	private void addMenuBar() {
+		fileMenu.add(load);
+		fileMenu.add(save);
+		fileMenu.addSeparator();
+		fileMenu.add(saveRep);
+		fileMenu.addSeparator();
+		fileMenu.add(exit);
+		
+		simulatorMenu.add(run);
+		simulatorMenu.add(reset);
+		//simulatorMenu.add(redirectOutput);
+		
+		reportsMenu.add(generateRep);
+		reportsMenu.add(clearRep);
+		
+		menuBar.add(fileMenu);
+		menuBar.add(simulatorMenu);
+		menuBar.add(reportsMenu);
+		
+		setJMenuBar(menuBar);
+	}
+	/**
+	 * Función que crea
+	 * la barra de herramientas.
+	 */
+	private void addToolBar(){
+		toolBar.addSeparator();
+		
+		toolBar.add(load);
+		toolBar.add(save);
+		toolBar.add(clear);
+		
+		toolBar.addSeparator();
+		
+		toolBar.add(insertEvents);
+		toolBar.add(run);
+		toolBar.add(reset);
+		
+		toolBar.addSeparator();
+		
+		toolBar.add(new JLabel("  Steps:  "));
+		stepsSpinner.setModel(new SpinnerNumberModel(INITIAL_STEPS, MIN_TIME, MAX_TIME, 1));
+		toolBar.add(stepsSpinner);
+		toolBar.add(new JLabel("  Current Time:  "));
+		timeViewer.setEditable(false);
+		toolBar.add(timeViewer);
+		
+		toolBar.addSeparator();
+		
+		toolBar.add(generateRep);
+		toolBar.add(clearRep);
+		toolBar.add(saveRep);
+		
+		toolBar.addSeparator();
+		
+		toolBar.add(exit);
+		
+		add(toolBar, BorderLayout.PAGE_START);
+	}
 
+	private void loadFile() {
+		//TODO
+		
 		// Abre la ventana del selector y espera la respuesta
 		// del usuario.
-		int returnValue = fileLoader.showOpenDialog(null);
+		int returnValue = fileChooser.showOpenDialog(null);
 
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
-			File selectedFile = fileLoader.getSelectedFile();
+			File selectedFile = fileChooser.getSelectedFile();
 			
-			return selectedFile.getAbsolutePath();
 		}
-
-		return null;
-	}
-
-	private JMenuItem getSaveEventsMenuItem() {
-		JMenuItem saveEv = new JMenuItem("Save Events");
-		saveEv.setMnemonic(KeyEvent.VK_S);
-
-		saveEv.addActionListener(
-			new ActionListener() {
-			
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					// ACCIÓN: Guardar un fichero de eventos.
-					String savePath = getSaveDirectory();
-
-					try {
-						saveEditedEventsTo(savePath);
-					}
-					catch (FileNotFoundException exc) {
-						JOptionPane.showMessageDialog(new JFrame(),
-							"There was an error during file creation. " + 
-							"File was not saved.",
-							"Error de guardado", 
-							JOptionPane.WARNING_MESSAGE
-						);
-					}
-					catch (IOException exc) {
-						JOptionPane.showMessageDialog(new JFrame(),
-							"There was an error during writing data in save file. " + 
-							"File was not saved.",
-							"Error de guardado", 
-							JOptionPane.WARNING_MESSAGE
-						);
-					}
-				}
-			}
-		);
-
-
-		return saveEv;
 
 	}
 
-	/**
-	 * Método que devuelve la ruta de archivo donde quiere 
-	 * guardar el fichero de eventos editado en el simulador. Si el 
-	 * usuario no elige ningún directorio, se devuelve <code>null</code>.
-	 */
-	private String getSaveDirectory() { 
-		JFileChooser fileSaver = new JFileChooser();
-
-		fileSaver.setDialogTitle("Save: ");
-
-		int returnValue = fileSaver.showSaveDialog(null);
-		if (returnValue == JFileChooser.APPROVE_OPTION) {
-			if ( fileSaver.getSelectedFile().isDirectory() ) {
-				return 	fileSaver.getSelectedFile().getAbsolutePath();
-			}
-		}
-
-		return null;
+	private void saveFile(JTextArea fromArea) { 
+		//TODO
 	}
 
 	/**
@@ -353,45 +341,8 @@ public class SimWindow extends JFrame implements Listener {
 		}		
 	}
 
-	private JMenuItem getSaveReportMenuItem() {
-		JMenuItem saveRep = new JMenuItem("Save Report");
-		saveRep.setMnemonic(KeyEvent.VK_R);
-
-		saveRep.addActionListener(
-			new ActionListener() {
-			
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					// ACCIÓN: Guardar un fichero de informes.
-					String savePath = getSaveDirectory();
-
-					try {
-						saveReportsAreaTo(savePath);
-					}
-					catch (FileNotFoundException exc) {
-						JOptionPane.showMessageDialog(new JFrame(),
-							"There was an error during file creation. " + 
-							"File was not saved.",
-							"Error de guardado", 
-							JOptionPane.WARNING_MESSAGE
-						);
-					}
-					catch (IOException exc) {
-						JOptionPane.showMessageDialog(new JFrame(),
-							"There was an error during writing data in save file. " + 
-							"File was not saved.",
-							"Error de guardado", 
-							JOptionPane.WARNING_MESSAGE
-						);
-					}
-				}
-			}
-		);
-
-		return saveRep;
-	}
-
 	/**
+	 * OPCIONAL
 	 * Método que guarda el área de texto donde se muestran los
 	 * reportes de la simulación en la ruta indicada.
 	 */
@@ -421,24 +372,6 @@ public class SimWindow extends JFrame implements Listener {
 		}
 	}
 
-	private JMenuItem getExitMenuItem() {
-		JMenuItem exit = new JMenuItem("Exit");
-		exit.setMnemonic(KeyEvent.VK_E);
-
-		exit.addActionListener(
-			new ActionListener() {
-			
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					// ACCIÓN: Salir de la simulación, preguntando antes
-					quit();
-				}
-			}
-		);
-
-		return exit;
-	}
-
 	/**
 	 * Método que pregunta en un cuadro de diálogo al
 	 * usuario si desea salir, terminando el programa si
@@ -454,114 +387,9 @@ public class SimWindow extends JFrame implements Listener {
 			null, null, null
 		);
 
-		if (n == 0) {
+		if (n == JOptionPane.YES_OPTION) {
 			System.exit(0);
 		}
-	}
-
-
-
-
-	private JMenu getSimulatorMenu() {
-		JMenu sim = new JMenu("Simulator");
-
-		JMenuItem run = getRunMenuItem();
-		sim.add(run);
-
-		// JMenuItem reset = getResetMenuItem();
-		// sim.add(reset);
-
-		// JMenuItem redirect = getRedirectMenuItem();
-		// sim.add(redirect);
-
-		return sim;
-	}
-	
-	private JMenuItem getRunMenuItem() {
-		JMenuItem run = new JMenuItem("Run");
-		run.setMnemonic(KeyEvent.VK_R);
-		
-		run.addActionListener(
-			new ActionListener() {
-			
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					// ACCIÓN: Ejecuta el simulador las unidades de
-					// tiempo indicadas por el usurio.
-
-					int inputTime;
-					try {
-						inputTime = getUserInputTime();
-					}
-					catch (IllegalArgumentException exc) {
-						JOptionPane.showMessageDialog(
-							new JFrame(),
-							"Not a valid input. " + exc,
-							"Error de entrada", 
-							JOptionPane.WARNING_MESSAGE
-						);
-
-						inputTime = -1;
-					}
-
-					if (inputTime != -1) {
-						try {
-							runSimulation(inputTime);
-						}
-						catch (SimulationException exc) {
-							JOptionPane.showMessageDialog(
-								new JFrame(),
-								"Simulator error ocurred:\n" + exc +
-								"\n\n" + "Simulation will reset",
-								"Error de simulación", 
-								JOptionPane.WARNING_MESSAGE
-							);
-
-							resetSimulation();
-						}
-						catch (IOException exc) {
-							// Error al guardar los informes, pero no
-							// deberían guardarse si no quiere el usuario.
-							// Crear método de sólo simular en TrafficSim
-							// y luego modificar el metodo simulate() de 
-							// Controller
-						}
-					}
-				}
-			}
-		);
-		
-		return run;
-	}
-
-	private int getUserInputTime() {
-		// Recibe una input de un cuadro de diálogo.
-		String userInput = (String) 
-			JOptionPane.showInputDialog(
-				new JFrame(),
-				"Indica el número de ciclos: ",
-				"Ciclos de ejecución",
-				JOptionPane.PLAIN_MESSAGE,
-				null, null, control.getBatchTimeLimit()
-			);
-
-		int inputTime;
-		try {
-			inputTime = Integer.parseInt(userInput);
-		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException(
-				"Int reading failure"
-			);
-		}
-
-		// Comprobamos que el valor sea positivo
-		if (inputTime <= 0) {
-			throw new IllegalArgumentException(
-				"Non-positive int failure"
-			);
-		}
-
-		return inputTime;
 	}
 
 	private void runSimulation(int time) 
@@ -578,30 +406,8 @@ public class SimWindow extends JFrame implements Listener {
 		
 	}
 	
-
-	private void clearSimulation() {
-		// To be implemented
-	}
-
-	private void resetSimulation() {
-		// To be implemented
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
-	private void addToolBar(){
+	private void resetSimulator() {
 		//TODO
-		toolBar = new JToolBar("Barra de herramientas");
-		
-		
 	}
 	
 	@Override

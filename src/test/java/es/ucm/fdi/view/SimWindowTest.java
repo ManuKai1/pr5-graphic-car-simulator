@@ -8,7 +8,7 @@ public class SimWindowTest {
 	// NO ESTÁ BIEN HECHO
 	@Test
 	public void show() throws Exception{
-		SimWindow window = new SimWindow(null, null, null);
+		SimWindow window = new SimWindow(null, null);
 		while(1 == 1){
 		}
 	}
