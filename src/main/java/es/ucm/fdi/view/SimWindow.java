@@ -1,23 +1,21 @@
 package es.ucm.fdi.view;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -26,14 +24,16 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.SpinnerNumberModel;
 
-import org.apache.commons.cli.ParseException;
-
 import es.ucm.fdi.control.Controller;
-import es.ucm.fdi.ini.Ini;
+import es.ucm.fdi.model.SimObj.Junction;
+import es.ucm.fdi.model.SimObj.Road;
+import es.ucm.fdi.model.SimObj.Vehicle;
+import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.model.simulation.SimulationException;
-import es.ucm.fdi.model.simulation.TrafficSimulation;
 import es.ucm.fdi.model.simulation.TrafficSimulation.Listener;
 import es.ucm.fdi.model.simulation.TrafficSimulation.UpdateEvent;
+import es.ucm.fdi.util.MultiTreeMap;
+import es.ucm.fdi.util.TableDataType;
 
 public class SimWindow extends JFrame implements Listener {
 	
@@ -44,6 +44,41 @@ public class SimWindow extends JFrame implements Listener {
 	private final int INITIAL_STEPS = 1;
 	private final int MIN_TIME = 1;
 	private final int MAX_TIME = 500;
+
+	// Para las tablas.
+	private final TableDataType[] eventDataHeaders = {
+			TableDataType.E_NUM,
+			TableDataType.E_TIME,
+			TableDataType.E_TYPE
+	};
+
+	private final TableDataType[] junctionDataHeaders = {
+			TableDataType.ID,
+			TableDataType.J_TYPE,
+			TableDataType.J_GREEN,
+			TableDataType.J_RED,
+	};
+
+	private final TableDataType[] roadDataHeaders = {
+			TableDataType.ID,
+			TableDataType.R_TYPE,
+			TableDataType.R_SOURCE,
+			TableDataType.R_TARGET,
+			TableDataType.R_LENGHT,
+			TableDataType.R_MAX,
+			TableDataType.R_STATE,
+	};
+
+	private final TableDataType[] vehicleDataHeaders = {
+			TableDataType.ID,
+			TableDataType.V_TYPE,
+			TableDataType.V_ROAD,
+			TableDataType.V_LOCATION,
+			TableDataType.V_SPEED,
+			TableDataType.V_KM,
+			TableDataType.V_FAULTY,
+			TableDataType.V_ROUTE
+	};
 	
 	//Faltaría separación de atributos
 	private Controller control;
@@ -75,9 +110,9 @@ public class SimWindow extends JFrame implements Listener {
 	
 	//Tablas
 	private SimTable eventsTable;
-	private SimTable vehiclesTable;
+	private SimTable junctionsTable;	
 	private SimTable roadsTable;
-	private SimTable junctionsTable;
+	private SimTable vehiclesTable;
 	
 	//Creaciones de acciones
 	//Recordar activarlas y desactivarlas
@@ -182,15 +217,18 @@ public class SimWindow extends JFrame implements Listener {
 		addMenuBar(); // barra de menus
 		//addToolBar(); // barra de herramientas
 		// addEventsEditor(); // editor de eventos
-		// addEventsView(); // cola de eventos
+		addEventsView(); // cola de eventos
 		// addReportsArea(); // zona de informes
-		// addVehiclesTable(); // tabla de vehiculos
-		// addRoadsTable(); // tabla de carreteras
-		// addJunctionsTable(); // tabla de cruces
+		addJunctionsTable(); // tabla de cruces
+		addRoadsTable(); // tabla de carreteras
+		addVehiclesTable(); // tabla de vehiculos
 		// addMap(); // mapa de carreteras
 		// addStatusBar(); // barra de estado
 	}
-	
+
+
+
+
 	private void initPanels(){
 		contentPanel1 = new JPanel();
 		contentPanel1.setLayout(new BoxLayout(contentPanel1, BoxLayout.Y_AXIS));
@@ -291,6 +329,36 @@ public class SimWindow extends JFrame implements Listener {
 		toolBar.add(exit);
 		
 		add(toolBar, BorderLayout.PAGE_START);
+	}
+
+	private void addEventsView() {
+		MultiTreeMap<Integer, Event> events = control.getSimulator().getEvents();
+
+		eventsTable = new SimTable(eventDataHeaders, events.valuesList());
+	}
+
+	private void addJunctionsTable() {
+		List<Junction> junctions = new ArrayList<>(
+			control.getSimulator().getRoadMap().getJunctions().values()
+		);
+		
+		junctionsTable = new SimTable(junctionDataHeaders, junctions);
+	}
+
+	private void addRoadsTable() {
+		List<Road> roads = new ArrayList<>(
+			control.getSimulator().getRoadMap().getRoads().values()
+		);
+
+		roadsTable = new SimTable(roadDataHeaders, roads);
+	}
+
+	private void addVehiclesTable() {
+		List<Vehicle> vehicles = new ArrayList<>(
+			control.getSimulator().getRoadMap().getVehicles().values()
+		);
+
+		vehiclesTable = new SimTable(vehicleDataHeaders, vehicles);
 	}
 
 	private void loadFile() {

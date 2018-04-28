@@ -1,10 +1,13 @@
 package es.ucm.fdi.model.events;
 
+import java.util.Map;
+
 import es.ucm.fdi.model.SimObj.DirtRoad;
 import es.ucm.fdi.model.SimObj.Junction;
 import es.ucm.fdi.model.simulation.AlreadyExistingSimObjException;
 import es.ucm.fdi.model.simulation.NonExistingSimObjException;
 import es.ucm.fdi.model.simulation.TrafficSimulation;
+import es.ucm.fdi.util.TableDataType;
 
 /**
  * {@link Event} que representa la creación de una
@@ -52,6 +55,51 @@ public class NewDirtRoad extends NewRoad {
         catch (NonExistingSimObjException e) {
             throw e;
         }
+    }
+
+    /**
+     * <p>
+     * {@inheritDoc}
+     * Añade un <code>NewDirtRoadEvent</code> al mapa. En
+     * concreto, su descripción es de la forma:
+     * </p> <p>
+     * "New dirt road j4"
+     * </p>
+     * 
+     * @param out {@inheritDoc}
+     */
+    @Override
+    public void describe(Map<TableDataType, String> out) {
+        // Descripción del evento.
+        StringBuilder description = new StringBuilder();
+        description.append("New junction ");
+        description.append(id);
+
+        // Inclusión en el mapa.
+        String time = Integer.toString(getTime());
+        String type = description.toString();
+        out.put(TableDataType.E_TIME, time);
+        out.put(TableDataType.E_TYPE, type);
+    }
+
+    /**
+     * <p>
+     * Devuelve la descripción <code>NewDirtRoad</code>
+     * utilizada en las tablas de la GUI. Ejemplo:
+     * </p> <p>
+     * "New dirt road r3"
+     * </p>
+     * 
+     * @return 	<code>String</code> con la descripción
+     */
+    @Override
+    protected String getEventDescription() {
+        // Descripción del evento.
+        StringBuilder description = new StringBuilder();
+        description.append("New dirt road ");
+        description.append(id);
+
+        return description.toString();
     }
 
     /**

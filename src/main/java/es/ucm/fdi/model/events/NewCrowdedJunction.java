@@ -1,5 +1,6 @@
 package es.ucm.fdi.model.events;
 
+
 import es.ucm.fdi.model.SimObj.CrowdedJunction;
 import es.ucm.fdi.model.simulation.AlreadyExistingSimObjException;
 import es.ucm.fdi.model.simulation.TrafficSimulation;
@@ -43,6 +44,26 @@ public class NewCrowdedJunction extends NewJunction {
             throw e;
         }
     }
+
+    /**
+	 * <p>
+	 * Devuelve la descripción <code>NewCrowdedJunction</code>
+	 * utilizada en las tablas de la GUI. Ejemplo:
+	 * </p> <p>
+	 * "New crowded junction j3"
+	 * </p>
+	 * 
+	 * @return 	<code>String</code> con la descripción
+	 */
+	@Override
+	protected String getEventDescription() {
+		// Descripción del evento.
+		StringBuilder description = new StringBuilder();
+		description.append("New crowded junction ");
+		description.append(id);
+
+		return 	description.toString();
+	}
 
     /**
      * Método que genera una nueva <code>CrowdedJunction</code>

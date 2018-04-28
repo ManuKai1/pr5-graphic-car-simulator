@@ -2,9 +2,11 @@ package es.ucm.fdi.model.SimObj;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.simulation.SimulationException;
+import es.ucm.fdi.util.TableDataType;
 
 /**
  * Clase que representa un coche como un objeto
@@ -12,11 +14,19 @@ import es.ucm.fdi.model.simulation.SimulationException;
  */
 public class Vehicle extends SimObject {
 
+	
 	/**
 	 * Etiqueta que encabeza el informe de un
 	 * <code>Vehicle</code> cualquiera.
 	 */
 	protected final String REPORT_TITLE = "[vehicle_report]";
+
+	/**
+	 * Información sobre el tipo de vehículo que
+	 * debe ponerse como valor en la clave <code>type</code>
+	 * de la <code>IniSection</code> generada.
+	 */
+	private static final String TYPE = ""; // vehículo normal
 	
 	/**
 	 * Ruta del <code>Vehicle</code> en forma de
@@ -312,6 +322,50 @@ public class Vehicle extends SimObject {
 		return (breakdownTime > 0);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * Añade una <code>Road</code> al map, con los datos:
+	 * id, source, target, length, max speed, vehicles
+	 * 
+	 * @param out {@inheritDoc}
+	 */
+	@Override
+	public void describe(Map<TableDataType, String> out) {
+		String road = this.road.getID();
+		String location = Integer.toString(this.location);
+		String speed = Integer.toString(this.actualSpeed);
+		String km = Integer.toString(this.kilometrage);
+		String faulty = Integer.toString(this.breakdownTime);
+		String route = getRouteDescription();
+
+
+		out.put(TableDataType.ID, id);
+		out.put(TableDataType.V_ROAD, TYPE);
+		out.put(TableDataType.V_ROAD, road);
+		out.put(TableDataType.V_LOCATION, location);
+		out.put(TableDataType.V_SPEED, speed);
+		out.put(TableDataType.V_KM, km);
+		out.put(TableDataType.V_FAULTY, faulty);
+		out.put(TableDataType.V_ROUTE, route);
+	}
+
+	private String getRouteDescription() {
+		StringBuilder route = new StringBuilder();
+
+		route.append("[");
+		for (Junction j : trip) {
+			route.append( j.getID() );
+			route.append(",");
+		}
+
+		// Borrado de última coma (mín: "[")
+		if (route.length() > 1) {
+			route.deleteCharAt(route.length() - 1);
+		}
+
+		return 	route.toString();
+	}
+
 }
 
 

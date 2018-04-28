@@ -295,6 +295,4 @@ public class CrowdedJunction extends Junction {
     private int lastingLightTime(Road road) {
         return ( timeLapses.get(road) - elapsedTime );
     }
-
-
 }

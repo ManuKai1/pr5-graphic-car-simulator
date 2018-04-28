@@ -302,6 +302,10 @@ public class TrafficSimulation {
 		return time;
 	}
 
+	public MultiTreeMap<Integer, Event> getEvents() { 
+		return events;
+	}
+
 
 
 

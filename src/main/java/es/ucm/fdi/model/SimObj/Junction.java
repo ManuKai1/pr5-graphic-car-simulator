@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.simulation.SimulationException;
+import es.ucm.fdi.util.TableDataType;
 
 /**
  * Clase que representa un cruce como un objeto
@@ -20,6 +21,13 @@ public class Junction extends SimObject {
 	 * <code>Junction</code> cualquiera.
 	 */
 	protected final String REPORT_TITLE = "[junction_report]";
+
+	/**
+	 * Información sobre el tipo de intersección que
+	 * debe ponerse como valor en la clave <code>type</code>
+	 * de la <code>IniSection</code> generada.
+	 */
+	private static final String TYPE = ""; // intersección normal
 
 	/**
 	 * Mapa de <code>Roads</code> entrantes
@@ -282,4 +290,84 @@ public class Junction extends SimObject {
 			id + ", " + junction.getID()
 		);
 	}
+
+
+
+	/**
+	 * {@inheritDoc}
+	 * Añade una <code>Junction</code> al mapa, con los
+	 * datos: id, tipo, colas de verde, colas de rojo.
+	 * 
+	 * @param out {@inheritDoc}
+	 */
+	@Override
+	public void describe(Map<TableDataType, String> out) {
+		String green = getGreenDescription();
+		String red = getRedDescription();
+		
+		out.put(TableDataType.ID, id);
+		out.put(TableDataType.J_TYPE, TYPE);
+		out.put(TableDataType.J_GREEN, green);
+		out.put(TableDataType.J_RED, red);
+	}
+
+	/**
+	 * <p>
+	 * Devuelve un <code>String</code> con el estado de 
+	 * la cola de espera de la <code>Road</code> con el 
+	 * semáforo en verde.
+	 * </p> <p>
+	 * Ejemplo:
+	 * </p> <p>
+	 * [(r2,green,[v3,v6,v8])]
+	 * </p>
+	 * 
+	 * @return	<code>String</code> con el estado de la
+	 * 			<code>Road</code> en verde
+	 */
+	protected String getGreenDescription() {
+		StringBuilder green = new StringBuilder();
+
+		// Sólo hay una con el semáforo en verde.
+		green.append("[");
+		for (Road incR : incomingRoads.values()) {
+			if ( incR.isGreen() ) {
+				green.append( incR.getWaitingState() );
+			}
+		}
+		green.append("]");
+
+		return green.toString();
+	}
+
+	/**
+	 * <p>
+	 * Devuelve un <code>String</code> con el estado de 
+	 * la cola de espera de las <code>Roads</code> con el 
+	 * semáforo en rojo.
+	 * </p> <p>
+	 * Ejemplo:
+	 * </p> <p>
+	 * [(r2,red,[v3,v6,v8]),(r4,red,[v5])]
+	 * </p>
+	 * 
+	 * @return	<code>String</code> con el estado de la
+	 * 			<code>Road</code> en rojo
+	 */
+	protected String getRedDescription() {
+		StringBuilder red = new StringBuilder();
+
+		// Sólo hay una con el semáforo en verde.
+		red.append("[");
+		for ( Road incR : incomingRoads.values() ) {
+			if ( ! incR.isGreen() ) {
+				red.append( incR.getWaitingState() );
+			}
+		}
+		red.append("]");
+
+		return red.toString();
+	}
+
+
 }

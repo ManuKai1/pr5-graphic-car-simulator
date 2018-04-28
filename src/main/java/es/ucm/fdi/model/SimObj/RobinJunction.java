@@ -27,7 +27,7 @@ public class RobinJunction extends Junction {
      * <code>type</code> de la <code>IniSection</code> 
      * generada.
      */
-    private final String type = "rr"; // round-robin
+    private final String TYPE = "rr"; // round-robin
 
     /**
      * Tiempo mínimo de duración de un semáforo.
@@ -227,7 +227,7 @@ public class RobinJunction extends Junction {
         section.setValue("id", id);
         section.setValue("time", simTime);
         section.setValue("queues", getQueuesValue());
-        section.setValue("type", type);
+    section.setValue("type", TYPE);
 
         return section;
     }
@@ -238,7 +238,7 @@ public class RobinJunction extends Junction {
     public IniSection generateIniSection(int simTime) {
         // Se utiliza getQueuesValue() de RobinJunction.
         IniSection section = super.generateIniSection(simTime);         
-        section.setValue("type", type);
+        section.setValue("type", TYPE);
     
     	return section;
     }

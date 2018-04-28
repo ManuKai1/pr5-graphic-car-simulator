@@ -61,6 +61,26 @@ public class NewHighwayRoad extends NewRoad {
     }
 
     /**
+     * <p>
+     * Devuelve la descripción <code>NewHighwayRoad</code>
+     * utilizada en las tablas de la GUI. Ejemplo:
+     * </p> <p>
+     * "New highway road r3"
+     * </p>
+     * 
+     * @return 	<code>String</code> con la descripción
+     */
+    @Override
+    protected String getEventDescription() {
+        // Descripción del evento.
+        StringBuilder description = new StringBuilder();
+        description.append("New highway road ");
+        description.append(id);
+
+        return description.toString();
+    }
+
+    /**
      * Método que genera una nueva <code>HighwayRoad</code>
      * a partir de los atributos del <code>Event<code>.
      * 

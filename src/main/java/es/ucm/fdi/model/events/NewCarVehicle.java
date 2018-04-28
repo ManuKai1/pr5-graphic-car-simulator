@@ -82,6 +82,26 @@ public class NewCarVehicle extends NewVehicle {
 			throw e;
 		}
 	}
+
+	/**
+	 * <p>
+	 * Devuelve la descripción <code>NewCarVehicle</code>
+	 * utilizada en las tablas de la GUI. Ejemplo:
+	 * </p> <p>
+	 * "New car vehicle v1"
+	 * </p>
+	 * 
+	 * @return 	<code>String</code> con la descripción
+	 */
+	@Override
+	protected String getEventDescription() {
+		// Descripción del evento.
+		StringBuilder description = new StringBuilder();
+		description.append("New vehicle ");
+		description.append(id);
+
+		return description.toString();
+	}
 	
 	/**
 	 * Método que genera un nuevo <code>CarVehicle</code> 
