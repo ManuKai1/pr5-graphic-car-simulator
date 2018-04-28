@@ -1,6 +1,8 @@
 package es.ucm.fdi.view;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -19,6 +21,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
@@ -39,6 +42,9 @@ public class SimWindow extends JFrame implements Listener {
 	
 	//Para la ventana
 	private final int DEF_HEIGHT = 1000, DEF_WIDTH = 1000;
+	
+	//Para los Split Pane
+	private final double VERTICAL_SPLIT = 0.3, HORIZONTAL_SPLIT = 0.5;
 	
 	//Para el spinner
 	private final int INITIAL_STEPS = 1;
@@ -80,16 +86,18 @@ public class SimWindow extends JFrame implements Listener {
 			TableDataType.V_ROUTE
 	};
 	
-	//Faltaría separación de atributos
 	private Controller control;
 	private OutputStream reports;
 
-	private JPanel mainPanel;
-	private JPanel contentPanel1;
-	private JPanel contentPanel2;
-	private JPanel contentPanel3;
-	private JPanel contentPanel4;
-	private JPanel contentPanel5;
+	private JPanel eventsAndReports = new JPanel( new GridLayout(1, 3));
+	private JPanel tablesPanel = new JPanel( new GridLayout(3, 1));
+	private JPanel graph = new JPanel();
+	
+	private JSplitPane tablesAndGraph = new JSplitPane(
+			JSplitPane.HORIZONTAL_SPLIT, tablesPanel, graph);
+	
+	private JSplitPane lowAndTop = new JSplitPane(
+			JSplitPane.VERTICAL_SPLIT, eventsAndReports, tablesAndGraph);
 	
 	private JMenuBar menuBar = new JMenuBar();
 	private JMenu fileMenu = new JMenu("File");
@@ -103,10 +111,10 @@ public class SimWindow extends JFrame implements Listener {
 	
 	private JSpinner stepsSpinner = new JSpinner();
 	
-	private JTextField timeViewer = new JTextField("" + 0);
+	private JTextField timeViewer = new JTextField("" + 0, 5);
 	
-	private JTextArea eventsTextArea;
-	private JTextArea reportsTextArea;
+	private JTextArea eventsTextArea = new JTextArea();
+	private JTextArea reportsTextArea = new JTextArea();
 	
 	//Tablas
 	private SimTable eventsTable;
@@ -188,74 +196,47 @@ public class SimWindow extends JFrame implements Listener {
 		control.getSimulator().addSimulatorListener(this);
 	}
 	
-	private Object clearReports() {
+	private void clearReports() {
 		// TODO Auto-generated method stub
-		return null;
 	}
 
-	private Object generateReports() {
+	private void generateReports() {
 		// TODO Auto-generated method stub
-		return null;
 	}
 
-	private Object runSimulator() {
+	private void runSimulator() {
 		// TODO Auto-generated method stub
-		return null;
 	}
 
-	private Object eventsToSim() {
+	private void eventsToSim() {
 		// TODO Auto-generated method stub
-		return null;
 	}
 
-	private Object clearEvents() {
+	private void clearEvents() {
 		// TODO Auto-generated method stub
-		return null;
 	}
 
 	private void addComponentsToLayout(){
 		addMenuBar(); // barra de menus
-		//addToolBar(); // barra de herramientas
-		// addEventsEditor(); // editor de eventos
+		addToolBar(); // barra de herramientas
+		addEventsEditor(); // editor de eventos
 		addEventsView(); // cola de eventos
-		// addReportsArea(); // zona de informes
-		addJunctionsTable(); // tabla de cruces
-		addRoadsTable(); // tabla de carreteras
+		addReportsArea(); // zona de informes
 		addVehiclesTable(); // tabla de vehiculos
+		addRoadsTable(); // tabla de carreteras
+		addJunctionsTable(); // tabla de cruces
 		// addMap(); // mapa de carreteras
 		// addStatusBar(); // barra de estado
 	}
-
-
-
-
+	
 	private void initPanels(){
-		contentPanel1 = new JPanel();
-		contentPanel1.setLayout(new BoxLayout(contentPanel1, BoxLayout.Y_AXIS));
-		mainPanel.add(contentPanel1, BorderLayout.CENTER);
-		
-		contentPanel2 = new JPanel();
-		contentPanel2.setLayout(new BoxLayout(contentPanel2, BoxLayout.X_AXIS));
-
-		contentPanel3 = new JPanel();		
-		contentPanel3.setLayout(new BoxLayout(contentPanel3, BoxLayout.X_AXIS));
-
-		contentPanel4 = new JPanel();
-		contentPanel4.setLayout(new BoxLayout(contentPanel4, BoxLayout.Y_AXIS));
-
-		contentPanel5 = new JPanel(new BorderLayout());
-		
-		contentPanel1.add(contentPanel2);
-		contentPanel1.add(contentPanel3);
-		contentPanel3.add(contentPanel4);
-		contentPanel3.add(contentPanel5);
+		tablesAndGraph.setResizeWeight(.5);
+		lowAndTop.setResizeWeight(.5);
+		add(lowAndTop, BorderLayout.CENTER);
 	}
 	
 	private void initGUI() {
 		// TODO
-		
-		mainPanel = new JPanel(new BorderLayout());
-		this.setContentPane(mainPanel);
 		
 		initPanels();
 	
@@ -265,6 +246,8 @@ public class SimWindow extends JFrame implements Listener {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setSize(DEF_WIDTH, DEF_HEIGHT);
 		setVisible(true);
+		tablesAndGraph.setDividerLocation(HORIZONTAL_SPLIT);
+		lowAndTop.setDividerLocation(VERTICAL_SPLIT);
 	}
 
 	/**
@@ -292,9 +275,12 @@ public class SimWindow extends JFrame implements Listener {
 		
 		setJMenuBar(menuBar);
 	}
+	
 	/**
 	 * Función que crea
 	 * la barra de herramientas.
+	 * Además, deshabilita algunas
+	 * acciones al comienzo.
 	 */
 	private void addToolBar(){
 		toolBar.addSeparator();
@@ -302,12 +288,17 @@ public class SimWindow extends JFrame implements Listener {
 		toolBar.add(load);
 		toolBar.add(save);
 		toolBar.add(clear);
+		save.setEnabled(false);
+		clear.setEnabled(false);
 		
 		toolBar.addSeparator();
 		
 		toolBar.add(insertEvents);
 		toolBar.add(run);
 		toolBar.add(reset);
+		insertEvents.setEnabled(false);
+		run.setEnabled(false);
+		reset.setEnabled(false);
 		
 		toolBar.addSeparator();
 		
@@ -323,6 +314,9 @@ public class SimWindow extends JFrame implements Listener {
 		toolBar.add(generateRep);
 		toolBar.add(clearRep);
 		toolBar.add(saveRep);
+		generateRep.setEnabled(false);
+		clearRep.setEnabled(false);
+		saveRep.setEnabled(false);
 		
 		toolBar.addSeparator();
 		
@@ -331,18 +325,30 @@ public class SimWindow extends JFrame implements Listener {
 		add(toolBar, BorderLayout.PAGE_START);
 	}
 
+	private void addEventsEditor(){
+		eventsTextArea.setEditable(true);
+		eventsAndReports.add(eventsTextArea);
+	}
+	
 	private void addEventsView() {
 		MultiTreeMap<Integer, Event> events = control.getSimulator().getEvents();
-
 		eventsTable = new SimTable(eventDataHeaders, events.valuesList());
+		
+		eventsAndReports.add(eventsTable);
 	}
 
+	private void addReportsArea(){
+		reportsTextArea.setEditable(false);
+		eventsAndReports.add(reportsTextArea);
+	}
+	
 	private void addJunctionsTable() {
 		List<Junction> junctions = new ArrayList<>(
 			control.getSimulator().getRoadMap().getJunctions().values()
 		);
 		
 		junctionsTable = new SimTable(junctionDataHeaders, junctions);
+		tablesPanel.add(junctionsTable);
 	}
 
 	private void addRoadsTable() {
@@ -351,6 +357,7 @@ public class SimWindow extends JFrame implements Listener {
 		);
 
 		roadsTable = new SimTable(roadDataHeaders, roads);
+		tablesPanel.add(roadsTable);
 	}
 
 	private void addVehiclesTable() {
@@ -359,6 +366,7 @@ public class SimWindow extends JFrame implements Listener {
 		);
 
 		vehiclesTable = new SimTable(vehicleDataHeaders, vehicles);
+		tablesPanel.add(vehiclesTable);
 	}
 
 	private void loadFile() {

@@ -65,10 +65,9 @@ public class SimTable extends JPanel {
         table = new JTable(model);
 
         // Se añade la tabla al panel
-        this.add(
-            table,
-            JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-            JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED
+        this.add( new JScrollPane(table,
+        		JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED)
         );
     }
 
