@@ -85,4 +85,8 @@ public class SimTable extends JPanel {
         // Actualización de la tabla.
         update();
     }
+    
+    public void setList(List<? extends Describable> newList){
+    	tableElements = newList;
+    }
 }

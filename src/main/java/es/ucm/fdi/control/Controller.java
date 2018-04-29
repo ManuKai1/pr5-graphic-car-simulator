@@ -1,7 +1,9 @@
 package es.ucm.fdi.control;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+
 import org.apache.commons.cli.ParseException;
 
 import es.ucm.fdi.control.evbuild.EventParser;
@@ -191,6 +193,14 @@ public class Controller {
 
     public void setIniInput(Ini newIni) {
         iniInput = newIni;
+    }
+    
+    public void setIniInput(InputStream is) throws IOException {
+        try {
+			iniInput = new Ini(is);
+		} catch (IOException e) {
+			throw e;
+		}
     }
 
     public void reset() throws ParseException {

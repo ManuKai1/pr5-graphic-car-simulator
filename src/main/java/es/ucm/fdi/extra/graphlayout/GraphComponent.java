@@ -64,7 +64,7 @@ public class GraphComponent extends JComponent {
 
 	public GraphComponent() {
 		_nodesPositions = new HashMap<>();
-		setMinimumSize(new Dimension(500, 500));
+		setMinimumSize(new Dimension(300, 300));
 		setPreferredSize(new Dimension(500, 500));
 		_lastWidth = -1;
 		_lastHeight = -1;

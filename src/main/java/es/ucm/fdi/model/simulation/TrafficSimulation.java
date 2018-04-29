@@ -99,6 +99,7 @@ public class TrafficSimulation {
 
 		// Añade el evento al mapa.
 		events.putValue(e.getTime(), e);
+		fireUpdateEvent(EventType.NEW_EVENT, "New Event error.");
 	}
 	
 	/**
@@ -168,8 +169,6 @@ public class TrafficSimulation {
 				try {
 					event.execute(this);
 					
-					//Aviso a Listeners de nuevo evento
-					fireUpdateEvent(EventType.NEW_EVENT, "New Event error");
 				}
 				catch (AlreadyExistingSimObjException e1) {
 					throw new SimulationException(

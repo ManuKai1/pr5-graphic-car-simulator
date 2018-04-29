@@ -1,16 +1,22 @@
 package es.ucm.fdi.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -18,12 +24,18 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.SpinnerNumberModel;
+import javax.swing.border.Border;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import org.apache.commons.cli.ParseException;
 
 import es.ucm.fdi.control.Controller;
 import es.ucm.fdi.model.SimObj.Junction;
@@ -49,6 +61,10 @@ public class SimWindow extends JFrame implements Listener {
 	private final int INITIAL_STEPS = 1;
 	private final int MIN_TIME = 1;
 	private final int MAX_TIME = 500;
+	
+	//Para las áreas de texto
+	private final String EVENTS_TITLE = "Events";
+	private final String REPORTS_TITLE = "Reports";
 
 	// Para las tablas.
 	private final TableDataType[] eventDataHeaders = {
@@ -186,9 +202,6 @@ public class SimWindow extends JFrame implements Listener {
 					KeyEvent.VK_ESCAPE, "Control + Shift + ESC", 
 					() -> quit());
 	
-	//Opcional
-	//private ReportDialog reportDialog;
-	
 	public SimWindow(Controller ctrl, String inFileName) {
 		super("Traffic Simulator");
 		control = ctrl;
@@ -211,11 +224,25 @@ public class SimWindow extends JFrame implements Listener {
 	}
 
 	private void eventsToSim() {
-		// TODO Auto-generated method stub
+		try {
+			control.setIniInput(new ByteArrayInputStream(eventsTextArea.getText().
+					getBytes()));
+			control.pushEvents();
+			run.setEnabled(true);
+		} catch (IllegalArgumentException e) {
+			JOptionPane.showMessageDialog(this,
+					e.getMessage());
+		} catch (ParseException e) {
+			JOptionPane.showMessageDialog(this,
+					e.getMessage());
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(this,
+					e.getMessage());
+		}
 	}
 
 	private void clearEvents() {
-		// TODO Auto-generated method stub
+		eventsTextArea.setText("");
 	}
 
 	private void addComponentsToLayout(){
@@ -339,7 +366,46 @@ public class SimWindow extends JFrame implements Listener {
 
 	private void addEventsEditor(){
 		eventsTextArea.setEditable(true);
-		eventsAndReports.add(eventsTextArea);
+		eventsTextArea.setLineWrap(true);
+		Border lineBorder = BorderFactory.createLineBorder(Color.BLACK);
+		Border borderWithTitle = BorderFactory.createTitledBorder(lineBorder, EVENTS_TITLE);
+		eventsTextArea.setFont(new Font("Verdana", Font.PLAIN, 12));
+		eventsTextArea.setBorder(borderWithTitle);
+		//Se activan y desactivan los botones según
+		//esté vacío el área de texto.
+		eventsTextArea.getDocument().addDocumentListener(
+				new DocumentListener(){
+			
+					public void changedUpdate(DocumentEvent e) {
+		                if (eventsTextArea.getText().isEmpty()) {
+		                    disableEventButtons();
+		                } else {
+		                    enableEventButtons();
+		                }
+		            }
+
+					@Override
+					public void insertUpdate(DocumentEvent arg0) {
+						if (eventsTextArea.getText().isEmpty()) {
+		                    disableEventButtons();
+		                } else {
+		                    enableEventButtons();
+		                }
+					}
+
+					@Override
+					public void removeUpdate(DocumentEvent arg0) {
+						if (eventsTextArea.getText().isEmpty()) {
+		                    disableEventButtons();
+		                } else {
+		                    enableEventButtons();
+		                }
+					}
+		});
+		
+		eventsAndReports.add(new JScrollPane(eventsTextArea,
+        		JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
 	}
 
 	
@@ -355,7 +421,14 @@ public class SimWindow extends JFrame implements Listener {
 	
 	private void addReportsArea(){
 		reportsTextArea.setEditable(false);
-		eventsAndReports.add(reportsTextArea);
+		reportsTextArea.setLineWrap(true);
+		Border lineBorder = BorderFactory.createLineBorder(Color.BLACK);
+		Border borderWithTitle = BorderFactory.createTitledBorder(lineBorder, REPORTS_TITLE);
+		reportsTextArea.setFont(new Font("Verdana", Font.PLAIN, 12));
+		reportsTextArea.setBorder(borderWithTitle);
+		eventsAndReports.add(new JScrollPane(reportsTextArea,
+        		JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
 	}
 	
 
@@ -422,95 +495,72 @@ public class SimWindow extends JFrame implements Listener {
 		RoadMap map = control.getSimulator().getRoadMap();
 
 		simGraph = new SimGraph(map);
-
 		graphPanel.add(simGraph);
 	}
 	
-
-
-
-
-
-
-	private void loadFile() {
-		//TODO
-		
+	private void loadFile(){
 		// Abre la ventana del selector y espera la respuesta
 		// del usuario.
-		int returnValue = fileChooser.showOpenDialog(null);
-		
+		int returnValue = fileChooser.showOpenDialog(this);
+		//Si fue un éxito
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
-			File selectedFile = fileChooser.getSelectedFile();
-			
+			currentFile = fileChooser.getSelectedFile();
+			try {
+				//Lectura de fichero y paso de bytes a String
+			    byte[] byteText = Files.readAllBytes(currentFile.toPath());
+			    String text = new String(byteText);
+			    eventsTextArea.setText(text);
+			}
+			catch(Exception e){
+				JOptionPane.showMessageDialog(this,
+						"Error while loading the file.");
+			}
 		}
-
 	}
 	
 	private void saveFile(JTextArea fromArea) { 
-		//TODO
-	}
-
-	/**
-	 * Método que guarda el área de texto editable de eventos
-	 * de la simulación en la ruta indicada.
-	 */
-	private void saveEditedEventsTo(String path) 
-			throws FileNotFoundException, IOException {
-		
-		// Creación del OutputStream
-		File outFile = null;
-		OutputStream os = null;
-		try {
-			outFile = new File(path);
-			os = new FileOutputStream(outFile);
-
-			StringBuilder edited = new StringBuilder();
-			edited.append("!!getEdited()");
-
-			os.write(edited.toString().getBytes());	
-		}
-		catch (FileNotFoundException e) {
-			throw e;
-		}
-		catch (IOException e) {
-			throw e;
-		}
-		finally {
-			os.close();
-		}		
-	}
-
-	/**
-	 * OPCIONAL
-	 * Método que guarda el área de texto donde se muestran los
-	 * reportes de la simulación en la ruta indicada.
-	 */
-	private void saveReportsAreaTo(String path) 
-			throws FileNotFoundException, IOException {
-		
-		// Creación del OutputStream
-		File outFile = null;
-		OutputStream os = null;
-		try {
-			outFile = new File(path);
-			os = new FileOutputStream(outFile);
-
-			StringBuilder edited = new StringBuilder();
-			edited.append("!!getEdited()");
-
-			os.write(edited.toString().getBytes());
-		} 
-		catch (FileNotFoundException e) {
-			throw e;
-		} 
-		catch (IOException e) {
-			throw e;
-		}
-		finally {
-			os.close();
+		int returnValue = fileChooser.showSaveDialog(this);
+		if (returnValue == JFileChooser.APPROVE_OPTION){
+			// Creación del OutputStream
+			File outFile = null;
+			OutputStream os = null;
+			try {
+				outFile = fileChooser.getSelectedFile();
+				os = new FileOutputStream(outFile);
+					StringBuilder edited = new StringBuilder();
+				edited.append(fromArea.getText());
+					os.write(edited.toString().getBytes());	
+				//Mensaje de éxito
+				JOptionPane.showMessageDialog(this,
+					"The file was saved.");
+					
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(this,
+						"Error while saving the file.");
+			}
+			finally {
+				try {
+					os.close();
+				} catch (IOException e) {
+					JOptionPane.showMessageDialog(this,
+							"Error while saving the file.");
+				}
+			}
 		}
 	}
 
+	private void enableEventButtons(){
+	    save.setEnabled(true);
+	    clear.setEnabled(true);
+	    insertEvents.setEnabled(true);
+	}
+	
+	private void disableEventButtons(){
+	    save.setEnabled(false);
+	    clear.setEnabled(false);
+	    insertEvents.setEnabled(false);
+	}
+	
 	/**
 	 * Método que pregunta en un cuadro de diálogo al
 	 * usuario si desea salir, terminando el programa si
@@ -551,8 +601,13 @@ public class SimWindow extends JFrame implements Listener {
 	
 	@Override
 	public void update(UpdateEvent ue, String error) {
-		// TODO Auto-generated method stub
-
+		switch(ue.getEvent()){
+		case NEW_EVENT :
+			List<Event> addedEvents = ue.getEventQueue().valuesList();
+			eventsTable.setList(addedEvents);
+			eventsTable.update();
+			break;
+		}
 	}
 
 }
