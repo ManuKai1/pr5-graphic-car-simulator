@@ -1,7 +1,6 @@
 package es.ucm.fdi.view;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.io.File;
@@ -12,7 +11,6 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.BoxLayout;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -32,6 +30,7 @@ import es.ucm.fdi.model.SimObj.Junction;
 import es.ucm.fdi.model.SimObj.Road;
 import es.ucm.fdi.model.SimObj.Vehicle;
 import es.ucm.fdi.model.events.Event;
+import es.ucm.fdi.model.simulation.RoadMap;
 import es.ucm.fdi.model.simulation.SimulationException;
 import es.ucm.fdi.model.simulation.TrafficSimulation.Listener;
 import es.ucm.fdi.model.simulation.TrafficSimulation.UpdateEvent;
@@ -91,10 +90,10 @@ public class SimWindow extends JFrame implements Listener {
 
 	private JPanel eventsAndReports = new JPanel( new GridLayout(1, 3));
 	private JPanel tablesPanel = new JPanel( new GridLayout(3, 1));
-	private JPanel graph = new JPanel();
+	private JPanel graphPanel = new JPanel();
 	
 	private JSplitPane tablesAndGraph = new JSplitPane(
-			JSplitPane.HORIZONTAL_SPLIT, tablesPanel, graph);
+			JSplitPane.HORIZONTAL_SPLIT, tablesPanel, graphPanel);
 	
 	private JSplitPane lowAndTop = new JSplitPane(
 			JSplitPane.VERTICAL_SPLIT, eventsAndReports, tablesAndGraph);
@@ -116,11 +115,14 @@ public class SimWindow extends JFrame implements Listener {
 	private JTextArea eventsTextArea = new JTextArea();
 	private JTextArea reportsTextArea = new JTextArea();
 	
-	//Tablas
+	// Tablas
 	private SimTable eventsTable;
 	private SimTable junctionsTable;	
 	private SimTable roadsTable;
 	private SimTable vehiclesTable;
+
+	// Grafo
+	private SimGraph simGraph;
 	
 	//Creaciones de acciones
 	//Recordar activarlas y desactivarlas
@@ -225,9 +227,10 @@ public class SimWindow extends JFrame implements Listener {
 		addVehiclesTable(); // tabla de vehiculos
 		addRoadsTable(); // tabla de carreteras
 		addJunctionsTable(); // tabla de cruces
-		// addMap(); // mapa de carreteras
+		addMap(); // mapa de carreteras
 		// addStatusBar(); // barra de estado
 	}
+	
 	
 	private void initPanels(){
 		tablesAndGraph.setResizeWeight(.5);
@@ -249,6 +252,11 @@ public class SimWindow extends JFrame implements Listener {
 		tablesAndGraph.setDividerLocation(HORIZONTAL_SPLIT);
 		lowAndTop.setDividerLocation(VERTICAL_SPLIT);
 	}
+
+	
+
+
+	
 
 	/**
 	 * Función que crea 
@@ -275,6 +283,8 @@ public class SimWindow extends JFrame implements Listener {
 		
 		setJMenuBar(menuBar);
 	}
+
+	
 	
 	/**
 	 * Función que crea
@@ -324,11 +334,15 @@ public class SimWindow extends JFrame implements Listener {
 		
 		add(toolBar, BorderLayout.PAGE_START);
 	}
+	
+
 
 	private void addEventsEditor(){
 		eventsTextArea.setEditable(true);
 		eventsAndReports.add(eventsTextArea);
 	}
+
+	
 	
 	private void addEventsView() {
 		MultiTreeMap<Integer, Event> events = control.getSimulator().getEvents();
@@ -336,11 +350,15 @@ public class SimWindow extends JFrame implements Listener {
 		
 		eventsAndReports.add(eventsTable);
 	}
-
+	
+	
+	
 	private void addReportsArea(){
 		reportsTextArea.setEditable(false);
 		eventsAndReports.add(reportsTextArea);
 	}
+	
+
 	
 	private void addJunctionsTable() {
 		List<Junction> junctions = new ArrayList<>(
@@ -350,24 +368,69 @@ public class SimWindow extends JFrame implements Listener {
 		junctionsTable = new SimTable(junctionDataHeaders, junctions);
 		tablesPanel.add(junctionsTable);
 	}
+	
 
+	
 	private void addRoadsTable() {
 		List<Road> roads = new ArrayList<>(
 			control.getSimulator().getRoadMap().getRoads().values()
-		);
-
+			);
+			
 		roadsTable = new SimTable(roadDataHeaders, roads);
 		tablesPanel.add(roadsTable);
 	}
+	
 
+	
 	private void addVehiclesTable() {
 		List<Vehicle> vehicles = new ArrayList<>(
 			control.getSimulator().getRoadMap().getVehicles().values()
-		);
-
+			);
+			
 		vehiclesTable = new SimTable(vehicleDataHeaders, vehicles);
 		tablesPanel.add(vehiclesTable);
 	}
+	
+
+
+	private void addMap() {	
+		/*
+		TEST
+
+		RoadMap map = new RoadMap();
+		Junction[] jArray = {
+			new Junction("j1"),
+			new Junction("j2"),
+			new Junction("j3"),
+			new Junction("j4")
+		};
+
+		Road[] rArray = {
+			new Road("r1", 50, 50, jArray[0], jArray[1]),
+			new Road("r2", 50, 50, jArray[1], jArray[2]),
+			new Road("r3", 50, 50, jArray[2], jArray[3]),
+		};
+
+		for (Junction j : jArray) {
+			map.addJunction(j);
+		}
+		for (Road r : rArray) {
+			map.addRoad(r);
+		}		
+		*/
+
+		RoadMap map = control.getSimulator().getRoadMap();
+
+		simGraph = new SimGraph(map);
+
+		graphPanel.add(simGraph);
+	}
+	
+
+
+
+
+
 
 	private void loadFile() {
 		//TODO
@@ -375,14 +438,14 @@ public class SimWindow extends JFrame implements Listener {
 		// Abre la ventana del selector y espera la respuesta
 		// del usuario.
 		int returnValue = fileChooser.showOpenDialog(null);
-
+		
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			File selectedFile = fileChooser.getSelectedFile();
 			
 		}
 
 	}
-
+	
 	private void saveFile(JTextArea fromArea) { 
 		//TODO
 	}

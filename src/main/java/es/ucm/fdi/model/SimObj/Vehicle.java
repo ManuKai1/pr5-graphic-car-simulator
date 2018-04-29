@@ -365,7 +365,6 @@ public class Vehicle extends SimObject {
 
 		return 	route.toString();
 	}
-
 }
 
 

@@ -53,7 +53,7 @@ public class GraphComponent extends JComponent {
 	/**
 	 * A map to store the location of each node
 	 */
-	Map<String, Point> _nodesPisitions;
+	Map<String, Point> _nodesPositions;
 
 	/**
 	 * width and height of the window when it was last resized. When change we
@@ -62,8 +62,8 @@ public class GraphComponent extends JComponent {
 	private int _lastWidth;
 	private int _lastHeight;
 
-	GraphComponent() {
-		_nodesPisitions = new HashMap<>();
+	public GraphComponent() {
+		_nodesPositions = new HashMap<>();
 		setMinimumSize(new Dimension(500, 500));
 		setPreferredSize(new Dimension(500, 500));
 		_lastWidth = -1;
@@ -96,7 +96,7 @@ public class GraphComponent extends JComponent {
 
 		// draw nodes
 		for (Node j : _graph.getNodes()) {
-			Point p = _nodesPisitions.get(j.getId());
+			Point p = _nodesPositions.get(j.getId());
 			g.setColor(Color.blue);
 			g.fillOval(p.cX - _nodeRadius / 2, p.cY - _nodeRadius / 2, _nodeRadius, _nodeRadius);
 			g.setColor(Color.black);
@@ -105,8 +105,8 @@ public class GraphComponent extends JComponent {
 
 		// draw edges
 		for (Edge e : _graph.getEdges()) {
-			Point p1 = _nodesPisitions.get(e.getSource().getId());
-			Point p2 = _nodesPisitions.get(e.getTarget().getId());
+			Point p1 = _nodesPositions.get(e.getSource().getId());
+			Point p2 = _nodesPositions.get(e.getTarget().getId());
 
 			// draw the edge
 			Color arrowColor = Math.random() > 0.5 ? Color.RED : Color.GREEN;
@@ -153,7 +153,7 @@ public class GraphComponent extends JComponent {
 			int tX = (int) (xc + tr * Math.cos(angle));
 			int tY = (int) (yc + tr * Math.sin(angle));
 
-			_nodesPisitions.put(n.getId(), new Point(cX, cY, tX, tY));
+			_nodesPositions.put(n.getId(), new Point(cX, cY, tX, tY));
 			i++;
 		}
 

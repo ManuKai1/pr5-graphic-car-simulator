@@ -81,29 +81,72 @@ public class Controller {
      * 3. Ejecuta la <code>TrafficSimulation</code>.
      * </p> 
      *
-     * @throws ParseException     if event parsing failed (no matching
-     *                                          event or invalid data)
-     * @throws IllegalArgumentException         if event time is lower than
-     *                                          sim time
-     * @throws SimulationException              if an error ocurred during the execution
-     *                                          of events in the simulation
-     * @throws IOException                      if an error ocurred during report generation
-     *                                          in the simulation
+     * @throws ParseException                   if event parsing failed 
+     *                                          (no matching event or 
+     *                                          invalid data)
+     * @throws IllegalArgumentException         if event time is lower 
+     *                                          than sim time
+     * @throws SimulationException              if an error ocurred during 
+     *                                          the execution of events in 
+     *                                          the simulation
+     * @throws IOException                      if an error ocurred during 
+     *                                          report generation in the 
+     *                                          simulation
      */
-    public void executeBatch() throws ParseException, IOException, SimulationException {
-        EventParser parser = new EventParser();
+    public void executeBatch() 
+            throws ParseException, IOException, SimulationException {
 
         // 1 //
         // Recorre las secciones del archivo .ini de entrada
         // y construye y guarda los eventos en el simulador.
+        try {
+            pushEvents();
+        }
+        catch (ParseException e1) {
+            throw e1;
+        }
+        catch (IllegalArgumentException e2) {
+            throw e2;
+        }
+        
+
+        // 2 // 
+        // Se ejecuta el simulador el número de pasos batchTimeLimit
+        // y se actualiza el OutputStream.
+        try {
+			simulate(batchTimeLimit);
+		}
+        catch (SimulationException e3) {
+            throw e3;
+        } 
+        catch (IOException e4) {
+			throw e4;
+		} 
+    }
+
+    /**
+     * Carga los eventos del archivo de entrada
+     * {@code iniInput} en el {@code simulator}.
+     * 
+     * @throws ParseException               if event parsing failed 
+     *                                      (no matching event or 
+     *                                      invalid data)
+     * @throws IllegalArgumentException     if event time is lower 
+     *                                      than sim time   
+     */
+    public void pushEvents() 
+            throws ParseException, IllegalArgumentException {
+        
+        EventParser parser = new EventParser();
+
         for ( IniSection sec : iniInput.getSections() ) {
         	Event ev;
             
-            try{
+            try {
         		ev = parser.parse(sec);
                 
         	}
-            catch(IllegalArgumentException e) {
+            catch (IllegalArgumentException e) {
             	throw new ParseException(
                     "Event parsing failed:\n" + e
                 );
@@ -116,21 +159,22 @@ public class Controller {
                 throw e; // Illegal time
             }            
         }
-
-        // 2 // 
-        // Se ejecuta el simulador el número de pasos batchTimeLimit
-        // y se actualiza el OutputStream.
-        try {
-			simulate(batchTimeLimit);
-		}
-        catch (SimulationException e) {
-            throw e;
-        } 
-        catch (IOException e) {
-			throw e;
-		} 
     }
 
+    /**
+     * Ejecuta el simulador durante un tiempo
+     * determinado {@code time}.
+     * 
+     * @param time -    número de ticks que se
+     *                  ejecutará el simulador
+     * 
+     * @throws SimulationException              if an error ocurred during 
+     *                                          the execution of events in 
+     *                                          the simulation
+     * @throws IOException                      if an error ocurred during 
+     *                                          report generation in the 
+     *                                          simulation
+     */
     public void simulate(int time) 
             throws SimulationException, IOException {
 

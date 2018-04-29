@@ -89,7 +89,8 @@ public class TrafficSimulation {
 	 */
 	public void pushEvent(Event e) 
 			throws IllegalArgumentException {
-		// Comprueba el tiempo.
+		
+				// Comprueba el tiempo.
 		if( e.getTime() < time ) {
 			throw new IllegalArgumentException(
 				"Event time is lower than current time."
@@ -205,7 +206,9 @@ public class TrafficSimulation {
 	 * Genera informes de todos los SimObject.
 	 * @param file fichero de salida
 	 */
-	private void generateReports(OutputStream file) throws IOException {
+	private void generateReports(OutputStream file) 
+			throws IOException {
+		
 		if (file != null) {
 			//Creación de ini
 			Ini iniFile = new Ini();

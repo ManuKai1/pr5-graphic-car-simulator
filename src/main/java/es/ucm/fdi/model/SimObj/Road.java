@@ -688,4 +688,14 @@ public class Road extends SimObject {
 		return 	state.toString();
 	}
 
+
+	public List<Vehicle> getRoadVehicles() {
+		List<Vehicle> list = new ArrayList<>();
+
+		list.addAll(vehiclesOnRoad);
+		list.addAll(waiting);
+
+		return list;
+	}
+
 }

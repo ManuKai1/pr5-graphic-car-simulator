@@ -18,9 +18,9 @@ public class GraphLayoutExample extends JFrame  {
 	}
 
 	private void initGUI() {
-		_rand = new Random(System.currentTimeMillis());
+		_rand = new Random( System.currentTimeMillis() );
 
-		JPanel mainPanel = new JPanel(new BorderLayout() );
+		JPanel mainPanel = new JPanel( new BorderLayout() );
 		
 		_graphComp = new GraphComponent();
 		mainPanel.add(_graphComp, BorderLayout.CENTER);
@@ -39,7 +39,6 @@ public class GraphLayoutExample extends JFrame  {
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.pack();
 		this.setVisible(true);
-
 	}
 
 	protected void generateGraph() {
