@@ -74,7 +74,6 @@ public class EventParser {
 			} 
 		}
 		
-
 		// Si llegamos a este punto es que todos 
 		// los parse han devuelto null
 		throw new IllegalArgumentException(

@@ -65,7 +65,7 @@ public class NewBikeVehicleBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " in new Bike."
+					e.getMessage() + " in new Bike."
 				);
 			}
 
@@ -76,7 +76,7 @@ public class NewBikeVehicleBuilder extends EventBuilder {
 				}
 				catch (IllegalArgumentException e) {
 					throw new IllegalArgumentException(
-						e + " when reading time " + 
+						e.getMessage() + " when reading time " + 
 						"in bike with id: " + id);
 				}
 			}
@@ -87,7 +87,7 @@ public class NewBikeVehicleBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " when reading maxSpeed " +
+					e.getMessage() + " when reading max_speed " +
 					"in bike with id: " + id);
 			}
 
@@ -99,7 +99,7 @@ public class NewBikeVehicleBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " when reading itinerary " + 
+					e.getMessage() + " when reading itinerary " + 
 					"in bike with id: " + id);
 			}
 			

@@ -53,7 +53,7 @@ public class NewRoadBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " in new Road."
+					e.getMessage() + " in new Road."
 				);
 			}
 			
@@ -64,7 +64,7 @@ public class NewRoadBuilder extends EventBuilder {
 				}
 				catch (IllegalArgumentException e) {
 					throw new IllegalArgumentException(
-						e + " when reading time " +
+						e.getMessage() + " when reading time " +
 						"in Road with id " + id
 					);
 				}
@@ -76,7 +76,7 @@ public class NewRoadBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " when reading dest "+
+					e.getMessage() + " when reading source junction " +
 					"in Road with id " + id
 				);
 			}
@@ -87,7 +87,7 @@ public class NewRoadBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " when reading source "+ 
+					e.getMessage() + " when reading destination junction " + 
 					"in Road with id " + id
 				);
 			}
@@ -98,7 +98,7 @@ public class NewRoadBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " when reading max speed "+
+					e.getMessage() + " when reading max speed "+
 					"in Road with id " + id
 				);
 			}
@@ -107,9 +107,9 @@ public class NewRoadBuilder extends EventBuilder {
 			try {
 				length = parsePositiveInt(ini, "length");
 			}
-			catch (NumberFormatException e) {
+			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " when reading length "+
+					e.getMessage() + " when reading length "+
 					"in Road with id " + id
 				);
 			}

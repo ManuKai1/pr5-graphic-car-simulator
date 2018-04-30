@@ -149,14 +149,18 @@ public abstract class EventBuilder {
 	protected String parseID(IniSection ini, String key) 
 			throws IllegalArgumentException {
 		String id = ini.getValue(key);
-
-		if ( ! validID(id) ) {
-			throw new IllegalArgumentException(
-				"Illegal ID: " + id
-			);
+		if(id != null){
+			if ( ! validID(id) ) {
+				throw new IllegalArgumentException(
+					"Illegal ID: " + id
+				);
+			}
+			return id;
 		}
-
-		return id;
+		else{
+			throw new IllegalArgumentException(
+					"No ID found");
+		}
 	}
 	
 	/**
@@ -325,18 +329,22 @@ public abstract class EventBuilder {
 	protected double parseProbability(IniSection ini, String key)
 			throws IllegalArgumentException {
 		double result;
-		try {
-			result = Double.parseDouble(ini.getValue(key));
+		String toResult = ini.getValue(key);
+		if(toResult != null){
+			try {
+				result = Double.parseDouble(toResult);
+			}
+			//El valor no era un real
+			catch (NumberFormatException e) {
+				throw new IllegalArgumentException("Double reading failure");
+			}
+			//La probabilidad se va de los límites
+			if (result < 0 || result > 1) {
+				throw new IllegalArgumentException("Out of bounds probability");
+			}
+			return result;
 		}
-		//El valor no era un real
-		catch (NumberFormatException e) {
-			throw new IllegalArgumentException("Double reading failure");
-		}
-		//La probabilidad se va de los límites
-		if (result < 0 || result > 1) {
-			throw new IllegalArgumentException("Out of bounds probability");
-		}
-		return result;
+		else throw new IllegalArgumentException("Value not found");
 	}
 	
 	/**
@@ -370,27 +378,31 @@ public abstract class EventBuilder {
 		
 		// Array de Strings con las IDs.
 		String line = ini.getValue(key);
-		String[] input = line.split(",");
+		if(line != null){
+			String[] input = line.split(",");
 
-		// Comprobación de IDs.
-		for (String idS : input) {
-			if ( ! validID(idS) ) {
+			// Comprobación de IDs.
+			for (String idS : input) {
+				if ( ! validID(idS) ) {
+					throw new IllegalArgumentException(
+						"Illegal ID: " + idS
+					);
+				}
+
+				result.add(idS);
+			}
+
+			// Al menos un elemento.
+			if (result.size() < minElems) {
 				throw new IllegalArgumentException(
-					"Illegal ID: " + idS
+					"Not enough elements"
 				);
 			}
 
-			result.add(idS);
+			return result;
 		}
-
-		// Al menos un elemento.
-		if (result.size() < minElems) {
-			throw new IllegalArgumentException(
-				"Not enough elements"
-			);
-		}
-
-		return result;
+		else throw new IllegalArgumentException(
+				"List of elements not found");
 	}
 	
 	/**

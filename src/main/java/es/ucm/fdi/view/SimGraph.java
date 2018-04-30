@@ -36,7 +36,7 @@ public class SimGraph extends JPanel {
         this.setVisible(true);
     }
 
-    private void generateGraph() {
+    public void generateGraph() {
 
         Graph graph = new Graph();
         Map<Junction, Node> junctToNode = new HashMap<>();
@@ -69,4 +69,5 @@ public class SimGraph extends JPanel {
 
         _graphComp.setGraph(graph);
     }
+    
 }

@@ -220,7 +220,17 @@ public class SimWindow extends JFrame implements Listener {
 	}
 
 	private void runSimulator() {
-		// TODO Auto-generated method stub
+		//De momento, se ejecuta con outstream null.
+		try {
+			control.getSimulator().execute((int) stepsSpinner.getValue(),
+					null);
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(this,
+					e.getMessage());
+		} catch (SimulationException e) {
+			JOptionPane.showMessageDialog(this,
+					e.getMessage());
+		}
 	}
 
 	private void eventsToSim() {
@@ -607,6 +617,26 @@ public class SimWindow extends JFrame implements Listener {
 			eventsTable.setList(addedEvents);
 			eventsTable.update();
 			break;
+		case ADVANCED :
+			List<Junction> addedJunctions = 
+				new ArrayList<Junction>(ue.getRoadMap().
+						getJunctions().values());
+			junctionsTable.setList(addedJunctions);
+			junctionsTable.update();
+			
+			List<Vehicle> addedVehicles = 
+				new ArrayList<Vehicle>(ue.getRoadMap().
+						getVehicles().values());
+			vehiclesTable.setList(addedVehicles);
+			vehiclesTable.update();
+			
+			List<Road> addedRoads = 
+				new ArrayList<Road>(ue.getRoadMap().
+						getRoads().values());
+			roadsTable.setList(addedRoads);
+			roadsTable.update();
+			
+			simGraph.generateGraph();
 		}
 	}
 

@@ -97,7 +97,7 @@ public class NewCarVehicle extends NewVehicle {
 	protected String getEventDescription() {
 		// Descripción del evento.
 		StringBuilder description = new StringBuilder();
-		description.append("New vehicle ");
+		description.append("New car vehicle ");
 		description.append(id);
 
 		return description.toString();

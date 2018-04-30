@@ -150,8 +150,8 @@ public class Controller {
         	}
             catch (IllegalArgumentException e) {
             	throw new ParseException(
-                    "Event parsing failed:\n" + e
-                );
+                    "Event parsing failed:\n" + 
+                    		e.getMessage());
             }
 
             try {

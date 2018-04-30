@@ -362,6 +362,8 @@ public class Vehicle extends SimObject {
 		if (route.length() > 1) {
 			route.deleteCharAt(route.length() - 1);
 		}
+		
+		route.append("]");
 
 		return 	route.toString();
 	}

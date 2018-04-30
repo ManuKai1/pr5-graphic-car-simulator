@@ -68,7 +68,7 @@ public class NewCrowdedJunctionBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-                    e + " in new Crowded Junction."
+                    e.getMessage() + " in new Crowded Junction."
                 );
 			}
 
@@ -79,7 +79,7 @@ public class NewCrowdedJunctionBuilder extends EventBuilder {
 				}
 				catch (IllegalArgumentException e) {
 					throw new IllegalArgumentException(
-                        e + " when reading time "+ 
+                        e.getMessage() + " when reading time "+ 
                         "in Crowded Junction with id " + id);
 				}
 			}

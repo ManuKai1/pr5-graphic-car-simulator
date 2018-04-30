@@ -69,7 +69,7 @@ public class NewCarVehicleBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException( 
-					e + " in new Car."
+					e.getMessage() + " in new Car."
 				);
 			}
 
@@ -80,7 +80,7 @@ public class NewCarVehicleBuilder extends EventBuilder {
 				}
 				catch (IllegalArgumentException e) {
 					throw new IllegalArgumentException(
-						e + " when reading time " +
+						e.getMessage() + " when reading time " +
 						"in car with id " + id
 					);
 				}
@@ -92,7 +92,7 @@ public class NewCarVehicleBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " when reading maxSpeed "+ 
+					e.getMessage() + " when reading max_speed "+ 
 					"in car with id " + id
 				);
 			}
@@ -105,7 +105,7 @@ public class NewCarVehicleBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " when reading itinerary "+ 
+					e.getMessage() + " when reading itinerary "+ 
 					"in car with id " + id
 				);
 			}
@@ -116,7 +116,7 @@ public class NewCarVehicleBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " when reading resistance " +
+					e.getMessage() + " when reading resistance " +
 					"in car with id " + id
 				);
 			}
@@ -127,7 +127,7 @@ public class NewCarVehicleBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e +" when reading faulty chance "+
+					e.getMessage() +" when reading faulty chance "+
 					"in car with id " + id
 				);
 			}
@@ -139,7 +139,7 @@ public class NewCarVehicleBuilder extends EventBuilder {
 			//La duración de avería no era un entero
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " when reading fault duration "
+					e.getMessage() + " when reading fault duration "
 					+ "in car with id " + id
 				);
 			}

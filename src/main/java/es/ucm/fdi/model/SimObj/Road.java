@@ -668,14 +668,14 @@ public class Road extends SimObject {
 		for (Vehicle v : waiting) {
 			// ID
 			state.append( v.getID() );
-			state.append("),");
+			state.append(",");
 		}
 
 		// Después los vehículos en la carretera.
 		for (Vehicle v : vehiclesOnRoad) {
 			// ID
 			state.append(v.getID());
-			state.append("),");
+			state.append(",");
 		}
 
 		// Borrado de última coma (mín "[")
