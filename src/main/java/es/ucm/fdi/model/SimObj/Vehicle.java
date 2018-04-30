@@ -20,13 +20,6 @@ public class Vehicle extends SimObject {
 	 * <code>Vehicle</code> cualquiera.
 	 */
 	protected final String REPORT_TITLE = "[vehicle_report]";
-
-	/**
-	 * Información sobre el tipo de vehículo que
-	 * debe ponerse como valor en la clave <code>type</code>
-	 * de la <code>IniSection</code> generada.
-	 */
-	private static final String TYPE = ""; // vehículo normal
 	
 	/**
 	 * Ruta del <code>Vehicle</code> en forma de
@@ -236,7 +229,7 @@ public class Vehicle extends SimObject {
 		section.setValue("speed", actualSpeed);
 		section.setValue("kilometrage", kilometrage);
 		section.setValue("faulty", breakdownTime);
-		section.setValue("location", hasArrived ? "arrived" : "(" + road.getID() + "," + location + ")");
+		section.setValue("location", getReportLocation());
 		
 		
 		return section;
@@ -324,23 +317,25 @@ public class Vehicle extends SimObject {
 	
 	/**
 	 * {@inheritDoc}
-	 * Añade una <code>Road</code> al map, con los datos:
+	 * Añade una {@code Road} al mapa, con los datos:
 	 * id, source, target, length, max speed, vehicles
 	 * 
 	 * @param out {@inheritDoc}
 	 */
 	@Override
 	public void describe(Map<TableDataType, String> out) {
+		// Strings
+		String type = getType();
 		String road = this.road.getID();
-		String location = Integer.toString(this.location);
+		String location = getDescriptionLocation();
 		String speed = Integer.toString(this.actualSpeed);
 		String km = Integer.toString(this.kilometrage);
 		String faulty = Integer.toString(this.breakdownTime);
 		String route = getRouteDescription();
 
-
+		// Map update
 		out.put(TableDataType.ID, id);
-		out.put(TableDataType.V_ROAD, TYPE);
+		out.put(TableDataType.V_TYPE, type);
 		out.put(TableDataType.V_ROAD, road);
 		out.put(TableDataType.V_LOCATION, location);
 		out.put(TableDataType.V_SPEED, speed);
@@ -349,6 +344,15 @@ public class Vehicle extends SimObject {
 		out.put(TableDataType.V_ROUTE, route);
 	}
 
+	/**
+	 * Devuelve un {@code String} con la descripción
+	 * de la ruta del {@code Vehicle}, como debe
+	 * mostrarse en la correspondiente tabla
+	 * del {@code GUI}.
+	 * 
+	 * @return	{@code String} con la descripción
+	 * 			de la ruta
+	 */
 	private String getRouteDescription() {
 		StringBuilder route = new StringBuilder();
 
@@ -366,6 +370,49 @@ public class Vehicle extends SimObject {
 		route.append("]");
 
 		return 	route.toString();
+	}
+
+	/**
+	 * Devuelve un {@code String} con el tipo de 
+	 * {@code Vehicle} que debe ponerse como valor 
+	 * en la clave {@code type}, tanto en la 
+	 * {@code IniSection} generada en {@code batch} 
+	 * como en la información mostrada en las 
+	 * tablas de la {@code GUI}.
+	 * 
+	 * @return 	{@code String} con el 
+	 * 			tipo de {@code Vehicle}
+	 */
+	protected String getType() {
+		return "-";
+	}
+
+	/**
+	 * Devuelve la localización del {@code Vehicle}
+	 * como debe mostrarse en los informes generados
+	 * por el simulador.
+	 * 
+	 * @return	{@code String} con la localización
+	 * 			correcta para el informe
+	 */
+	protected String getReportLocation() {
+		return 	hasArrived ? 
+					"arrived" : 
+					"(" + road.getID() + "," + location + ")";
+	}
+
+	/**
+	 * Devuelve la localización del {@code Vehicle}
+	 * como debe mostrarse en la correspondiente
+	 * tabla del {@code GUI}.
+	 * 
+	 * @return	{@code String} con la descripción
+	 * 			de la localización
+	 */
+	protected String getDescriptionLocation() {
+		return 	hasArrived ?
+					"arrived" :
+					Integer.toString(location);
 	}
 }
 

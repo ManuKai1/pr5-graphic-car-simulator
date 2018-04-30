@@ -22,14 +22,7 @@ public class Road extends SimObject {
 	 * Etiqueta que encabeza el informe de una 
 	 * <code>Road</code> cualquiera.
 	 */
-	protected final String REPORT_TITLE = "[road_report]";
-
-	/**
-	 * Información sobre el tipo de carretera que
-	 * debe ponerse como valor en la clave <code>type</code>
-	 * de la <code>IniSection</code> generada.
-	 */
-	private static final String TYPE = ""; // carretera normal
+	protected static final String REPORT_TITLE = "[road_report]";
 	
 	/**
 	 * Longitud de la <code>Road</code>.
@@ -634,6 +627,21 @@ public class Road extends SimObject {
 		return waiting.size();
 	}
 
+	/**
+	 * Devuelve un {@code String} con el tipo de 
+	 * {@code Road} que debe ponerse como valor 
+	 * en la clave {@code type}, tanto en la 
+	 * {@code IniSection} generada en {@code batch} 
+	 * como en la información mostrada en las 
+	 * tablas de la {@code GUI}.
+	 * 
+	 * @return 	{@code String} con el 
+	 * 			tipo de {@code Road}
+	 */
+	protected String getType() {
+		return "-";
+	}
+
 
 	/**
 	 * {@inheritDoc}
@@ -652,7 +660,7 @@ public class Road extends SimObject {
 
 
 		out.put(TableDataType.ID, id);
-		out.put(TableDataType.R_TYPE, TYPE);
+		out.put(TableDataType.R_TYPE, getType());
 		out.put(TableDataType.R_SOURCE, source);
 		out.put(TableDataType.R_TARGET, target);
 		out.put(TableDataType.R_LENGHT, length);

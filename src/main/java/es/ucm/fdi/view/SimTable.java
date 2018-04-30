@@ -2,6 +2,7 @@ package es.ucm.fdi.view;
 
 import java.awt.BorderLayout;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -10,9 +11,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.util.Describable;
 import es.ucm.fdi.util.TableDataType;
 
+@SuppressWarnings("serial")
 public class SimTable extends JPanel {
 
     private JTable table;
@@ -85,8 +88,25 @@ public class SimTable extends JPanel {
         // Actualización de la tabla.
         update();
     }
+
+    public List<? extends Describable> getTableElements() {
+        return tableElements;
+    }
     
     public void setList(List<? extends Describable> newList){
-    	tableElements = newList;
+        tableElements = newList;
+        
+        update();
+    }
+
+    public void updateList(int minTime) {
+        Iterator<? extends Describable> iter = tableElements.listIterator();
+        
+        while ( iter.hasNext() ) {
+            Event e = (Event) iter.next();
+            if (e.getTime() < minTime) {
+                iter.remove();
+            }
+        }
     }
 }

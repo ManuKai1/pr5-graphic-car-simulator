@@ -7,13 +7,12 @@ import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -46,9 +45,11 @@ import es.ucm.fdi.model.simulation.RoadMap;
 import es.ucm.fdi.model.simulation.SimulationException;
 import es.ucm.fdi.model.simulation.TrafficSimulation.Listener;
 import es.ucm.fdi.model.simulation.TrafficSimulation.UpdateEvent;
+import es.ucm.fdi.util.Describable;
 import es.ucm.fdi.util.MultiTreeMap;
 import es.ucm.fdi.util.TableDataType;
 
+@SuppressWarnings("serial")
 public class SimWindow extends JFrame implements Listener {
 	
 	//Para la ventana
@@ -224,6 +225,11 @@ public class SimWindow extends JFrame implements Listener {
 		try {
 			control.getSimulator().execute((int) stepsSpinner.getValue(),
 					null);
+
+			// Se actualiza la tabla de eventos.
+			int minTime = control.getSimulator().getCurrentTime();
+			
+			updateEventsTable(minTime);
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(this,
 					e.getMessage());
@@ -421,8 +427,10 @@ public class SimWindow extends JFrame implements Listener {
 	
 	
 	private void addEventsView() {
-		MultiTreeMap<Integer, Event> events = control.getSimulator().getEvents();
-		eventsTable = new SimTable(eventDataHeaders, events.valuesList());
+		MultiTreeMap<Integer, Event> eventsMap = control.getSimulator().getEvents();
+		List<Event> eventsList = eventsMap.valuesList();
+
+		eventsTable = new SimTable(eventDataHeaders, eventsList);
 		
 		eventsAndReports.add(eventsTable);
 	}
@@ -590,20 +598,6 @@ public class SimWindow extends JFrame implements Listener {
 			System.exit(0);
 		}
 	}
-
-	private void runSimulation(int time) 
-			throws SimulationException, IOException {
-		try {
-			control.simulate(time);
-		}
-		catch (SimulationException e) {
-			throw e;
-		}
-		catch (IOException e) {
-			throw e;
-		}
-		
-	}
 	
 	private void resetSimulator() {
 		//TODO
@@ -640,4 +634,29 @@ public class SimWindow extends JFrame implements Listener {
 		}
 	}
 
+
+	/**
+	 * A partir de la lista de elementos de 
+	 * {@code EventsTable}, descarta aquellos
+	 * {@code Event} cuyo tiempo de ejecución
+	 * es menor que {@code minTime}.
+	 * 
+	 * @see #runSimulator()
+	 */
+	private void updateEventsTable(int minTime) {
+
+		ArrayList<? extends Describable> tableElements =
+				new ArrayList<>( eventsTable.getTableElements() );
+		Iterator<? extends Describable> iter = tableElements.iterator();
+
+		while (iter.hasNext()) {
+			Event e = (Event) iter.next();
+
+			if (e.getTime() < minTime) {
+				iter.remove();
+			}
+		}
+
+		eventsTable.setList(tableElements);
+	}
 }

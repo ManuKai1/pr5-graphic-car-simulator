@@ -1,4 +1,4 @@
-package es.ucm.fdi.extra.graphlayout;
+package es.ucm.fdi.view.graphlayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,13 +8,15 @@ public class Edge {
 	private Node _source;
 	private Node _target;
 	private int _length;
+	private boolean _light;
 	private List<Dot> _dots;
 	
-	public Edge(String id, Node source, Node target, int length) {
+	public Edge(String id, Node source, Node target, int length, boolean light) {
 		_source = source;
 		_target = target;
 		_id = id;
 		_length = length;
+		_light = light;
 		_dots = new ArrayList<>();
 	}
 	
@@ -35,6 +37,10 @@ public class Edge {
 
 	public int getLength() {
 		return _length;
+	}
+
+	public boolean getLight() {
+		return _light;
 	}
 	
 	public List<Dot> getDots() {

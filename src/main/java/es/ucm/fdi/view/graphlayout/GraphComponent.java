@@ -1,4 +1,4 @@
-package es.ucm.fdi.extra.graphlayout;
+package es.ucm.fdi.view.graphlayout;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -22,7 +22,7 @@ public class GraphComponent extends JComponent {
 	/**
 	 * The radius of each dot
 	 */
-	private static final int _dotRadius = 5;
+	private static final int _dotRadius = 8;
 
 	/**
 	 * An inner class that represent a location of a node. Fields cX and cY are the
@@ -56,7 +56,7 @@ public class GraphComponent extends JComponent {
 	Map<String, Point> _nodesPositions;
 
 	/**
-	 * width and height of the window when it was last resized. When change we
+	 * Width and height of the window when it was last resized. When change we
 	 * recalculate the location of nodes to scale the graph, etc.
 	 */
 	private int _lastWidth;
@@ -95,7 +95,7 @@ public class GraphComponent extends JComponent {
 		}
 
 		// draw nodes
-		for (Node j : _graph.getNodes()) {
+		for ( Node j : _graph.getNodes() ) {
 			Point p = _nodesPositions.get(j.getId());
 			g.setColor(Color.blue);
 			g.fillOval(p.cX - _nodeRadius / 2, p.cY - _nodeRadius / 2, _nodeRadius, _nodeRadius);
@@ -104,28 +104,38 @@ public class GraphComponent extends JComponent {
 		}
 
 		// draw edges
-		for (Edge e : _graph.getEdges()) {
+		for ( Edge e : _graph.getEdges() ) {
 			Point p1 = _nodesPositions.get(e.getSource().getId());
 			Point p2 = _nodesPositions.get(e.getTarget().getId());
 
-			// draw the edge
-			Color arrowColor = Math.random() > 0.5 ? Color.RED : Color.GREEN;
+			// Draw the edge (road).
+			// -> Arrow color matches that of
+			// the traffic lights
+			Color arrowColor = e.getLight() ? Color.GREEN : Color.RED; // según semáforo
 			drawArrowLine(g, p1.cX, p1.cY, p2.cX, p2.cY, 15, 5, Color.BLACK, arrowColor);
 
-			// draw dots as circles. Dots at the same location are drawn with circles of
-			// different diameter.
+			// Draw dots as circles (vehicles). 
+			// -> Dots at the same location are drawn 
+			// with circles of different diameter
+			// -> Dots color changes if vehicles is
+			// faulty.
 			int lastLocation = -1;
 			int diam = _dotRadius;
-			for (Dot d : e.getDots()) {
-				if (lastLocation != d.getLocation()) {
+			for ( Dot d : e.getDots() ) {
+				
+				if ( lastLocation != d.getLocation() ) {
 					lastLocation = d.getLocation();
 					diam = _dotRadius;
-				} else {
+				} 
+				else {
 					diam += _dotRadius;
 				}
-				Color dotColor = Math.random() > 0.5 ? Color.MAGENTA : Color.ORANGE;
-				drawCircleOnALine(g, p1.cX, p1.cY, p2.cX, p2.cY, e.getLength(), d.getLocation(), diam, dotColor,
-						d.getId());
+
+				Color dotColor = d.getFaulty() ? Color.ORANGE : Color.MAGENTA;
+				drawCircleOnALine(
+						g, p1.cX, p1.cY, p2.cX, p2.cY, 
+						e.getLength(), d.getLocation(), diam, 
+						dotColor, d.getId());
 			}
 		}
 	}

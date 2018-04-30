@@ -9,14 +9,6 @@ import es.ucm.fdi.ini.IniSection;
  * como un objeto de simulación. Hereda de {@link Road}
  */
 public class HighwayRoad extends Road {
-    
-    /**
-     * Información sobre el tipo de <code>Road</code> 
-     * que debe ponerse como valor en la clave 
-     * <code>type</code> de la <code>IniSection</code> 
-     * generada.
-     */
-    private final String TYPE = "lanes";
 
     /**
      * Número de carriles de la autopista.
@@ -116,18 +108,28 @@ public class HighwayRoad extends Road {
         // Se generan los datos en el informe.
         section.setValue("id", id);
         section.setValue("time", simTime);
-        section.setValue("type", TYPE);
+        section.setValue("type", getType());
         section.setValue("state", getRoadState().toString());
 
         return section;
     }
+
+    /**
+     * {@inheritDoc}
+     * 
+     * @return  {@inheritDoc}
+     */
+    @Override
+    protected String getType() {
+		return "lanes";
+	}
 
     /*
     * ESTE MÉTODO NO CONSERVA EL ORDEN DE LOS EXPECTED OUTPUTS, 
     * PERO LA COMPARACIÓN ES CORRECTA POR SECCIONES.
     public IniSection generateIniSection(int simTime) {
         IniSection section = super.generateIniSection(simTime);
-        section.setValue("type", TYPE);
+        section.setValue("type", getType());
         
         return section;
     }

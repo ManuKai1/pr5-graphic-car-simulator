@@ -23,13 +23,6 @@ public class Junction extends SimObject {
 	protected final String REPORT_TITLE = "[junction_report]";
 
 	/**
-	 * Información sobre el tipo de intersección que
-	 * debe ponerse como valor en la clave <code>type</code>
-	 * de la <code>IniSection</code> generada.
-	 */
-	private static final String TYPE = ""; // intersección normal
-
-	/**
 	 * Mapa de <code>Roads</code> entrantes
 	 * en la <code>Junction</code>.
 	 */
@@ -306,7 +299,7 @@ public class Junction extends SimObject {
 		String red = getRedDescription();
 		
 		out.put(TableDataType.ID, id);
-		out.put(TableDataType.J_TYPE, TYPE);
+		out.put(TableDataType.J_TYPE, getType());
 		out.put(TableDataType.J_GREEN, green);
 		out.put(TableDataType.J_RED, red);
 	}
@@ -369,5 +362,18 @@ public class Junction extends SimObject {
 		return red.toString();
 	}
 
-
+	/**
+	 * Devuelve un {@code String} con el tipo de 
+	 * {@code Junction} que debe ponerse como valor 
+	 * en la clave {@code type}, tanto en la 
+	 * {@code IniSection} generada en {@code batch} 
+	 * como en la información mostrada en las 
+	 * tablas de la {@code GUI}.
+	 * 
+	 * @return 	{@code String} con el 
+	 * 			tipo de {@code Junction}
+	 */
+	protected String getType() {
+		return "-";
+	}
 }

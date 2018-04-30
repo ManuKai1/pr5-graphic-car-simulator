@@ -6,6 +6,8 @@ import java.awt.BorderLayout;
 import java.awt.event.*;
 import java.util.Random;
 
+import es.ucm.fdi.view.graphlayout.*;
+
 @SuppressWarnings("serial")
 public class GraphLayoutExample extends JFrame  {
 	
@@ -58,12 +60,12 @@ public class GraphLayoutExample extends JFrame  {
 				t = (t + 1) % numNodes;
 			}
 			int l = _rand.nextInt(30)+20;
-			Edge e = new Edge("e"+i, g.getNodes().get(s), g.getNodes().get(t), l);
+			Edge e = new Edge("e"+i, g.getNodes().get(s), g.getNodes().get(t), l, true);
 			
 			int numDots = _rand.nextInt(5);
 			for(int j=0; j<numDots; j++) {
 				l = Math.max(0, _rand.nextBoolean() ? l/2 : l);
-				e.addDot( new Dot("d"+j, l));
+				e.addDot( new Dot("d"+j, l, true));
 			}
 			
 			g.addEdge(e);

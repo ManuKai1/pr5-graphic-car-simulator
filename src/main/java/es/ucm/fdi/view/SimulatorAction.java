@@ -12,6 +12,7 @@ import java.io.InputStream;
  * Once created, can be added multiple times; and enabled and disabled
  * at all places at once.
  */
+@SuppressWarnings("serial")
 public class SimulatorAction extends AbstractAction {
 
     private static final String ICON_BASE = "icons/";

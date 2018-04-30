@@ -20,11 +20,8 @@ import org.apache.commons.cli.ParseException;
 
 import es.ucm.fdi.control.Controller;
 import es.ucm.fdi.ini.Ini;
-import es.ucm.fdi.model.simulation.SimulationException;
-import es.ucm.fdi.model.simulation.TrafficSimulation;
 import es.ucm.fdi.view.SimWindow;
 
-import javax.swing.SwingUtilities.*;
 
 public class ExampleMain {
 
