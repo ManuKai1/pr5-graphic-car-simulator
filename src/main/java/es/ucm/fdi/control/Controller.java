@@ -183,9 +183,6 @@ public class Controller {
         try {
 			simulator.execute(time, outStream);
 		}
-        catch (SimulationException e) {
-            throw e;
-        } 
         catch (IOException e) {
 			throw e;
 		} 

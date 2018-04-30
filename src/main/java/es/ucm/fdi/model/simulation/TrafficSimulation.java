@@ -115,7 +115,7 @@ public class TrafficSimulation {
 	 * 								reports generation
 	 */
 	public void execute(int steps, OutputStream file) 
-			throws IOException, SimulationException {
+			throws IOException {
 		// * //
 		// Tiempo límite en que para la simulación.
 		int timeLimit = time + steps - 1;
@@ -128,8 +128,7 @@ public class TrafficSimulation {
 			try {
 				executeEvents();
 			} catch (SimulationException e1) {
-				fireUpdateEvent(EventType.ERROR, "Simulation Exception error");
-				throw e1;
+				fireUpdateEvent(EventType.ERROR, e1.getMessage());
 			}
 			
 			// 2 // SIMULACIÓN //
@@ -172,12 +171,12 @@ public class TrafficSimulation {
 				}
 				catch (AlreadyExistingSimObjException e1) {
 					throw new SimulationException(
-						"Simulation error:\n" + e1
+						"Simulation error:\n" + e1.getMessage()
 					);
 				}
 				catch (NonExistingSimObjException e2) {
 					throw new SimulationException(
-						"Simulation error:\n" + e2
+						"Simulation error:\n" + e2.getMessage()
 					);
 				}		
 			}
@@ -202,6 +201,37 @@ public class TrafficSimulation {
 	}
 	
 	/**
+	 * Genera un string con reports de todos los SimObject.
+	 * @return String con reports creados.
+	 */
+	public String reportsToString(){
+		Ini iniFile = generateIniReports();
+		return iniFile.toString();
+	}
+	
+	/**
+	 * Genera un ini con reports de todos los SimObject.
+	 * @return Ini con reports creados.
+	 */
+	private Ini generateIniReports(){
+		//Creación de ini
+		Ini iniFile = new Ini();
+		//Junctions:
+		for (Junction junction : roadMap.getJunctions().values() ) {
+			iniFile.addsection(junction.generateIniSection(time));
+		}
+		//Roads:
+		for (Road road : roadMap.getRoads().values() ) {
+			iniFile.addsection(road.generateIniSection(time));
+		}
+		//Vehicles:
+		for (Vehicle vehicle : roadMap.getVehicles().values() ) {
+			iniFile.addsection(vehicle.generateIniSection(time));
+		}
+		return iniFile;
+	}
+	
+	/**
 	 * Genera informes de todos los SimObject.
 	 * @param file fichero de salida
 	 */
@@ -209,20 +239,7 @@ public class TrafficSimulation {
 			throws IOException {
 		
 		if (file != null) {
-			//Creación de ini
-			Ini iniFile = new Ini();
-			//Junctions:
-			for (Junction junction : roadMap.getJunctions().values() ) {
-				iniFile.addsection(junction.generateIniSection(time));
-			}
-			//Roads:
-			for (Road road : roadMap.getRoads().values() ) {
-				iniFile.addsection(road.generateIniSection(time));
-			}
-			//Vehicles:
-			for (Vehicle vehicle : roadMap.getVehicles().values() ) {
-				iniFile.addsection(vehicle.generateIniSection(time));
-			}
+			Ini iniFile = generateIniReports();
 			
 			// Guardado en el outputStream
 			try{

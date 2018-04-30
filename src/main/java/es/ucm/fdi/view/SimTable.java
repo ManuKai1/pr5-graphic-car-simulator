@@ -74,7 +74,7 @@ public class SimTable extends JPanel {
         );
     }
 
-    public void update() {
+    private void update() {
         model.fireTableDataChanged();
     }
 
@@ -95,8 +95,12 @@ public class SimTable extends JPanel {
     
     public void setList(List<? extends Describable> newList){
         tableElements = newList;
-        
         update();
+    }
+    
+    public void clear(){
+    	tableElements.clear();
+    	update();
     }
 
     public void updateList(int minTime) {

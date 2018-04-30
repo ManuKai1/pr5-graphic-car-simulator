@@ -213,11 +213,16 @@ public class SimWindow extends JFrame implements Listener {
 	}
 	
 	private void clearReports() {
-		// TODO Auto-generated method stub
+		reportsTextArea.setText("");
+		saveRep.setEnabled(false);
+		clearRep.setEnabled(false);
 	}
 
 	private void generateReports() {
-		// TODO Auto-generated method stub
+		String reports = control.getSimulator().reportsToString();
+		reportsTextArea.setText(reports);
+		clearRep.setEnabled(true);
+		saveRep.setEnabled(true);
 	}
 
 	private void runSimulator() {
@@ -230,10 +235,8 @@ public class SimWindow extends JFrame implements Listener {
 			int minTime = control.getSimulator().getCurrentTime();
 			
 			updateEventsTable(minTime);
+			generateRep.setEnabled(true);
 		} catch (IOException e) {
-			JOptionPane.showMessageDialog(this,
-					e.getMessage());
-		} catch (SimulationException e) {
 			JOptionPane.showMessageDialog(this,
 					e.getMessage());
 		}
@@ -245,6 +248,7 @@ public class SimWindow extends JFrame implements Listener {
 					getBytes()));
 			control.pushEvents();
 			run.setEnabled(true);
+			reset.setEnabled(true);
 		} catch (IllegalArgumentException e) {
 			JOptionPane.showMessageDialog(this,
 					e.getMessage());
@@ -282,7 +286,6 @@ public class SimWindow extends JFrame implements Listener {
 	}
 	
 	private void initGUI() {
-		// TODO
 		
 		initPanels();
 	
@@ -485,31 +488,6 @@ public class SimWindow extends JFrame implements Listener {
 
 
 	private void addMap() {	
-		/*
-		TEST
-
-		RoadMap map = new RoadMap();
-		Junction[] jArray = {
-			new Junction("j1"),
-			new Junction("j2"),
-			new Junction("j3"),
-			new Junction("j4")
-		};
-
-		Road[] rArray = {
-			new Road("r1", 50, 50, jArray[0], jArray[1]),
-			new Road("r2", 50, 50, jArray[1], jArray[2]),
-			new Road("r3", 50, 50, jArray[2], jArray[3]),
-		};
-
-		for (Junction j : jArray) {
-			map.addJunction(j);
-		}
-		for (Road r : rArray) {
-			map.addRoad(r);
-		}		
-		*/
-
 		RoadMap map = control.getSimulator().getRoadMap();
 
 		simGraph = new SimGraph(map);
@@ -600,7 +578,7 @@ public class SimWindow extends JFrame implements Listener {
 	}
 	
 	private void resetSimulator() {
-		//TODO
+		control.getSimulator().reset();
 	}
 	
 	@Override
@@ -609,28 +587,43 @@ public class SimWindow extends JFrame implements Listener {
 		case NEW_EVENT :
 			List<Event> addedEvents = ue.getEventQueue().valuesList();
 			eventsTable.setList(addedEvents);
-			eventsTable.update();
 			break;
 		case ADVANCED :
+			timeViewer.setText("" + control.getExecutionTime());
+			
 			List<Junction> addedJunctions = 
 				new ArrayList<Junction>(ue.getRoadMap().
 						getJunctions().values());
 			junctionsTable.setList(addedJunctions);
-			junctionsTable.update();
 			
 			List<Vehicle> addedVehicles = 
 				new ArrayList<Vehicle>(ue.getRoadMap().
 						getVehicles().values());
 			vehiclesTable.setList(addedVehicles);
-			vehiclesTable.update();
 			
 			List<Road> addedRoads = 
 				new ArrayList<Road>(ue.getRoadMap().
 						getRoads().values());
 			roadsTable.setList(addedRoads);
-			roadsTable.update();
 			
 			simGraph.generateGraph();
+			break;
+		case RESET :
+			clearReports();
+			generateRep.setEnabled(false);
+			reset.setEnabled(false);
+			run.setEnabled(false);
+			eventsTable.clear();
+			junctionsTable.clear();
+			roadsTable.clear();
+			vehiclesTable.clear();
+			simGraph.generateGraph();
+			timeViewer.setText("" + control.getExecutionTime());
+			break;
+		case ERROR:
+			JOptionPane.showMessageDialog(this,
+					error);
+			break;
 		}
 	}
 
