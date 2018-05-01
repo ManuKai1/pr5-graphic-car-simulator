@@ -2,6 +2,7 @@ package es.ucm.fdi.view;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.KeyEvent;
@@ -42,7 +43,6 @@ import es.ucm.fdi.model.SimObj.Road;
 import es.ucm.fdi.model.SimObj.Vehicle;
 import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.model.simulation.RoadMap;
-import es.ucm.fdi.model.simulation.SimulationException;
 import es.ucm.fdi.model.simulation.TrafficSimulation.Listener;
 import es.ucm.fdi.model.simulation.TrafficSimulation.UpdateEvent;
 import es.ucm.fdi.util.Describable;
@@ -123,7 +123,7 @@ public class SimWindow extends JFrame implements Listener {
 	private JToolBar toolBar = new JToolBar();
 	
 	private JFileChooser fileChooser = new JFileChooser();;
-	private File currentFile;
+	private File currentFile = null;
 	
 	private JSpinner stepsSpinner = new JSpinner();
 	
@@ -131,6 +131,8 @@ public class SimWindow extends JFrame implements Listener {
 	
 	private JTextArea eventsTextArea = new JTextArea();
 	private JTextArea reportsTextArea = new JTextArea();
+	
+	private JLabel infoText = new JLabel("Simulator initialized correctly.");
 	
 	// Tablas
 	private SimTable eventsTable;
@@ -203,68 +205,28 @@ public class SimWindow extends JFrame implements Listener {
 					KeyEvent.VK_ESCAPE, "Control + Shift + ESC", 
 					() -> quit());
 	
+	/**
+	 * Constructor dado un controlador y un posible fichero de entrada.
+	 * @param ctrl : Controlador a usar.
+	 * @param inFileName : Fichero de entrada de eventos.
+	 */
 	public SimWindow(Controller ctrl, String inFileName) {
 		super("Traffic Simulator");
 		control = ctrl;
-		currentFile = inFileName != null ? new File(inFileName) : null;
 		//control.setOutStream(reports);
 		initGUI();
+		
+		if(inFileName != null){
+			currentFile = new File(inFileName);
+			fileToEvents();
+		}
 		control.getSimulator().addSimulatorListener(this);
 	}
 	
-	private void clearReports() {
-		reportsTextArea.setText("");
-		saveRep.setEnabled(false);
-		clearRep.setEnabled(false);
-	}
-
-	private void generateReports() {
-		String reports = control.getSimulator().reportsToString();
-		reportsTextArea.setText(reports);
-		clearRep.setEnabled(true);
-		saveRep.setEnabled(true);
-	}
-
-	private void runSimulator() {
-		//De momento, se ejecuta con outstream null.
-		try {
-			control.getSimulator().execute((int) stepsSpinner.getValue(),
-					null);
-
-			// Se actualiza la tabla de eventos.
-			int minTime = control.getSimulator().getCurrentTime();
-			
-			updateEventsTable(minTime);
-			generateRep.setEnabled(true);
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(this,
-					e.getMessage());
-		}
-	}
-
-	private void eventsToSim() {
-		try {
-			control.setIniInput(new ByteArrayInputStream(eventsTextArea.getText().
-					getBytes()));
-			control.pushEvents();
-			run.setEnabled(true);
-			reset.setEnabled(true);
-		} catch (IllegalArgumentException e) {
-			JOptionPane.showMessageDialog(this,
-					e.getMessage());
-		} catch (ParseException e) {
-			JOptionPane.showMessageDialog(this,
-					e.getMessage());
-		} catch (IOException e) {
-			JOptionPane.showMessageDialog(this,
-					e.getMessage());
-		}
-	}
-
-	private void clearEvents() {
-		eventsTextArea.setText("");
-	}
-
+	/**
+	 * Añade los componentes principales
+	 * a la interfaz.
+	 */
 	private void addComponentsToLayout(){
 		addMenuBar(); // barra de menus
 		addToolBar(); // barra de herramientas
@@ -275,16 +237,26 @@ public class SimWindow extends JFrame implements Listener {
 		addRoadsTable(); // tabla de carreteras
 		addJunctionsTable(); // tabla de cruces
 		addMap(); // mapa de carreteras
-		// addStatusBar(); // barra de estado
+		addInfoZone(); // barra de estado
 	}
 	
-	
+	/**
+	 * Crea el layout central de
+	 * la ventana principal.
+	 * (La toolbar y la zona de información
+	 * se añaden en su propia función)
+	 */
 	private void initPanels(){
 		tablesAndGraph.setResizeWeight(.5);
 		lowAndTop.setResizeWeight(.5);
 		add(lowAndTop, BorderLayout.CENTER);
+		
+		
 	}
 	
+	/**
+	 * Inicialización completa de la interfaz
+	 */
 	private void initGUI() {
 		
 		initPanels();
@@ -298,11 +270,6 @@ public class SimWindow extends JFrame implements Listener {
 		tablesAndGraph.setDividerLocation(HORIZONTAL_SPLIT);
 		lowAndTop.setDividerLocation(VERTICAL_SPLIT);
 	}
-
-	
-
-
-	
 
 	/**
 	 * Función que crea 
@@ -381,8 +348,9 @@ public class SimWindow extends JFrame implements Listener {
 		add(toolBar, BorderLayout.PAGE_START);
 	}
 	
-
-
+	/**
+	 * Creación de la zona de escritura de eventos.
+	 */
 	private void addEventsEditor(){
 		eventsTextArea.setEditable(true);
 		eventsTextArea.setLineWrap(true);
@@ -427,8 +395,9 @@ public class SimWindow extends JFrame implements Listener {
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
 	}
 
-	
-	
+	/**
+	 * Creación de la tabla de eventos.
+	 */
 	private void addEventsView() {
 		MultiTreeMap<Integer, Event> eventsMap = control.getSimulator().getEvents();
 		List<Event> eventsList = eventsMap.valuesList();
@@ -438,8 +407,9 @@ public class SimWindow extends JFrame implements Listener {
 		eventsAndReports.add(eventsTable);
 	}
 	
-	
-	
+	/**
+	 * Creación de la zona de informes
+	 */
 	private void addReportsArea(){
 		reportsTextArea.setEditable(false);
 		reportsTextArea.setLineWrap(true);
@@ -452,8 +422,9 @@ public class SimWindow extends JFrame implements Listener {
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED));
 	}
 	
-
-	
+	/**
+	 * Creación de la tabla de cruces
+	 */
 	private void addJunctionsTable() {
 		List<Junction> junctions = new ArrayList<>(
 			control.getSimulator().getRoadMap().getJunctions().values()
@@ -463,8 +434,9 @@ public class SimWindow extends JFrame implements Listener {
 		tablesPanel.add(junctionsTable);
 	}
 	
-
-	
+	/**
+	 * Creación de la tabla de carreteras
+	 */
 	private void addRoadsTable() {
 		List<Road> roads = new ArrayList<>(
 			control.getSimulator().getRoadMap().getRoads().values()
@@ -474,8 +446,9 @@ public class SimWindow extends JFrame implements Listener {
 		tablesPanel.add(roadsTable);
 	}
 	
-
-	
+	/**
+	 * Creación de la tabla de vehículos
+	 */
 	private void addVehiclesTable() {
 		List<Vehicle> vehicles = new ArrayList<>(
 			control.getSimulator().getRoadMap().getVehicles().values()
@@ -485,8 +458,9 @@ public class SimWindow extends JFrame implements Listener {
 		tablesPanel.add(vehiclesTable);
 	}
 	
-
-
+	/**
+	 * Creación del mapa de carreteras (grafo)
+	 */
 	private void addMap() {	
 		RoadMap map = control.getSimulator().getRoadMap();
 
@@ -494,6 +468,37 @@ public class SimWindow extends JFrame implements Listener {
 		graphPanel.add(simGraph);
 	}
 	
+	/**
+	 * Creación de la barra de información
+	 */
+	private void addInfoZone(){
+		JPanel infoZone = new JPanel();
+		infoZone.setLayout(new FlowLayout(FlowLayout.LEFT));
+		infoZone.add(infoText);
+		add(infoZone, BorderLayout.PAGE_END);
+	}
+	
+	/**
+	 * Método que escribe los datos de un
+	 * fichero en la zona de eventos.
+	 */
+	private void fileToEvents(){
+		try {
+			//Lectura de fichero y paso de bytes a String
+		    byte[] byteText = Files.readAllBytes(currentFile.toPath());
+		    String text = new String(byteText);
+		    eventsTextArea.setText(text);
+		    infoText.setText("Events file loaded.");
+		}
+		catch(Exception e){
+			JOptionPane.showMessageDialog(this,
+					"Error while loading the file.");
+		}
+	}
+	
+	/**
+	 * Carga en su área correspondiente un fichero de eventos.
+	 */
 	private void loadFile(){
 		// Abre la ventana del selector y espera la respuesta
 		// del usuario.
@@ -501,19 +506,14 @@ public class SimWindow extends JFrame implements Listener {
 		//Si fue un éxito
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			currentFile = fileChooser.getSelectedFile();
-			try {
-				//Lectura de fichero y paso de bytes a String
-			    byte[] byteText = Files.readAllBytes(currentFile.toPath());
-			    String text = new String(byteText);
-			    eventsTextArea.setText(text);
-			}
-			catch(Exception e){
-				JOptionPane.showMessageDialog(this,
-						"Error while loading the file.");
-			}
+			fileToEvents();
 		}
 	}
 	
+	/**
+	 * Guarda en un fichero el texto de cierto recuadro.
+	 * @param fromArea : Área de la que se recibe el texto.
+	 */
 	private void saveFile(JTextArea fromArea) { 
 		int returnValue = fileChooser.showSaveDialog(this);
 		if (returnValue == JFileChooser.APPROVE_OPTION){
@@ -529,6 +529,7 @@ public class SimWindow extends JFrame implements Listener {
 				//Mensaje de éxito
 				JOptionPane.showMessageDialog(this,
 					"The file was saved.");
+				infoText.setText("File saved.");
 					
 			} catch (Exception e) {
 				JOptionPane.showMessageDialog(this,
@@ -544,17 +545,97 @@ public class SimWindow extends JFrame implements Listener {
 			}
 		}
 	}
-
+	
+	/**
+	 * Activa los botones de eventos
+	 * (para cuando son usables)
+	 */
 	private void enableEventButtons(){
 	    save.setEnabled(true);
 	    clear.setEnabled(true);
 	    insertEvents.setEnabled(true);
 	}
 	
+	/**
+	 * Desactiva los botones de eventos
+	 * (para cuando no son usables)
+	 */
 	private void disableEventButtons(){
 	    save.setEnabled(false);
 	    clear.setEnabled(false);
 	    insertEvents.setEnabled(false);
+	}
+	
+	/**
+	 * Método que limpia el área de informes.
+	 */
+	private void clearReports() {
+		reportsTextArea.setText("");
+		saveRep.setEnabled(false);
+		clearRep.setEnabled(false);
+		infoText.setText("Reports cleared.");
+	}
+
+	/**
+	 * Método que genera en su área los informes
+	 * correspondientes al tiempo actual.
+	 */
+	private void generateReports() {
+		String reports = control.getSimulator().reportsToString();
+		reportsTextArea.setText(reports);
+		clearRep.setEnabled(true);
+		saveRep.setEnabled(true);
+		infoText.setText("Generated reports for current time.");
+	}
+
+	/**
+	 * Método que ejecuta el simulador el
+	 * número de pasos que el usuario haya seleccionado.
+	 */
+	private void runSimulator() {
+		//TODO
+		//De momento, se ejecuta con outstream null.
+		try {
+			control.getSimulator().execute((int) stepsSpinner.getValue(),
+					null);
+
+			// Se actualiza la tabla de eventos.
+			int minTime = control.getSimulator().getCurrentTime();
+			
+			updateEventsTable(minTime);
+			generateRep.setEnabled(true);
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(this,
+					e.getMessage());
+		}
+	}
+
+	/**
+	 * Método que transfiere los eventos de
+	 * la zona de texto al simulador.
+	 */
+	private void eventsToSim() {
+		try {
+			control.setIniInput(new ByteArrayInputStream(eventsTextArea.getText().
+					getBytes()));
+			control.pushEvents();
+			run.setEnabled(true);
+			reset.setEnabled(true);
+		} catch (IllegalArgumentException e) {
+			JOptionPane.showMessageDialog(this,
+					e.getMessage());
+		} catch (ParseException e) {
+			JOptionPane.showMessageDialog(this,
+					e.getMessage());
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(this,
+					e.getMessage());
+		}
+	}
+
+	private void clearEvents() {
+		eventsTextArea.setText("");
+		infoText.setText("Events cleared.");
 	}
 	
 	/**
@@ -577,16 +658,23 @@ public class SimWindow extends JFrame implements Listener {
 		}
 	}
 	
+	/**
+	 * Resetea el simulador
+	 */
 	private void resetSimulator() {
 		control.getSimulator().reset();
 	}
 	
+	/**
+	 * Recibe eventos y actualiza la GUI convenientemente.
+	 */
 	@Override
 	public void update(UpdateEvent ue, String error) {
 		switch(ue.getEvent()){
 		case NEW_EVENT :
 			List<Event> addedEvents = ue.getEventQueue().valuesList();
 			eventsTable.setList(addedEvents);
+			infoText.setText("Events added to the simulator.");
 			break;
 		case ADVANCED :
 			timeViewer.setText("" + control.getExecutionTime());
@@ -607,6 +695,8 @@ public class SimWindow extends JFrame implements Listener {
 			roadsTable.setList(addedRoads);
 			
 			simGraph.generateGraph();
+			
+			infoText.setText("Simulation playing...");
 			break;
 		case RESET :
 			clearReports();
@@ -619,10 +709,11 @@ public class SimWindow extends JFrame implements Listener {
 			vehiclesTable.clear();
 			simGraph.generateGraph();
 			timeViewer.setText("" + control.getExecutionTime());
+			infoText.setText("Simulation reset.");
 			break;
 		case ERROR:
 			JOptionPane.showMessageDialog(this,
-					error);
+					error, "Simulator error", JOptionPane.WARNING_MESSAGE);
 			break;
 		}
 	}
