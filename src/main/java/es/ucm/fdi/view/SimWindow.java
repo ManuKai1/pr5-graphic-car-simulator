@@ -17,6 +17,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -103,7 +104,7 @@ public class SimWindow extends JFrame implements Listener {
 	};
 	
 	private Controller control;
-	private OutputStream reports;
+	private OutputStream reports = null;
 
 	private JPanel eventsAndReports = new JPanel( new GridLayout(1, 3));
 	private JPanel tablesPanel = new JPanel( new GridLayout(3, 1));
@@ -148,62 +149,80 @@ public class SimWindow extends JFrame implements Listener {
 	private SimulatorAction load =
 			new SimulatorAction("Load Events", "open.png", 
 					"Load an events file",
-					KeyEvent.VK_L, "Control + Shift + L", 
+					KeyEvent.VK_L, "control shift L", 
 					() -> loadFile());
 	
 	private SimulatorAction save =
 			new SimulatorAction("Save Events", "save.png", 
 					"Save an events file",
-					KeyEvent.VK_S, "Control + Shift + S", 
+					KeyEvent.VK_S, "control shift S", 
 					() -> saveFile(eventsTextArea));
 	
 	private SimulatorAction clear = 
 			new SimulatorAction("Clear Events", "clear.png",
 					"Clear event zone",
-					KeyEvent.VK_C, "Control + Shift + C", 
+					KeyEvent.VK_C, "control shift C", 
 					() -> clearEvents());
 	
 	private SimulatorAction insertEvents = 
 			new SimulatorAction("Insert Events", "events.png",
 					"Add events to simulation",
-					KeyEvent.VK_E, "Control + Shift + E", 
+					KeyEvent.VK_E, "control shift E", 
 					() -> eventsToSim());
 	
 	private SimulatorAction run =
 			new SimulatorAction("Run", "play.png", 
 					"Run the simulator",
-					KeyEvent.VK_P, "Control + Shift + P", 
+					KeyEvent.VK_P, "control shift P", 
 					() -> runSimulator());
 
 	private SimulatorAction reset =
 			new SimulatorAction("Reset", "reset.png",
 					"Reset the simulator",
-					KeyEvent.VK_R, "Control + Shift + R", 
+					KeyEvent.VK_R, "control shift R", 
 					() -> resetSimulator());
 	
 	private SimulatorAction generateRep =
 			new SimulatorAction("Generate Reports", "report.png",
 					"Report generator",
-					KeyEvent.VK_G, "Control + Shift + G", 
+					KeyEvent.VK_G, "control shift G", 
 					() -> generateReports());
 	
 	private SimulatorAction clearRep =
 			new SimulatorAction("Clear Reports", "delete_report.png",
 					"Clears reports",
-					KeyEvent.VK_D, "Control + Shift + D", 
+					KeyEvent.VK_D, "control shift D", 
 					() -> clearReports());
 	
 	private SimulatorAction saveRep =
 			new SimulatorAction("Save Reports", "save_report.png",
 					"Save reports to file",
-					KeyEvent.VK_F, "Control + Shift + F", 
+					KeyEvent.VK_F, "control shift F", 
 					() -> saveFile(reportsTextArea));
+	
+	private SimulatorAction changeOutput =
+			new SimulatorAction("Change Output", "report.png",
+					"Redirects output to reports area",
+					KeyEvent.VK_O, "control shift O", 
+					() -> changeOutput());
 	
 	private SimulatorAction exit =
 			new SimulatorAction("Exit", "exit.png",
 					"Exit the simulator",
-					KeyEvent.VK_ESCAPE, "Control + Shift + ESC", 
+					KeyEvent.VK_ESCAPE, "control shift ESC", 
 					() -> quit());
+	
+	/**
+	 * Clase interna que representa la
+	 * redirección de los reports a su área de texto.
+	 */
+	private class ReportStream extends OutputStream{
+
+		public void write(int arg0) throws IOException {
+			reportsTextArea.append("" + (char) arg0);			
+		}
+		
+	}
 	
 	/**
 	 * Constructor dado un controlador y un posible fichero de entrada.
@@ -213,7 +232,6 @@ public class SimWindow extends JFrame implements Listener {
 	public SimWindow(Controller ctrl, String inFileName) {
 		super("Traffic Simulator");
 		control = ctrl;
-		//control.setOutStream(reports);
 		initGUI();
 		
 		if(inFileName != null){
@@ -278,17 +296,21 @@ public class SimWindow extends JFrame implements Listener {
 	private void addMenuBar() {
 		fileMenu.add(load);
 		fileMenu.add(save);
-		fileMenu.addSeparator();
-		fileMenu.add(saveRep);
+		fileMenu.add(clear);
 		fileMenu.addSeparator();
 		fileMenu.add(exit);
 		
 		simulatorMenu.add(run);
 		simulatorMenu.add(reset);
-		//simulatorMenu.add(redirectOutput);
+		
 		
 		reportsMenu.add(generateRep);
+		reportsMenu.add(saveRep);
 		reportsMenu.add(clearRep);
+		reportsMenu.addSeparator();
+		JCheckBoxMenuItem redirectOutput = 
+				new JCheckBoxMenuItem(changeOutput);
+		reportsMenu.add(redirectOutput);
 		
 		menuBar.add(fileMenu);
 		menuBar.add(simulatorMenu);
@@ -593,17 +615,19 @@ public class SimWindow extends JFrame implements Listener {
 	 * número de pasos que el usuario haya seleccionado.
 	 */
 	private void runSimulator() {
-		//TODO
-		//De momento, se ejecuta con outstream null.
 		try {
 			control.getSimulator().execute((int) stepsSpinner.getValue(),
-					null);
+					reports);
 
 			// Se actualiza la tabla de eventos.
 			int minTime = control.getSimulator().getCurrentTime();
 			
 			updateEventsTable(minTime);
 			generateRep.setEnabled(true);
+			if(reports != null){
+				clearRep.setEnabled(true);
+				saveRep.setEnabled(true);
+			}
 		} catch (IOException e) {
 			JOptionPane.showMessageDialog(this,
 					e.getMessage());
@@ -636,6 +660,13 @@ public class SimWindow extends JFrame implements Listener {
 	private void clearEvents() {
 		eventsTextArea.setText("");
 		infoText.setText("Events cleared.");
+	}
+	
+	private void changeOutput(){
+		if(reports == null){
+			reports = new ReportStream();
+		}
+		else reports = null;
 	}
 	
 	/**
@@ -677,7 +708,7 @@ public class SimWindow extends JFrame implements Listener {
 			infoText.setText("Events added to the simulator.");
 			break;
 		case ADVANCED :
-			timeViewer.setText("" + control.getExecutionTime());
+			timeViewer.setText("" + (control.getExecutionTime() + 1));
 			
 			List<Junction> addedJunctions = 
 				new ArrayList<Junction>(ue.getRoadMap().
