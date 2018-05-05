@@ -28,7 +28,7 @@ public abstract class SimObject implements Describable {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public abstract void describe(Map<TableDataType, String> out);
+	public abstract void describe(Map<TableDataType, Object> out);
 
 	public abstract IniSection generateIniSection(int simTime);
 

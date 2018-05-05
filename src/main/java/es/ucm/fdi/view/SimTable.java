@@ -26,7 +26,8 @@ public class SimTable extends JPanel {
 
     private class ListOfMapsTableModel extends AbstractTableModel {
         
-        public Map<TableDataType, String> elementData = new HashMap<>();
+        public Map<TableDataType, Object> elementData = new HashMap<>();
+        public Map<Integer, Boolean> reportChecks = new HashMap<>();
 
         @Override
         public String getColumnName(int columnIndex) {
@@ -46,16 +47,70 @@ public class SimTable extends JPanel {
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             
-            // Se trata el caso especial de la tabla de eventos.
+            // Caso de la numeración de la tabla de eventos.
             if ( headers[columnIndex] == TableDataType.E_NUM ) {
                 return  Integer.toString(rowIndex + 1);
             }
-            else {
-                tableElements.get(rowIndex).describe(elementData);
 
-                return  elementData.get(headers[columnIndex]);
-            }            
+            // Caso de los checks para acotar reports.
+            if ( headers[columnIndex] == TableDataType.REPORT ) {
+                Boolean check = reportChecks.get(rowIndex);
+
+                if (check == null) {
+                    return true;
+                }
+                else {
+                    return check;
+                }
+            }
+            
+            // Caso normal.
+            tableElements.get(rowIndex).describe(elementData);
+
+            return  elementData.get(headers[columnIndex]);
         }
+
+        /**
+         * {@inheritDoc}
+         * Overriden so that the JTable renders Booleans as
+         * JCheckBoxes.
+         */
+        @Override
+        public Class<?> getColumnClass(int columnIndex) {
+            if (headers[columnIndex] == TableDataType.REPORT) {
+                return Boolean.class;
+            }
+            else {
+                return String.class;
+            }
+        }
+
+        /**
+         * {@inheritDoc}
+         * Overriden so that JCheckBoxex can be edited.
+         */
+        @Override
+        public boolean isCellEditable(int rowIndex, int columnIndex) {
+            if ( headers[columnIndex] == TableDataType.REPORT ) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+        /**
+         * {@inheritDoc}
+         * Overriden so that JCheckBoxes can be (un)checked.
+         * Only checkBoxes can be set.
+         */
+        @Override
+        public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+            if ( headers[columnIndex] == TableDataType.REPORT ) {
+                reportChecks.put(rowIndex, (Boolean) aValue);
+            }
+        }
+        
     }
 
     public SimTable(TableDataType[] head, List<? extends Describable> elements) {
@@ -66,12 +121,13 @@ public class SimTable extends JPanel {
 
         // Se crea la tabla basada en el modelo.
         table = new JTable(model);
+        table.setRowSelectionAllowed(false);
 
         // Se añade la tabla al panel
         this.add( new JScrollPane(table,
         		JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED)
-        );
+        );   
     }
 
     private void update() {

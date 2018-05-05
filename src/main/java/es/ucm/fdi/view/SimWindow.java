@@ -76,6 +76,7 @@ public class SimWindow extends JFrame implements Listener {
 	};
 
 	private final TableDataType[] junctionDataHeaders = {
+			TableDataType.REPORT,
 			TableDataType.ID,
 			TableDataType.J_TYPE,
 			TableDataType.J_GREEN,
@@ -83,6 +84,7 @@ public class SimWindow extends JFrame implements Listener {
 	};
 
 	private final TableDataType[] roadDataHeaders = {
+			TableDataType.REPORT,
 			TableDataType.ID,
 			TableDataType.R_TYPE,
 			TableDataType.R_SOURCE,
@@ -93,6 +95,7 @@ public class SimWindow extends JFrame implements Listener {
 	};
 
 	private final TableDataType[] vehicleDataHeaders = {
+			TableDataType.REPORT,
 			TableDataType.ID,
 			TableDataType.V_TYPE,
 			TableDataType.V_ROAD,
@@ -453,7 +456,8 @@ public class SimWindow extends JFrame implements Listener {
 		);
 		
 		junctionsTable = new SimTable(junctionDataHeaders, junctions);
-		tablesPanel.add(junctionsTable);
+
+		tablesPanel.add(junctionsTable);	
 	}
 	
 	/**

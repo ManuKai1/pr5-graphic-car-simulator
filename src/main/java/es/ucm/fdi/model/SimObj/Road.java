@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.simulation.SimulationException;
 import es.ucm.fdi.util.TableDataType;
@@ -651,7 +652,7 @@ public class Road extends SimObject {
 	 * @param out {@inheritDoc}
 	 */
 	@Override
-	public void describe(Map<TableDataType, String> out) {
+	public void describe(Map<TableDataType, Object> out) {
 		String source = fromJunction.getID();
 		String target = toJunction.getID();
 		String length = Integer.toString(this.length);

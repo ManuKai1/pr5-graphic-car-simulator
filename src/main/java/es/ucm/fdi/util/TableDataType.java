@@ -5,7 +5,8 @@ public enum TableDataType {
     E_TIME("Time"),   // For event execution time
     E_TYPE("Type"),   // For event description
 
-    ID("ID"),       // For object id
+    ID("ID"),           // For object id
+    REPORT("Report"),   // For object report
     
     J_TYPE("Type"),
     J_GREEN("Green"), // For data on green roads

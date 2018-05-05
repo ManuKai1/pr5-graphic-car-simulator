@@ -294,7 +294,7 @@ public class Junction extends SimObject {
 	 * @param out {@inheritDoc}
 	 */
 	@Override
-	public void describe(Map<TableDataType, String> out) {
+	public void describe(Map<TableDataType, Object> out) {
 		String green = getGreenDescription();
 		String red = getRedDescription();
 		

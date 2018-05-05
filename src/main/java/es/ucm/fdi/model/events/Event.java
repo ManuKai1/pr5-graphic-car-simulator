@@ -29,7 +29,7 @@ public abstract class Event implements Describable {
 	}
 
 	@Override
-	public void describe(Map<TableDataType, String> out)
+	public void describe(Map<TableDataType, Object> out)
 	{
 		// Inclusión en el mapa.
 		String time = Integer.toString(this.time);

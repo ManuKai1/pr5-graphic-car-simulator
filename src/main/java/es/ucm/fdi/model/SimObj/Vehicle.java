@@ -323,7 +323,7 @@ public class Vehicle extends SimObject {
 	 * @param out {@inheritDoc}
 	 */
 	@Override
-	public void describe(Map<TableDataType, String> out) {
+	public void describe(Map<TableDataType, Object> out) {
 		// Strings
 		String type = getType();
 		String road = this.road.getID();
