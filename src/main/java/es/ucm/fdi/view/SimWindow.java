@@ -5,9 +5,14 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -23,8 +28,10 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JSplitPane;
@@ -39,6 +46,8 @@ import javax.swing.event.DocumentListener;
 import org.apache.commons.cli.ParseException;
 
 import es.ucm.fdi.control.Controller;
+import es.ucm.fdi.ini.Ini;
+import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.SimObj.Junction;
 import es.ucm.fdi.model.SimObj.Road;
 import es.ucm.fdi.model.SimObj.Vehicle;
@@ -67,6 +76,9 @@ public class SimWindow extends JFrame implements Listener {
 	//Para las áreas de texto
 	private final String EVENTS_TITLE = "Events";
 	private final String REPORTS_TITLE = "Reports";
+	
+	//Para el menu contextual de eventos
+	private final String FRIENDLY_KEY = "friendly";
 
 	// Para las tablas.
 	private final TableDataType[] eventDataHeaders = {
@@ -259,6 +271,7 @@ public class SimWindow extends JFrame implements Listener {
 		addJunctionsTable(); // tabla de cruces
 		addMap(); // mapa de carreteras
 		addInfoZone(); // barra de estado
+		addEditor(); // menu contextual eventos
 	}
 	
 	/**
@@ -502,6 +515,78 @@ public class SimWindow extends JFrame implements Listener {
 		infoZone.setLayout(new FlowLayout(FlowLayout.LEFT));
 		infoZone.add(infoText);
 		add(infoZone, BorderLayout.PAGE_END);
+	}
+	
+	/**
+	 * Creación del menú contextual para
+	 * añadir eventos predeterminados.
+	 */
+	private void addEditor(){
+		JPopupMenu editorPopupMenu = new JPopupMenu();
+		editorPopupMenu.add(load);
+		editorPopupMenu.add(save);
+		editorPopupMenu.add(clear);
+		editorPopupMenu.addSeparator();
+		
+		JMenu subMenu = new JMenu("Insert");
+		
+		try {
+			//Fichero de plantillas
+			Ini ini = new Ini(new FileInputStream(
+					"src/main/resources/util/templates.ini"));
+			List<IniSection> sections = ini.getSections();
+			//Creación de botones del menú
+			for(IniSection section : sections){
+				JMenuItem insert = new JMenuItem(section.
+						getValue(FRIENDLY_KEY));
+				section.eraseKey(FRIENDLY_KEY);
+				insert.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						eventsTextArea.insert(section.toString(), 
+								eventsTextArea.getCaretPosition());
+					}
+				});
+				subMenu.add(insert);
+			}
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(this,
+					"templates.ini file missing.", "Templates error",
+					JOptionPane.WARNING_MESSAGE);
+		}
+		editorPopupMenu.add(subMenu);
+		eventsTextArea.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				showPopup(e);
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				showPopup(e);
+			}
+
+			private void showPopup(MouseEvent e) {
+				if (e.isPopupTrigger() && editorPopupMenu.isEnabled()) {
+					editorPopupMenu.show(e.getComponent(), e.getX(), e.getY());
+				}
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+			}
+		});
+		
 	}
 	
 	/**
@@ -750,6 +835,7 @@ public class SimWindow extends JFrame implements Listener {
 			JOptionPane.showMessageDialog(this,
 					error, "Simulator error", JOptionPane.WARNING_MESSAGE);
 			break;
+		default : break;
 		}
 	}
 

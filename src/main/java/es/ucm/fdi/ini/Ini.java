@@ -116,7 +116,7 @@ public class Ini {
 				}
 
 				if (!matched) {
-					throw new IniError("Syntax error: " + line);
+					throw new IOException("Syntax error: line " + line);
 				}
 			}
 		}

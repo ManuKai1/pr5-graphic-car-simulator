@@ -102,6 +102,15 @@ public class IniSection {
 	}
 
 	/**
+	 * Deletes a key from the map and key list
+	 * @param key to erase
+	 */
+	public void eraseKey(String key){
+		_keys.remove(key);
+		_attr.remove(key);
+	}
+	
+	/**
 	 * Returns the value corresponding to a given key
 	 * 
 	 * @param key
@@ -135,6 +144,15 @@ public class IniSection {
 	 */
 	public Map<String, String> getKeysMap() {
 		return Collections.unmodifiableMap(_attr);
+	}
+	
+	/**
+	 * Returns the comments map of this section.
+	 * 
+	 * @return the comments map of this section.
+	 */
+	public Map<String, List<String>> getCommentsMap() {
+		return Collections.unmodifiableMap(_comments);
 	}
 
 	/**

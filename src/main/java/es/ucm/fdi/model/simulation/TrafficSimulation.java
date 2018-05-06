@@ -10,6 +10,7 @@ import javax.swing.SwingUtilities;
 import es.ucm.fdi.ini.Ini;
 import es.ucm.fdi.model.SimObj.Junction;
 import es.ucm.fdi.model.SimObj.Road;
+import es.ucm.fdi.model.SimObj.SimObject;
 import es.ucm.fdi.model.SimObj.Vehicle;
 import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.util.EventType;
@@ -52,7 +53,6 @@ public class TrafficSimulation {
 			return time;
 		}
 	}
-
 	
 	/**
 	 * Mapa de eventos donde: Integer representa el tiempo de
