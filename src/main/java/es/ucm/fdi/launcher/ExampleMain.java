@@ -323,9 +323,12 @@ public class ExampleMain {
 	private static void startBatchMode() throws Exception {		
 		// Argumentos
 		Ini iniInput = new Ini(_inFile);
-		File outFile = new File(_outFile);
-		OutputStream os = new FileOutputStream(outFile);
-
+		OutputStream os = System.out;
+		if(_outFile != null){
+			File outFile = new File(_outFile);
+			os = new FileOutputStream(outFile);
+		}
+		
 		// Controlador
 		Controller control = new Controller(iniInput, os, _timeLimit);
 
