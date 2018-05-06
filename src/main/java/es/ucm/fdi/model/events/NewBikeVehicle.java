@@ -7,6 +7,7 @@ import es.ucm.fdi.model.SimObj.BikeVehicle;
 import es.ucm.fdi.model.SimObj.Junction;
 import es.ucm.fdi.model.simulation.AlreadyExistingSimObjException;
 import es.ucm.fdi.model.simulation.NonExistingSimObjException;
+import es.ucm.fdi.model.simulation.SimulationException;
 import es.ucm.fdi.model.simulation.TrafficSimulation;
 
 /**
@@ -40,14 +41,18 @@ public class NewBikeVehicle extends NewVehicle {
 	 * 
 	 * @throws AlreadyExistingSimObjException 	if <code>Vehicle</code> 
 	 * 											ID already registered
+	 * @throws NonExistingSimObjException 		if a junction on its itinerary
+	 * 											is nonexistent.
 	 */
 	@Override
 	public void execute(TrafficSimulation sim) 
-			throws AlreadyExistingSimObjException {
+			throws AlreadyExistingSimObjException, NonExistingSimObjException {
 		try {
 			super.execute(sim);
 		} 
 		catch (AlreadyExistingSimObjException e) {
+			throw e;
+		} catch (NonExistingSimObjException e) {
 			throw e;
 		}
 	}
@@ -80,6 +85,7 @@ public class NewBikeVehicle extends NewVehicle {
 	 * @return 		<code>BikeVehicle</code> con los datos del <code>Event</code>
 	 * 
 	 * @throws NonExistingSimObjException 	si alguna <code>Junction</code>
+	 * 										o <code>Road<code>
 	 * 										en la ruta no está registrada
 	 */
 	@Override
@@ -103,6 +109,10 @@ public class NewBikeVehicle extends NewVehicle {
 			}
 		}
 		
-		return	new BikeVehicle( getId(), trip, maxSpeed );
+		try {
+			return	new BikeVehicle( getId(), trip, maxSpeed );
+		} catch (SimulationException e) {
+			throw new NonExistingSimObjException(e.getMessage());
+		}
 	}
 }

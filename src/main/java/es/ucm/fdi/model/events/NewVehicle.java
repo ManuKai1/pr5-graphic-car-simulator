@@ -7,6 +7,7 @@ import es.ucm.fdi.model.SimObj.Junction;
 import es.ucm.fdi.model.SimObj.Vehicle;
 import es.ucm.fdi.model.simulation.AlreadyExistingSimObjException;
 import es.ucm.fdi.model.simulation.NonExistingSimObjException;
+import es.ucm.fdi.model.simulation.SimulationException;
 import es.ucm.fdi.model.simulation.TrafficSimulation;
 
 /**
@@ -89,17 +90,18 @@ public class NewVehicle extends Event {
 	 * 
 	 * @throws AlreadyExistingSimObjException 	if <code>Vehicle</code> 
 	 * 											ID already registered 
+	 * @throws NonExistingSimObjException 
 	 */
 	@Override
 	public void execute(TrafficSimulation sim) 
-			throws AlreadyExistingSimObjException {
+			throws AlreadyExistingSimObjException, NonExistingSimObjException {
 		if ( ! sim.getRoadMap().existsVehicleID(id) ) {
 			try {
 				Vehicle newV = newVehicle(sim);
 				sim.addVehicle(newV);
 			}
 			catch (NonExistingSimObjException e) {
-				System.err.println( e.getMessage() );
+				throw e;
 			}
 		}
 		else {
@@ -159,7 +161,11 @@ public class NewVehicle extends Event {
 				);
 			}
 		}
-		return	new Vehicle(getId(), trip, maxSpeed);
+		try {
+			return	new Vehicle(getId(), trip, maxSpeed);
+		} catch (SimulationException e) {
+			throw new NonExistingSimObjException(e.getMessage());
+		}
 	}
 
 

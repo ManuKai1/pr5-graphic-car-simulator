@@ -49,14 +49,15 @@ public class FaultyVehicle extends Event {
 	 * </p>
 	 * 
 	 * @param sim la simulación sobre la que se ejecuta el evento.
+	 * @throws NonExistingSimObjException 
 	 */
 	@Override
-	public void execute(TrafficSimulation sim) {
+	public void execute(TrafficSimulation sim) throws NonExistingSimObjException {
 		try {
 			sim.makeFaulty(vehiclesID, duration);
 		}
 		catch (NonExistingSimObjException e) {
-			System.err.println(e.getMessage());
+			throw e;
 		}
 	}
 

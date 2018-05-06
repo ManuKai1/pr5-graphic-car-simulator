@@ -7,6 +7,7 @@ import es.ucm.fdi.model.SimObj.CarVehicle;
 import es.ucm.fdi.model.SimObj.Junction;
 import es.ucm.fdi.model.simulation.AlreadyExistingSimObjException;
 import es.ucm.fdi.model.simulation.NonExistingSimObjException;
+import es.ucm.fdi.model.simulation.SimulationException;
 import es.ucm.fdi.model.simulation.TrafficSimulation;
 
 /**
@@ -71,14 +72,18 @@ public class NewCarVehicle extends NewVehicle {
 	 * 
 	 * @throws AlreadyExistingSimObjException 	if <code>Vehicle</code>
 	 * 											ID already registered
+	 * @throws NonExistingSimObjException   	if a junction on its itinerary
+	 * 											is nonexistent.
 	 */
 	@Override
 	public void execute(TrafficSimulation sim) 
-			throws AlreadyExistingSimObjException {
+			throws AlreadyExistingSimObjException, NonExistingSimObjException {
 		try {
 			super.execute(sim);
 		}
 		catch ( AlreadyExistingSimObjException e ) {
+			throw e;
+		} catch (NonExistingSimObjException e) {
 			throw e;
 		}
 	}
@@ -134,7 +139,11 @@ public class NewCarVehicle extends NewVehicle {
 			}
 		}
 
-		return	new CarVehicle(id, trip, maxSpeed, resistance, faultyChance,
-						faultDuration, randomSeed);
+		try {
+			return	new CarVehicle(id, trip, maxSpeed, resistance, faultyChance,
+							faultDuration, randomSeed);
+		} catch (SimulationException e) {
+			throw new NonExistingSimObjException(e.getMessage());
+		}
 	}	
 }
