@@ -5,7 +5,7 @@ import java.util.Map;
 
 import javax.swing.JPanel;
 
-import es.ucm.fdi.view.graphlayout.*;
+import es.ucm.fdi.extra.graphlayout.*;
 
 import es.ucm.fdi.model.SimObj.Junction;
 import es.ucm.fdi.model.SimObj.Road;

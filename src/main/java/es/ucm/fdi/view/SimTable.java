@@ -12,7 +12,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableColumn;
 
 import es.ucm.fdi.model.SimObj.SimObject;
 import es.ucm.fdi.model.events.Event;
@@ -115,11 +114,6 @@ public class SimTable extends JPanel {
                 reportChecks.put(rowIndex, (Boolean) aValue);
             }
         }
-
-        public Map<Integer, Boolean> getChecks() {
-            return reportChecks;
-        }
-        
     }
 
     public SimTable(TableDataType[] head, List<? extends Describable> elements) {
