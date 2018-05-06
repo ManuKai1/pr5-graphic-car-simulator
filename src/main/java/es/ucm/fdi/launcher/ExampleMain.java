@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.SwingUtilities;
 
@@ -25,6 +24,7 @@ import es.ucm.fdi.view.SimWindow;
 
 public class ExampleMain {
 
+	// ** ATRIBUTOS ** //
 	/**
 	 * Default time limit if none indicated by user.
 	 */
@@ -41,12 +41,12 @@ public class ExampleMain {
 	private static Integer _timeLimit = null;
 
 	/**
-	 * <code>String</code> with the input file pathname.
+	 * {@code String} with the input file pathname.
 	 */
 	private static String _inFile = null;
 
 	/**
-	 * <code>String</code> with the output file pathname.
+	 * {@code String} with the output file pathname.
 	 */
 	private static String _outFile = null;
 
@@ -55,11 +55,29 @@ public class ExampleMain {
 	 */
 	private static String _mode = null;
 
+	
+	
+	
+	
+	// ** MAIN ** //
+	public static void main(String[] args) {
+
+		start(args);
+	}
+
+
+
+
+
+
+	// ** MÉTODOS DE PARSEO DE ARGS ** //
 	/**
-	 * Parses introduced <code>args</code>. If error found, a <code>ParseException</code>
-	 * is caught and program exits with <code>1</code>.
+	 * Parses introduced {@code args}. If error found, a 
+	 * {@code ParseException} is caught and the program 
+	 * exits with {@code 1}.
 	 * 
-	 * @param args arguments of command line
+	 * @param args 	- arguments of the introduced 
+	 * 				command line
 	 */
 	private static void parseArgs(String[] args) {
 
@@ -90,17 +108,16 @@ public class ExampleMain {
 			}
 
 		} catch (ParseException e) {
-			// new Piece(...) might throw GameError exception
 			System.err.println(e.getLocalizedMessage());
 			System.exit(1);
 		}
 	}
 
 	/**
-	 * Generates and returns a collection of possible <code>Options</code> to be
-	 * used in a <code>CommandLine</code>.
+	 * Generates and returns a collection of possible 
+	 * {@code Option}s to be used in a {@code CommandLine}.
 	 * 
-	 * @return collection of <code>Options</code>
+	 * @return 	collection of {@code Option}s
 	 */
 	private static Options buildOptions() {
 		// Colección
@@ -154,11 +171,37 @@ public class ExampleMain {
 	}
 
 	/**
-	 * If indicated in the command line, help is shown in console with the help message
-	 * of all possible options available to use in a command line.
+	 * Comprueba si el modo introducido es válido, si no,
+	 * lanza una excepción. Si no se ha introducido ningún
+	 * modo, se ejecuta el modo por defecto {@code _MODE_DEFAULT}.
 	 * 
-	 * @param line <code>CommandLine</code> introduced.
-	 * @param cmdLineOptions collection of <code>Options</code> available.
+	 * @param line 	- {@code CommandLine} introduced
+	 * 
+	 * @throws ParseException 	if not a valid mode
+	 * 							introduced
+	 */
+	private static void parseModeOption(CommandLine line) 
+			throws ParseException {
+
+		_mode = line.getOptionValue("m");
+		
+		if (_mode == null) {
+			_mode = _MODE_DEFAULT;
+		}
+
+		if ( ! _mode.equals("batch") && ! _mode.equals("gui") ) {
+			throw new ParseException("Not a valid execution mode.");
+		}
+	}
+
+
+	/**
+	 * If indicated, help is shown in console with 
+	 * the help messages of all options available.
+	 * 
+	 * @param line 				- {@code CommandLine} introduced
+	 * @param cmdLineOptions 	- collection of {@code Option}s 
+	 * 							available
 	 */
 	private static void parseHelpOption(CommandLine line, Options cmdLineOptions) {
 		if ( line.hasOption("h") ) {
@@ -170,63 +213,58 @@ public class ExampleMain {
 	}
 
 	/**
-	 * Modifies the input file name attribute: <code>_outFile</code> with the one indicated
-	 * in the command line, after parsing it.
+	 * <p>
+	 * Modifies the input file name attribute {@code _inFile} 
+	 * with the one indicated in the command line, after 
+	 * parsing it. 
+	 * </p> <p>
+	 * If in {@code GUI} mode, no input file
+	 * is needed.
+	 * </p>
 	 * 
-	 * @param line <code>CommandLine</code> introduced.
-	 * @throws ParseException if not a valid input file name.
+	 * @param line 	- {@code CommandLine} introduced
+	 * 
+	 * @throws ParseException 	if not a valid input 
+	 * 							file name for batch
 	 */
-	private static void parseInFileOption(CommandLine line) throws ParseException {
+	private static void parseInFileOption(CommandLine line) 
+			throws ParseException {
+
 		_inFile = line.getOptionValue("i");
 		if (_inFile == null) {
-			if(!_mode.equals("gui")){
+			if( ! _mode.equals("gui") ) {
 				throw new ParseException("An events file is missing");
 			}
 		}
 	}
 
 	/**
-	 * Modifies the input file name attribute: <code>_outFile</code> with the one indicated
-	 * in the command line, after parsing it.
+	 * Modifies the output file name attribute {@code _outFile}
+	 * with the one indicated in the command line
 	 * 
-	 * @param line <code>CommandLine</code> introduced.
-	 * @throws ParseException if not a valid input file name.
+	 * @param line 	- {@code CommandLine} introduced
 	 */
-	private static void parseModeOption(CommandLine line) throws ParseException {
-		_mode = line.getOptionValue("m");
-		
-		if (_mode == null) {
-			_mode = _MODE_DEFAULT;
-		}
-
-		if (!_mode.equals("batch") && !_mode.equals("gui")) {
-			throw new ParseException("Not a valid execution mode.");
-		}
-	}
-
-	/**
-	 * Modifies the output file name attribute: <code>_outFile</code> with the one indicated
-	 * in the command line, after partsing it.
-	 * 
-	 * @param line <code>CommandLine</code> introduced.
-	 * @throws ParseException if not a valid output file name.
-	 */
-	private static void parseOutFileOption(CommandLine line) throws ParseException {
+	private static void parseOutFileOption(CommandLine line) {
 		_outFile = line.getOptionValue("o");
 	}
 
 	/**
 	 * <p>
-	 * Updates the number of steps indicated by the command line and stored in attribute
-	 * <code>_timeLimit</code>.
+	 * Stores the number of steps indicated by the command line and 
+	 * in attribute {@code _timeLimit}.
 	 * </p> <p>
-	 * If no value is indicated, automatically set up to <code>_TIMELIMIT_DEFAULT</code>.
+	 * If no value is indicated, automatically set up to 
+	 * {@code _TIMELIMIT_DEFAULT}
 	 * </p>
 	 * 
-	 * @param line <code>CommandLine</code> introduced
-	 * @throws ParseException if the time value is not valid
+	 * @param line 	- {@code CommandLine} introduced
+	 * 
+	 * @throws ParseException 	if the time value 
+	 * 							is not valid
 	 */
-	private static void parseStepsOption(CommandLine line) throws ParseException {
+	private static void parseStepsOption(CommandLine line) 
+			throws ParseException {
+
 		// Si no se ha introducido ningún valor, se toma por defecto.
 		String t = line.getOptionValue("t", _TIMELIMIT_DEFAULT.toString());
 
@@ -239,19 +277,32 @@ public class ExampleMain {
 		}
 	}
 
+	
+	
+
+
+
+
+
+
+	// ** MÉTODOS DE TESTEO ** //
 	/**
 	 * <p>
-	 * Runs the simulator on all files that end with <code>.ini</code> in the given
-	 * <code>path</code>, and compares that output to the expected output. 
+	 * Runs the simulator on all files that end with {@code .ini} 
+	 * in the given {@code path}, and compares the output to the 
+	 * expected.
 	 * </p> <p>
-	 * It assumed that for example <code>example.ini</code> the expected output is stored 
-	 * in <code>example.ini.eout</code>.
+	 * It is assumed that for input file {@code example.ini} the 
+	 * expected output is stored in {@code example.ini.eout}.
 	 * </p> <p>
-	 * The simulator's output will be stored in <code>example.ini.out</code>.
+	 * The simulator's output will be stored in {@codeexample.ini.out}.
 	 * </p>
 	 * 
-	 * @param path <code>String</code> with the directory path
-	 * @throws IOException if failure in reading/writing files.
+	 * @param path 	- {@code String} with the 
+	 * 				directory path
+	 * 
+	 * @throws IOException 	if failure in reading/writing 
+	 * 						the files.
 	 */
 	static void test(String path) throws IOException {
 		// Directorio.
@@ -284,16 +335,26 @@ public class ExampleMain {
 	}
 
 	/**
-	 * Runs the simulator on a file <code>inFile</code>, writes the simulation report in <code>outFile</code>, and
-	 * compares the result with the expected report stored in the file <code>expectedOutFile</code>. 
+	 * Runs the simulator on a file {@code inFile}, writes 
+	 * the simulation report in {@code outFile}, and compares 
+	 * the result with the expected report stored in the file 
+	 * {@code expectedOutFile}.
 	 * 
-	 * @param inFile <code>String</code> with the input file abstract pathname
-	 * @param outFile <code>String</code> with the output file abstract pathname
-	 * @param expectedOutFile <code>String</code> with the expected output file abstract pathname
-	 * @param timeLimit execution time limit
-	 * @throws IOException if failure in reading/writing of files
+	 * @param inFile 			- {@code String} with the input 
+	 * 							file abstract pathname
+	 * @param outFile 			- {@code String} with the output 
+	 * 							file abstract pathname
+	 * @param expectedOutFile 	- {@code String} with the expected 
+	 * 							output file abstract pathname
+	 * @param timeLimit 		- execution time limit
+	 * 
+	 * @throws IOException 		if failure in reading/writing 
+	 * 							of files
 	 */
-	private static void test(String inFile, String outFile, String expectedOutFile, int timeLimit) throws IOException {
+	private static void test(String inFile, String outFile, 
+			String expectedOutFile, int timeLimit) 
+			throws IOException {
+
 		_inFile = inFile;
 		_outFile = outFile;		
 		_timeLimit = timeLimit;
@@ -315,10 +376,21 @@ public class ExampleMain {
  		);
 	}
 
+
+
+
+
+
+
+
+
+
+	// ** EJECUCIÓN EN BATCH ** //
 	/**
-	 * Run the <code>Simulator</code> in <code>batch</code> mode.
+	 * Run the simulation in {@code batch} mode.
 	 * 
-	 * @throws IOException if failure in reading/writing files.
+	 * @throws IOException 	if failure in reading/writing 
+	 * 						of files
 	 */
 	private static void startBatchMode() throws Exception {		
 		// Argumentos
@@ -341,11 +413,21 @@ public class ExampleMain {
 		}
 	}
 
+
+
+
+
+
+
+
+
+	// ** EJECUCIÓN EN GUI ** //
 	/**
-	 * Run the <code>Simulator</code> in <code>GUI</code> mode.
-	 * @throws Exception 
+	 * Run the simulation in {@code GUI} mode.
+	 * 
+	 * @throws Exception 	if Swing interface fails
 	 */
-	private static void startGUIMode() throws Exception{
+	private static void startGUIMode() throws Exception {
 		// Argumentos
 		Ini iniInput = null;
 		if(_inFile != null){
@@ -371,10 +453,20 @@ public class ExampleMain {
 		
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	
+	// ** EJECUCIÓN DEL PROGRAMA CON LÍNEA DE COMANDOS ** //
 	/**
-	 * Runs the <code>Simulator</code> in <code>command line</code> mode.
+	 * Runs the simulation in with a {@code CommandLine} as
+	 * arguments.
 	 * 
-	 * @param args simulation arguments
+	 * @param args 	- simulation arguments
 	 */
 	private static void start(String[] args) {
 		try	{
@@ -392,22 +484,5 @@ public class ExampleMain {
 			e.printStackTrace();
 			System.err.println("Aborting execution...");
 		}
-
-		
-	}
-
-	public static void main(String[] args) throws IOException, InvocationTargetException, InterruptedException {
-
-		/*
-		* Command lines, examples:
-		*
-		* -i resources/examples/events/basic/ex1.ini
-		* -i resources/examples/events/basic/ex1.ini -o ex1.out
-		* -i resources/examples/events/basic/ex1.ini -t 20
-		* -i resources/examples/events/basic/ex1.ini -o ex1.out -t 20
-		* --help
-		*/
-		
-		start(args);
 	}
 }
