@@ -60,7 +60,7 @@ public class NewVehicleBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " in new Vehicle."
+					e.getMessage() + " in new Vehicle."
 				);
 			}
 
@@ -71,7 +71,7 @@ public class NewVehicleBuilder extends EventBuilder {
 				}
 				catch (IllegalArgumentException e) {
 					throw new IllegalArgumentException(
-						e + " when reading time " +
+						e.getMessage() + " when reading time " +
 						"in Vehicle with id " + id
 					);
 				}
@@ -83,7 +83,7 @@ public class NewVehicleBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " when reading maxSpeed " +
+					e.getMessage() + " when reading max_speed " +
 					"in Vehicle with id " + id
 				);
 			}
@@ -96,7 +96,7 @@ public class NewVehicleBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " when reading itinerary "+
+					e.getMessage() + " when reading itinerary "+
 					"in Vehicle with id " + id
 				);
 			}

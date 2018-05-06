@@ -2,9 +2,11 @@ package es.ucm.fdi.model.SimObj;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.simulation.SimulationException;
+import es.ucm.fdi.util.TableDataType;
 
 /**
  * Clase que representa un coche como un objeto
@@ -12,6 +14,7 @@ import es.ucm.fdi.model.simulation.SimulationException;
  */
 public class Vehicle extends SimObject {
 
+	
 	/**
 	 * Etiqueta que encabeza el informe de un
 	 * <code>Vehicle</code> cualquiera.
@@ -88,8 +91,10 @@ public class Vehicle extends SimObject {
 	 * @param identifier 	identificador del objeto
 	 * @param trp 			ruta de <code>Junctions</code>
 	 * @param max 			máxima velocidad alcanzable
+	 * @throws SimulationException cuando no se encuentra la primera carretera
+	 * 								entre sus junction
 	 */
-	public Vehicle(String identifier, ArrayList<Junction> trp, int max) {
+	public Vehicle(String identifier, ArrayList<Junction> trp, int max) throws SimulationException {
 		super(identifier);
 		trip = trp;
 		maxSpeed = max;
@@ -103,7 +108,7 @@ public class Vehicle extends SimObject {
 			road.pushVehicle(this);
 		}
 		catch (SimulationException e) {
-			System.err.println( e.getMessage() );
+			throw e;
 		}
 	}
 	
@@ -174,8 +179,9 @@ public class Vehicle extends SimObject {
 	 * </p> <p>
 	 * El método falla si no encuentra ninguna <code>Road</code>
 	 * entre las dos <code>Junctions</code>
+	 * @throws SimulationException si no se encuentra la siguiente carretera
 	 */
-	public void moveToNextRoad() {
+	public void moveToNextRoad() throws SimulationException {
 		int waitingPos = lastTripPos + 1; // Cruce donde estaba esperando
 		int nextWaitingPos = waitingPos + 1; // Cruce donde debe acabar la siguiente road
 
@@ -194,7 +200,7 @@ public class Vehicle extends SimObject {
 
 				location = 0;
 			} catch (SimulationException e) {
-				System.err.println( e.getMessage() );
+				throw e;
 			}			
 		}
 
@@ -226,7 +232,7 @@ public class Vehicle extends SimObject {
 		section.setValue("speed", actualSpeed);
 		section.setValue("kilometrage", kilometrage);
 		section.setValue("faulty", breakdownTime);
-		section.setValue("location", hasArrived ? "arrived" : "(" + road.getID() + "," + location + ")");
+		section.setValue("location", getReportLocation());
 		
 		
 		return section;
@@ -312,6 +318,105 @@ public class Vehicle extends SimObject {
 		return (breakdownTime > 0);
 	}
 	
+	/**
+	 * {@inheritDoc}
+	 * Añade una {@code Road} al mapa, con los datos:
+	 * id, source, target, length, max speed, vehicles
+	 * 
+	 * @param out {@inheritDoc}
+	 */
+	@Override
+	public void describe(Map<TableDataType, Object> out) {
+		// Strings
+		String type = getType();
+		String road = this.road.getID();
+		String location = getDescriptionLocation();
+		String speed = Integer.toString(this.actualSpeed);
+		String km = Integer.toString(this.kilometrage);
+		String faulty = Integer.toString(this.breakdownTime);
+		String route = getRouteDescription();
+
+		// Map update
+		out.put(TableDataType.ID, id);
+		out.put(TableDataType.V_TYPE, type);
+		out.put(TableDataType.V_ROAD, road);
+		out.put(TableDataType.V_LOCATION, location);
+		out.put(TableDataType.V_SPEED, speed);
+		out.put(TableDataType.V_KM, km);
+		out.put(TableDataType.V_FAULTY, faulty);
+		out.put(TableDataType.V_ROUTE, route);
+	}
+
+	/**
+	 * Devuelve un {@code String} con la descripción
+	 * de la ruta del {@code Vehicle}, como debe
+	 * mostrarse en la correspondiente tabla
+	 * del {@code GUI}.
+	 * 
+	 * @return	{@code String} con la descripción
+	 * 			de la ruta
+	 */
+	private String getRouteDescription() {
+		StringBuilder route = new StringBuilder();
+
+		route.append("[");
+		for (Junction j : trip) {
+			route.append( j.getID() );
+			route.append(",");
+		}
+
+		// Borrado de última coma (mín: "[")
+		if (route.length() > 1) {
+			route.deleteCharAt(route.length() - 1);
+		}
+		
+		route.append("]");
+
+		return 	route.toString();
+	}
+
+	/**
+	 * Devuelve un {@code String} con el tipo de 
+	 * {@code Vehicle} que debe ponerse como valor 
+	 * en la clave {@code type}, tanto en la 
+	 * {@code IniSection} generada en {@code batch} 
+	 * como en la información mostrada en las 
+	 * tablas de la {@code GUI}.
+	 * 
+	 * @return 	{@code String} con el 
+	 * 			tipo de {@code Vehicle}
+	 */
+	protected String getType() {
+		return "-";
+	}
+
+	/**
+	 * Devuelve la localización del {@code Vehicle}
+	 * como debe mostrarse en los informes generados
+	 * por el simulador.
+	 * 
+	 * @return	{@code String} con la localización
+	 * 			correcta para el informe
+	 */
+	protected String getReportLocation() {
+		return 	hasArrived ? 
+					"arrived" : 
+					"(" + road.getID() + "," + location + ")";
+	}
+
+	/**
+	 * Devuelve la localización del {@code Vehicle}
+	 * como debe mostrarse en la correspondiente
+	 * tabla del {@code GUI}.
+	 * 
+	 * @return	{@code String} con la descripción
+	 * 			de la localización
+	 */
+	protected String getDescriptionLocation() {
+		return 	hasArrived ?
+					"arrived" :
+					Integer.toString(location);
+	}
 }
 
 

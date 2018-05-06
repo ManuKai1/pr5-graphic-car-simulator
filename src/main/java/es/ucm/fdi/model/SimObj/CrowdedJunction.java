@@ -17,14 +17,6 @@ import es.ucm.fdi.ini.IniSection;
 public class CrowdedJunction extends Junction {
 
     /**
-     * Información sobre el tipo de <code>Junction</code> 
-     * que debe ponerse como valor en la clave 
-     * <code>type</code> de la <code>IniSection</code> 
-     * generada.
-     */
-    private static final String TYPE = "mc"; // most-crowded
-
-    /**
      * Mapa de <code>incomingRoads</code> a sus respectivos 
      * intervalos de duración de sus semáforos.
      */
@@ -232,7 +224,7 @@ public class CrowdedJunction extends Junction {
         section.setValue("id", id);
         section.setValue("time", simTime);
         section.setValue("queues", getQueuesValue());
-        section.setValue("type", TYPE);
+        section.setValue("type", getType());
 
         return section;
     }
@@ -243,7 +235,7 @@ public class CrowdedJunction extends Junction {
     public IniSection generateIniSection(int simTime) {
         // Se utiliza getQueuesValue() de RobinJunction.
         IniSection section = super.generateIniSection(simTime);         
-        section.setValue("type", TYPE);
+        section.setValue("type", getType());
     
     	return section;
     }
@@ -296,5 +288,13 @@ public class CrowdedJunction extends Junction {
         return ( timeLapses.get(road) - elapsedTime );
     }
 
-
+    /**
+     * {@inheritDoc}
+     * 
+     * @return  {@inheritDoc}
+     */
+    @Override
+    protected String getType() {
+		return "mc";
+	}
 }

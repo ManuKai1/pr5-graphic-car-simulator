@@ -64,7 +64,7 @@ public class NewRobinJunctionBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-                    e + " in new Robin Junction."
+                    e.getMessage() + " in new Robin Junction."
                 );
 			}
 
@@ -75,7 +75,7 @@ public class NewRobinJunctionBuilder extends EventBuilder {
 				}
 				catch (IllegalArgumentException e ){
 					throw new IllegalArgumentException(
-                        e + " when reading time " +
+                        e.getMessage() + " when reading time " +
                         "in Robin Junction with id " + id
                     );
 				}
@@ -88,7 +88,7 @@ public class NewRobinJunctionBuilder extends EventBuilder {
             }
             catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException(
-                    e + " when reading minimum Time " +
+                    e.getMessage() + " when reading minimum Time " +
                     "in Robin Junction with ID " + id
                 );
             }
@@ -99,7 +99,7 @@ public class NewRobinJunctionBuilder extends EventBuilder {
             }
             catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException(
-                    e + " when reading maximum Time "+
+                    e.getMessage() + " when reading maximum Time "+
                     "in Robin Junction with ID " + id
                 );
             }

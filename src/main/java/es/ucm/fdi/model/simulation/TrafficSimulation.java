@@ -10,6 +10,7 @@ import javax.swing.SwingUtilities;
 import es.ucm.fdi.ini.Ini;
 import es.ucm.fdi.model.SimObj.Junction;
 import es.ucm.fdi.model.SimObj.Road;
+import es.ucm.fdi.model.SimObj.SimObject;
 import es.ucm.fdi.model.SimObj.Vehicle;
 import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.util.EventType;
@@ -52,7 +53,6 @@ public class TrafficSimulation {
 			return time;
 		}
 	}
-
 	
 	/**
 	 * Mapa de eventos donde: Integer representa el tiempo de
@@ -60,6 +60,11 @@ public class TrafficSimulation {
 	 * que se ejecutan en ese tiempo.
 	 */
 	private MultiTreeMap<Integer, Event> events = new MultiTreeMap<>();
+
+	/**
+	 * Lista con los listeners registrados en el simulador.
+	 */
+	private List<Listener> listeners = new ArrayList<>();
 
 	/**
 	 * Mapa de simulación que relaciona Junction con sus carreteras entrantes
@@ -71,8 +76,6 @@ public class TrafficSimulation {
 	 * Tiempo actual de la simulación.
 	 */
 	private int time = 0;
-
-	private List<Listener> listeners = new ArrayList<>();
 	
 	public TrafficSimulation() {}
 	
@@ -86,7 +89,8 @@ public class TrafficSimulation {
 	 */
 	public void pushEvent(Event e) 
 			throws IllegalArgumentException {
-		// Comprueba el tiempo.
+		
+				// Comprueba el tiempo.
 		if( e.getTime() < time ) {
 			throw new IllegalArgumentException(
 				"Event time is lower than current time."
@@ -95,6 +99,7 @@ public class TrafficSimulation {
 
 		// Añade el evento al mapa.
 		events.putValue(e.getTime(), e);
+		fireUpdateEvent(EventType.NEW_EVENT, "New Event error.");
 	}
 	
 	/**
@@ -110,7 +115,7 @@ public class TrafficSimulation {
 	 * 								reports generation
 	 */
 	public void execute(int steps, OutputStream file) 
-			throws IOException, SimulationException {
+			throws IOException {
 		// * //
 		// Tiempo límite en que para la simulación.
 		int timeLimit = time + steps - 1;
@@ -123,7 +128,8 @@ public class TrafficSimulation {
 			try {
 				executeEvents();
 			} catch (SimulationException e1) {
-				throw e1;
+				fireUpdateEvent(EventType.ERROR, e1.getMessage());
+				break;
 			}
 			
 			// 2 // SIMULACIÓN //
@@ -163,21 +169,15 @@ public class TrafficSimulation {
 				try {
 					event.execute(this);
 					
-					//Aviso a Listeners de nuevo evento
-					fireUpdateEvent(EventType.NEW_EVENT, "New Event error"); //???
 				}
 				catch (AlreadyExistingSimObjException e1) {
-					fireUpdateEvent(EventType.ERROR, "Simulation Exception error");
-					
 					throw new SimulationException(
-						"Simulation error:\n" + e1
+						"Simulation error:\n" + e1.getMessage()
 					);
 				}
 				catch (NonExistingSimObjException e2) {
-					fireUpdateEvent(EventType.ERROR, "Simulation Exception error");
-					
 					throw new SimulationException(
-						"Simulation error:\n" + e2
+						"Simulation error:\n" + e2.getMessage()
 					);
 				}		
 			}
@@ -202,31 +202,69 @@ public class TrafficSimulation {
 	}
 	
 	/**
+	 * Genera un string con reports de los SimObject en la lista.
+	 * Utilizdo para cargar el report generado en el área
+	 * de texto de la {@code GUI}.
+	 * @return String con reports creados.
+	 */
+	public String reportsToString(List<SimObject> objectsToReport) {
+		Ini iniFile = generateIniReports(objectsToReport);
+		
+		return iniFile.toString();
+	}
+	
+	/**
+	 * Genera un ini con reports de todos los SimObject.
+	 * @return Ini con reports creados.
+	 */
+	private Ini generateIniReports(){
+		//Creación de ini
+		Ini iniFile = new Ini();
+		//Junctions:
+		for (Junction junction : roadMap.getJunctions().values() ) {
+			iniFile.addsection(junction.generateIniSection(time));
+		}
+		//Roads:
+		for (Road road : roadMap.getRoads().values() ) {
+			iniFile.addsection(road.generateIniSection(time));
+		}
+		//Vehicles:
+		for (Vehicle vehicle : roadMap.getVehicles().values() ) {
+			iniFile.addsection(vehicle.generateIniSection(time));
+		}
+		return iniFile;
+	}
+
+	/**
+	 * Genera un {@code .ini} con reports de los
+	 * {@code SimObject}s que recibe como argumento.
+	 */
+	private Ini generateIniReports(List<SimObject> objectsToReport) {
+		// Creación de ini
+		Ini iniFile = new Ini();
+		// SimObjects
+		for (SimObject obj : objectsToReport ) {
+			iniFile.addsection(obj.generateIniSection(time));
+		}
+
+		return iniFile;
+	}
+	
+	/**
 	 * Genera informes de todos los SimObject.
 	 * @param file fichero de salida
 	 */
-	private void generateReports(OutputStream file) throws IOException{
+	private void generateReports(OutputStream file) 
+			throws IOException {
+		
 		if (file != null) {
-			//Creación de ini
-			Ini iniFile = new Ini();
-			//Junctions:
-			for(Junction junction : roadMap.getJunctions().values() ){
-				iniFile.addsection(junction.generateIniSection(time));
-			}
-			//Roads:
-			for(Road road : roadMap.getRoads().values() ){
-				iniFile.addsection(road.generateIniSection(time));
-			}
-			//Vehicles:
-			for(Vehicle vehicle : roadMap.getVehicles().values() ){
-				iniFile.addsection(vehicle.generateIniSection(time));
-			}
+			Ini iniFile = generateIniReports();
 			
 			// Guardado en el outputStream
 			try{
 				iniFile.store(file);
 			}
-			catch(IOException e){
+			catch (IOException e) {
 				throw new IOException(
 					"Error when saving file on time " + time + ":" + e.getMessage()
 				);
@@ -255,45 +293,6 @@ public class TrafficSimulation {
 				);
 			}
 		}
-	}
-	
-	/**
-	 *  Añade un listener a la lista (además, implementa registered).
-	 *  @param l es el listener a añadir
-	 */
-	public void addSimulatorListener(Listener l) {
-		listeners.add(l);
-		UpdateEvent ue = new UpdateEvent(EventType.REGISTERED);
-		// evita pseudo-recursividad
-		// Error?
-		SwingUtilities.invokeLater(()->l.update(ue,"Registered error."));
-	}
-	
-	/**
-	 *  Elimina un listener de la lista.
-	 *  @param l es el listener a eliminar
-	 */
-	public void removeListener(Listener l) {
-		listeners.remove(l);
-	}
-	
-	// uso interno, evita tener que escribir el mismo bucle muchas veces
-	private void fireUpdateEvent(EventType type, String error) {
-		UpdateEvent ue = new UpdateEvent(type);
-		for(Listener l : listeners){
-			l.update(ue, error);
-		}
-	}
-
-	
-	/**
-	 * Reinicia el simulador
-	 */
-	public void reset(){
-		events.clear();
-		roadMap.clear();
-		time = 0;
-		fireUpdateEvent(EventType.RESET, "Reset error");
 	}
 
 	/**
@@ -332,5 +331,61 @@ public class TrafficSimulation {
 	 */
 	public RoadMap getRoadMap(){
 		return roadMap;
+	}
+
+	/**
+	 * 
+	 */
+	public int getCurrentTime() {
+		return time;
+	}
+
+	public MultiTreeMap<Integer, Event> getEvents() { 
+		return events;
+	}
+
+
+
+
+
+	/**
+	 *  Añade un listener a la lista (además, implementa registered).
+	 *  @param l es el listener a añadir
+	 */
+	public void addSimulatorListener(Listener l) {
+		listeners.add(l);
+		UpdateEvent ue = new UpdateEvent(EventType.REGISTERED);
+		// evita pseudo-recursividad
+		// Error?
+		SwingUtilities.invokeLater(() -> l.update(ue, "Registered error."));
+	}
+
+	/**
+	 *  Elimina un listener de la lista.
+	 *  @param l es el listener a eliminar
+	 */
+	public void removeListener(Listener l) {
+		listeners.remove(l);
+	}
+
+	/**
+	 * Método de uso interno que informa a todos los
+	 * listeners registrados de un EventType en simulación.
+	 */
+	private void fireUpdateEvent(EventType type, String error) {
+		UpdateEvent ue = new UpdateEvent(type);
+		for (Listener l : listeners) {
+			l.update(ue, error);
+		}
+	}
+
+	/**
+	 * Reinicia el simulador
+	 */
+	public void reset() {
+		events.clear();
+		roadMap.clear();
+		time = 0;
+		fireUpdateEvent(EventType.RESET, "Reset error");
 	}
 }

@@ -1,5 +1,6 @@
 package es.ucm.fdi.model.events;
 
+
 import es.ucm.fdi.model.SimObj.RobinJunction;
 import es.ucm.fdi.model.simulation.AlreadyExistingSimObjException;
 import es.ucm.fdi.model.simulation.TrafficSimulation;
@@ -56,6 +57,26 @@ public class NewRobinJunction extends NewJunction {
             throw e;
         }
     }
+
+    /**
+	 * <p>
+	 * Devuelve la descripción <code>NewRobinJunction</code>
+	 * utilizada en las tablas de la GUI. Ejemplo:
+	 * </p> <p>
+	 * "New robin junction j3"
+	 * </p>
+	 * 
+	 * @return 	<code>String</code> con la descripción
+	 */
+	@Override
+	protected String getEventDescription() {
+		// Descripción del evento.
+		StringBuilder description = new StringBuilder();
+		description.append("New robin junction ");
+		description.append(id);
+
+		return 	description.toString();
+	}
 
     /**
      * Método que genera una nueva <code>RobinJunction</code>ç

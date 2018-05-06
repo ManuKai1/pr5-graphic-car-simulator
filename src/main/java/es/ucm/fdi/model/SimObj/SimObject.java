@@ -1,16 +1,17 @@
 package es.ucm.fdi.model.SimObj;
 
+import java.util.Map;
+
 import es.ucm.fdi.ini.IniSection;
-import es.ucm.fdi.model.SimObj.Junction;
-import es.ucm.fdi.model.SimObj.Road;
-import es.ucm.fdi.model.SimObj.Vehicle;
+import es.ucm.fdi.util.Describable;
+import es.ucm.fdi.util.TableDataType;
 
 /**
  * Clase base que representa un objeto cualquiera
  * de la simulación, a saber: {@link Junction Junctions}, 
  * {@link Road Roads} y {@link Vehicle Vehicles}
  */
-public abstract class SimObject { 
+public abstract class SimObject implements Describable { 
 
 	/**
 	 * Identificador del objeto de simulación.
@@ -22,6 +23,12 @@ public abstract class SimObject {
 	 * simulación. Ocurre en un tick.
 	 */
 	public abstract void proceed();
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public abstract void describe(Map<TableDataType, Object> out);
 
 	public abstract IniSection generateIniSection(int simTime);
 

@@ -66,7 +66,7 @@ public class NewHighwayRoadBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " in new Highway Road."
+					e.getMessage() + " in new Highway Road."
 				);
 			}
 			
@@ -77,7 +77,7 @@ public class NewHighwayRoadBuilder extends EventBuilder {
 				}
 				catch (IllegalArgumentException e) {
 					throw new IllegalArgumentException(
-						e + " when reading time " +
+						e.getMessage() + " when reading time " +
 						"in Highway Road with id " + id
 					);
 				}
@@ -89,7 +89,7 @@ public class NewHighwayRoadBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " when reading dest " + 
+					e.getMessage() + " when reading source junction " + 
 					"in Highway Road with id " + id
 				);
 			}
@@ -100,7 +100,7 @@ public class NewHighwayRoadBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " when reading source " + 
+					e.getMessage() + " when reading destination junction " + 
 					"in Highway Road with id " + id
 				);
 			}
@@ -111,7 +111,7 @@ public class NewHighwayRoadBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " when reading max speed "+
+					e.getMessage() + " when reading max speed "+
 					"in Highway Road with id " + id
 				);
 			}
@@ -120,9 +120,9 @@ public class NewHighwayRoadBuilder extends EventBuilder {
 			try {
 				length = parsePositiveInt(ini, "length");
 			}
-			catch (NumberFormatException e) {
+			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " when reading length "+
+					e.getMessage() + " when reading length "+
 					"in Highway Road with id " + id
 				);
 			}
@@ -133,7 +133,7 @@ public class NewHighwayRoadBuilder extends EventBuilder {
             }
             catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException(
-					e + " when reading length " + 
+					e.getMessage() + " when reading length " + 
 					"in Highway Road with id " + id
 				);
             }

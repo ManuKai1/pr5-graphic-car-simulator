@@ -64,7 +64,7 @@ public class NewDirtRoadBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " in new Dirt Road."
+					e.getMessage() + " in new Dirt Road."
 				);
 			}
 			
@@ -75,7 +75,7 @@ public class NewDirtRoadBuilder extends EventBuilder {
 				}
 				catch (IllegalArgumentException e) {
 					throw new IllegalArgumentException(
-						e + " when reading time " + 
+						e.getMessage() + " when reading time " + 
 						"in Dirt Road with id " + id
 					);
 				}
@@ -87,7 +87,7 @@ public class NewDirtRoadBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " when reading dest " +
+					e.getMessage() + " when reading source junction " +
 					"in Dirt Road with id " + id
 				);
 			}
@@ -98,7 +98,7 @@ public class NewDirtRoadBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " when reading source " +
+					e.getMessage() + " when reading destination junction " +
 					"in Dirt Road with id " + id
 				);
 			}
@@ -109,7 +109,7 @@ public class NewDirtRoadBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " when reading max speed " +
+					e.getMessage() + " when reading max speed " +
 					"in Dirt Road with id " + id
 				);
 			}
@@ -118,9 +118,9 @@ public class NewDirtRoadBuilder extends EventBuilder {
 			try {
 				length = parsePositiveInt(ini, "length");
 			}
-			catch (NumberFormatException e) {
+			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " when reading length " +
+					e.getMessage() + " when reading length " +
 					"in Dirt Road with id " + id
 				);
 			}

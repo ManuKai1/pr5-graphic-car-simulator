@@ -1,9 +1,10 @@
 package es.ucm.fdi.control;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
-import javax.xml.parsers.ParserConfigurationException;
+import org.apache.commons.cli.ParseException;
 
 import es.ucm.fdi.control.evbuild.EventParser;
 import es.ucm.fdi.ini.Ini;
@@ -11,6 +12,8 @@ import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.model.simulation.SimulationException;
 import es.ucm.fdi.model.simulation.TrafficSimulation;
+import es.ucm.fdi.model.simulation.TrafficSimulation.Listener;
+import es.ucm.fdi.model.simulation.TrafficSimulation.UpdateEvent;
 
 /**
  * <p>
@@ -21,7 +24,7 @@ import es.ucm.fdi.model.simulation.TrafficSimulation;
  * <code>.ini</code> que almacena los {@link Event Events}.
  * </p> <p>
  * El simulador se actualiza durante un tiempo determinado
- * {@link #timeLimit}, volcando los resultados en un flujo
+ * {@link #batchTimeLimit}, volcando los resultados en un flujo
  * de salida {@link #outStream}.
  * </p>
  */
@@ -41,9 +44,31 @@ public class Controller {
     private OutputStream outStream;
 
     /**
-     * Número de ticks que se ejecuta el simulador.
+     * Número de ticks que se ejecuta el simulador en modo
+     * batch.
      */
-    private int timeLimit;
+    private int batchTimeLimit;
+
+    /**
+     * Simulación a la que el controlador tiene acceso.
+     */
+    private TrafficSimulation simulator;
+    
+    /**
+     * Usado para mostrar errores por consola.
+     */
+    private class BatchListener implements Listener{
+
+		@Override
+		public void update(UpdateEvent ue, String error) {
+			switch(ue.getEvent()){
+			case ERROR : System.err.println(error);
+				break;
+			default : break;
+			}
+		}
+		
+    }
 
     /**
      * Constructor de {@link Controller} que recibe 
@@ -59,7 +84,8 @@ public class Controller {
     public Controller(Ini in, OutputStream out, int time) {
         iniInput = in;
         outStream = out;
-        timeLimit = time;
+        batchTimeLimit = time;
+        simulator = new TrafficSimulation();
     }
 
     /**
@@ -75,31 +101,151 @@ public class Controller {
      * 3. Ejecuta la <code>TrafficSimulation</code>.
      * </p> 
      *
-     * @throws ParserConfigurationException     if event parsing failed (no matching
-     *                                          event or invalid data)
-     * @throws IllegalArgumentException         if event time is lower than
-     *                                          sim time
-     * @throws SimulationException              if an error ocurred during the execution
-     *                                          of events in the simulation
-     * @throws IOException                      if an error ocurred during report generation
-     *                                          in the simulation
+     * @throws ParseException                   if event parsing failed 
+     *                                          (no matching event or 
+     *                                          invalid data)
+     * @throws IllegalArgumentException         if event time is lower 
+     *                                          than sim time
+     * @throws SimulationException              if an error ocurred during 
+     *                                          the execution of events in 
+     *                                          the simulation
+     * @throws IOException                      if an error ocurred during 
+     *                                          report generation in the 
+     *                                          simulation
      */
-    public void execute() throws ParserConfigurationException, IOException, SimulationException {
-        TrafficSimulation simulator = new TrafficSimulation();
-        EventParser parser = new EventParser();
+    public void executeBatch() 
+            throws ParseException, IOException, SimulationException {
 
         // 1 //
+        // Recorre las secciones del archivo .ini de entrada
+        // y construye y guarda los eventos en el simulador.
+        try {
+            pushEvents();
+        }
+        catch (ParseException e1) {
+            throw e1;
+        }
+        catch (IllegalArgumentException e2) {
+            throw e2;
+        }
+        
+        BatchListener error = new BatchListener();
+        simulator.addSimulatorListener(error);
+        
+        // 2 // 
+        // Se ejecuta el simulador el número de pasos batchTimeLimit
+        // y se actualiza el OutputStream.
+        try {
+			simulate(batchTimeLimit);
+		}
+        catch (IOException e4) {
+			throw e4;
+		} 
+    }
+
+    /**
+     * Carga los eventos del archivo de entrada
+     * {@code iniInput} en el {@code simulator}.
+     * 
+     * @throws ParseException               if event parsing failed 
+     *                                      (no matching event or 
+     *                                      invalid data)
+     * @throws IllegalArgumentException     if event time is lower 
+     *                                      than sim time   
+     */
+    public void pushEvents() 
+            throws ParseException, IllegalArgumentException {
+        
+        EventParser parser = new EventParser();
+
+        for ( IniSection sec : iniInput.getSections() ) {
+        	Event ev;
+            
+            try {
+        		ev = parser.parse(sec);
+                
+        	}
+            catch (IllegalArgumentException e) {
+            	throw new ParseException(
+                    "Event parsing failed:\n" + 
+                    		e.getMessage());
+            }
+
+            try {
+                simulator.pushEvent(ev);   
+            }
+            catch (IllegalArgumentException e) {
+                throw e; // Illegal time
+            }            
+        }
+    }
+
+    /**
+     * Ejecuta el simulador durante un tiempo
+     * determinado {@code time}.
+     * 
+     * @param time -    número de ticks que se
+     *                  ejecutará el simulador
+     * 
+     * @throws SimulationException              if an error ocurred during 
+     *                                          the execution of events in 
+     *                                          the simulation
+     * @throws IOException                      if an error ocurred during 
+     *                                          report generation in the 
+     *                                          simulation
+     */
+    public void simulate(int time) 
+            throws SimulationException, IOException {
+
+        try {
+			simulator.execute(time, outStream);
+		}
+        catch (IOException e) {
+			throw e;
+		} 
+    }
+
+    /**
+     * Cambia el archivo Ini de entrada
+     * @param newIni nuevo Ini de entrada
+     */
+    public void setIniInput(Ini newIni) {
+        iniInput = newIni;
+    }
+    
+    /**
+     * Cambia el archivo Ini de entrada
+     * dado un InputStream
+     * @param is InputStream desde el que generar Ini
+     * @throws IOException fallo al leer is
+     */
+    public void setIniInput(InputStream is) throws IOException {
+        try {
+			iniInput = new Ini(is);
+		} catch (IOException e) {
+			throw e;
+		}
+    }
+
+    /**
+     * Resetea el controlador y lee los eventos del ini.
+     * @throws ParseException si hay algún evento no parseable.
+     */
+    public void reset() throws ParseException {
+        simulator = new TrafficSimulation();
+        EventParser parser = new EventParser();
+
         // Recorre las secciones del archivo .ini de entrada
         // y construye y guarda los eventos en el simulador.
         for ( IniSection sec : iniInput.getSections() ) {
         	Event ev;
             
-            try{
+            try {
         		ev = parser.parse(sec);
                 
         	}
             catch(IllegalArgumentException e) {
-            	throw new ParserConfigurationException(
+            	throw new ParseException(
                     "Event parsing failed:\n" + e
                 );
             }
@@ -111,22 +257,21 @@ public class Controller {
                 throw e; // Illegal time
             }            
         }
-
-        // 2 // 
-        // Se ejecuta el simulador el número de pasos timeLimit
-        // y se actualiza el OutputStream.
-        try {
-			simulator.execute(timeLimit, outStream);
-		}
-        catch (SimulationException e) {
-            throw e;
-        } 
-        catch (IOException e) {
-			throw e;
-		} 
     }
 
-    public void setOutputStream(JTextAreaOutputStream report) {
-
+    public int getExecutionTime() {
+        return simulator.getCurrentTime();
     }
+
+    public int getBatchTimeLimit() {
+        return batchTimeLimit;
+    }
+
+	public void setOutStream(OutputStream newOut) {
+		outStream = newOut;	
+	}
+
+	public TrafficSimulation getSimulator() {
+		return simulator;
+	}
 }

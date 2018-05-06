@@ -1,4 +1,4 @@
-package es.ucm.fdi.extra.graphlayout;
+package es.ucm.fdi.view.graphlayout;
 
 import java.util.ArrayList;
 import java.util.List;

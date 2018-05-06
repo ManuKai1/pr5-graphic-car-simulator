@@ -3,6 +3,7 @@ package es.ucm.fdi.model.SimObj;
 import java.util.ArrayList;
 
 import es.ucm.fdi.ini.IniSection;
+import es.ucm.fdi.model.simulation.SimulationException;
 
 /**
  * Clase que representa una bicicleta como un objeto
@@ -11,20 +12,14 @@ import es.ucm.fdi.ini.IniSection;
 public class BikeVehicle extends Vehicle {
 
 	/**
-	 * Información sobre el tipo de vehículo que
-	 * debe ponerse como valor en la clave <code>type</code>
-	 * de la <code>IniSection</code> generada.
-	 */
-	private static final String TYPE = "bike"; // bike
-
-	/**
 	 * Constructor de {@link BikeVehicle}.
 	 * 
 	 * @param identifier 	identificador del objeto
 	 * @param trp 			ruta de <code>Junctions</code>
 	 * @param max 			máxima velocidad alcanzable
+	 * @throws SimulationException 
 	 */
-	public BikeVehicle(String identifier, ArrayList<Junction> trp, int max) {
+	public BikeVehicle(String identifier, ArrayList<Junction> trp, int max) throws SimulationException {
 		super(identifier, trp, max);
 	}
 
@@ -65,14 +60,24 @@ public class BikeVehicle extends Vehicle {
 		// Se generan los datos en el informe.
 		section.setValue("id", id);
 		section.setValue("time", simTime);
-		section.setValue("type", TYPE);
+		section.setValue("type", getType());
 		section.setValue("speed", actualSpeed);
 		section.setValue("kilometrage", kilometrage);
 		section.setValue("faulty", breakdownTime);
-		section.setValue("location", hasArrived ? "arrived" : "(" + road.getID() + "," + location + ")");
+		section.setValue("location", getReportLocation());
 		
 		
 		return section;
+	}
+
+	/**
+     * {@inheritDoc}
+     * 
+     * @return  {@inheritDoc}
+     */
+    @Override
+    protected String getType() {
+		return "bike";
 	}
 
 	/*
@@ -80,7 +85,7 @@ public class BikeVehicle extends Vehicle {
 	* PERO LA COMPARACIÓN ES CORRECTA POR SECCIONES.
 	public IniSection generateIniSection(int simTime) {
 		IniSection section = super.generateIniSection(simTime);
-		section.setValue("type", TYPE);
+		section.setValue("type", getType());
 
 		return section;
 	}

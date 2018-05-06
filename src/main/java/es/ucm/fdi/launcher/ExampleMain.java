@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 
-import javax.xml.parsers.ParserConfigurationException;
+import javax.swing.SwingUtilities;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -20,7 +20,8 @@ import org.apache.commons.cli.ParseException;
 
 import es.ucm.fdi.control.Controller;
 import es.ucm.fdi.ini.Ini;
-import es.ucm.fdi.model.simulation.SimulationException;
+import es.ucm.fdi.view.SimWindow;
+
 
 public class ExampleMain {
 
@@ -28,6 +29,11 @@ public class ExampleMain {
 	 * Default time limit if none indicated by user.
 	 */
 	private final static Integer _TIMELIMIT_DEFAULT = 10;
+
+	/**
+	 * Default execution mode if none indicated by user.
+	 */
+	private final static String _MODE_DEFAULT = "batch";
 	
 	/**
 	 * Execution time limit: number of ticks the simulator will do.
@@ -43,6 +49,11 @@ public class ExampleMain {
 	 * <code>String</code> with the output file pathname.
 	 */
 	private static String _outFile = null;
+
+	/**
+	 * Mode of execution: 'batch' or 'gui'.
+	 */
+	private static String _mode = null;
 
 	/**
 	 * Parses introduced <code>args</code>. If error found, a <code>ParseException</code>
@@ -61,6 +72,7 @@ public class ExampleMain {
 		CommandLineParser parser = new DefaultParser();
 		try {
 			CommandLine line = parser.parse(cmdLineOptions, args);
+			parseModeOption(line);
 			parseHelpOption(line, cmdLineOptions);
 			parseInFileOption(line);
 			parseOutFileOption(line);
@@ -110,7 +122,16 @@ public class ExampleMain {
 			.desc("Events input file")
 			.build()
 		);
-		
+
+		// Comando de modo: -m, --mode; <arg>; "'batch' for batch mode and 'gui' for GUI mode"
+		cmdLineOptions.addOption(
+			Option.builder("m")
+			.longOpt("mode")
+			.hasArg()
+			.desc("'batch' for batch mode and 'gui' for GUI mode (default value is 'batch')")
+			.build()
+		);
+
 		// Comando de salida: -o; --output; <arg.ini>; "Output file, where reports are written"
 		cmdLineOptions.addOption(
 			Option.builder("o")
@@ -158,7 +179,28 @@ public class ExampleMain {
 	private static void parseInFileOption(CommandLine line) throws ParseException {
 		_inFile = line.getOptionValue("i");
 		if (_inFile == null) {
-			throw new ParseException("An events file is missing");
+			if(!_mode.equals("gui")){
+				throw new ParseException("An events file is missing");
+			}
+		}
+	}
+
+	/**
+	 * Modifies the input file name attribute: <code>_outFile</code> with the one indicated
+	 * in the command line, after parsing it.
+	 * 
+	 * @param line <code>CommandLine</code> introduced.
+	 * @throws ParseException if not a valid input file name.
+	 */
+	private static void parseModeOption(CommandLine line) throws ParseException {
+		_mode = line.getOptionValue("m");
+		
+		if (_mode == null) {
+			_mode = _MODE_DEFAULT;
+		}
+
+		if (!_mode.equals("batch") && !_mode.equals("gui")) {
+			throw new ParseException("Not a valid execution mode.");
 		}
 	}
 
@@ -257,7 +299,11 @@ public class ExampleMain {
 		_timeLimit = timeLimit;
 
 		// Ejecución en batch.
-		startBatchMode();
+		try {
+			startBatchMode();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		// Comprobación del resultado.
 		boolean equalOutput = ( new Ini(_outFile) ).equals( new Ini(expectedOutFile) );
@@ -274,50 +320,80 @@ public class ExampleMain {
 	 * 
 	 * @throws IOException if failure in reading/writing files.
 	 */
-	private static void startBatchMode() throws IOException {		
+	private static void startBatchMode() throws Exception {		
 		// Argumentos
 		Ini iniInput = new Ini(_inFile);
-		File outFile = new File(_outFile);
-		OutputStream os = new FileOutputStream(outFile);
-
+		OutputStream os = System.out;
+		if(_outFile != null){
+			File outFile = new File(_outFile);
+			os = new FileOutputStream(outFile);
+		}
+		
 		// Controlador
 		Controller control = new Controller(iniInput, os, _timeLimit);
 
 		// Ejecución y captura de excepciones
 		try {
-			control.execute();
+			control.executeBatch();
 		}
-		catch (ParserConfigurationException e1) {
-			System.err.println(e1);
-			e1.printStackTrace();
-			System.err.println("Aborting execution...");
+		catch (Exception e) {
+			throw e;
 		}
-		catch (IllegalArgumentException e2) {
-			System.err.println(e2);
-			e2.printStackTrace();
-			System.err.println("Aborting execution...");
-		} 
-		catch (SimulationException e3) {
-			System.err.println(e3);
-			e3.printStackTrace();
-			System.err.println("Aborting execution...");
+	}
+
+	/**
+	 * Run the <code>Simulator</code> in <code>GUI</code> mode.
+	 * @throws Exception 
+	 */
+	private static void startGUIMode() throws Exception{
+		// Argumentos
+		Ini iniInput = null;
+		if(_inFile != null){
+			iniInput = new Ini(_inFile);
 		}
-		catch (IOException e4) {
-			System.err.println(e4);
-			e4.printStackTrace();
-			System.err.println("Aborting execution...");
+
+		// Controlador de salida nula
+		Controller control = new Controller(iniInput, null, _timeLimit);
+
+		// Interfaz gráfica
+		try {
+			SwingUtilities.invokeAndWait(
+				new Runnable() {
+					public void run() {
+						new SimWindow(control, _inFile);
+					}
+				}
+			);
 		}
+		catch (Exception e) {
+			throw e;
+		}
+		
 	}
 
 	/**
 	 * Runs the <code>Simulator</code> in <code>command line</code> mode.
 	 * 
 	 * @param args simulation arguments
-	 * @throws IOException if failure in reading/writing files.
 	 */
-	private static void start(String[] args) throws IOException {
-		parseArgs(args);
-		startBatchMode();
+	private static void start(String[] args) {
+		try	{
+			parseArgs(args);
+			switch (_mode) {
+			case "batch" : 
+				startBatchMode();
+				break;
+			case "gui":
+				startGUIMode();
+				break;
+			}
+		}
+		catch(Exception e){
+			e.printStackTrace();
+			System.err.println("Aborting execution...");
+		}
+
+		
 	}
 
 	public static void main(String[] args) throws IOException, InvocationTargetException, InterruptedException {
@@ -331,14 +407,7 @@ public class ExampleMain {
 		* -i resources/examples/events/basic/ex1.ini -o ex1.out -t 20
 		* --help
 		*/
-
-		// Simulation testing //
-		// test("src/main/resources/examples/basic");
-		 test("src/main/resources/examples/advanced");
-		// test("src/main/resources/examples/err");
-		//test("src/main/resources/examples/new");
-
-		// Start simulator from command line //
-		// start(args);
+		
+		start(args);
 	}
 }

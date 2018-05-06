@@ -5,10 +5,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Deque;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+
 
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.simulation.SimulationException;
+import es.ucm.fdi.util.TableDataType;
 
 /**
  * Clase que representa una carretera como un objeto
@@ -20,7 +23,7 @@ public class Road extends SimObject {
 	 * Etiqueta que encabeza el informe de una 
 	 * <code>Road</code> cualquiera.
 	 */
-	protected final String REPORT_TITLE = "[road_report]";
+	protected static final String REPORT_TITLE = "[road_report]";
 	
 	/**
 	 * Longitud de la <code>Road</code>.
@@ -395,8 +398,6 @@ public class Road extends SimObject {
 		// Borrado de última coma
 		if (state.length() > 0) {
 			state.deleteCharAt(state.length() - 1);
-			// En caso contrario, queues es vacío y produciría
-			// una OutOfBoubdsException.
 		}
 
 		return state;
@@ -625,6 +626,85 @@ public class Road extends SimObject {
 	 */
 	public int getNumWaitingVehicles() {
 		return waiting.size();
+	}
+
+	/**
+	 * Devuelve un {@code String} con el tipo de 
+	 * {@code Road} que debe ponerse como valor 
+	 * en la clave {@code type}, tanto en la 
+	 * {@code IniSection} generada en {@code batch} 
+	 * como en la información mostrada en las 
+	 * tablas de la {@code GUI}.
+	 * 
+	 * @return 	{@code String} con el 
+	 * 			tipo de {@code Road}
+	 */
+	protected String getType() {
+		return "-";
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	 * Añade una <code>Road</code> al map, con los datos:
+	 * id, source, target, length, max speed, vehicles
+	 * 
+	 * @param out {@inheritDoc}
+	 */
+	@Override
+	public void describe(Map<TableDataType, Object> out) {
+		String source = fromJunction.getID();
+		String target = toJunction.getID();
+		String length = Integer.toString(this.length);
+		String maxSpeed = Integer.toString(this.speedLimit);
+		String state = getRoadStateDescription();
+
+
+		out.put(TableDataType.ID, id);
+		out.put(TableDataType.R_TYPE, getType());
+		out.put(TableDataType.R_SOURCE, source);
+		out.put(TableDataType.R_TARGET, target);
+		out.put(TableDataType.R_LENGHT, length);
+		out.put(TableDataType.R_MAX, maxSpeed);
+		out.put(TableDataType.R_STATE, state);
+	}
+
+	private String getRoadStateDescription() {
+		StringBuilder state = new StringBuilder();
+
+		state.append("[");
+		// Primero los vehículos en la cola de espera.
+		for (Vehicle v : waiting) {
+			// ID
+			state.append( v.getID() );
+			state.append(",");
+		}
+
+		// Después los vehículos en la carretera.
+		for (Vehicle v : vehiclesOnRoad) {
+			// ID
+			state.append(v.getID());
+			state.append(",");
+		}
+
+		// Borrado de última coma (mín "[")
+		if (state.length() > 1) {
+			state.deleteCharAt(state.length() - 1);
+		}
+
+		state.append("]");
+
+		return 	state.toString();
+	}
+
+
+	public List<Vehicle> getRoadVehicles() {
+		List<Vehicle> list = new ArrayList<>();
+
+		list.addAll(vehiclesOnRoad);
+		list.addAll(waiting);
+
+		return list;
 	}
 
 }

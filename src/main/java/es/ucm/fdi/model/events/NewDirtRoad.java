@@ -1,5 +1,6 @@
 package es.ucm.fdi.model.events;
 
+
 import es.ucm.fdi.model.SimObj.DirtRoad;
 import es.ucm.fdi.model.SimObj.Junction;
 import es.ucm.fdi.model.simulation.AlreadyExistingSimObjException;
@@ -52,6 +53,26 @@ public class NewDirtRoad extends NewRoad {
         catch (NonExistingSimObjException e) {
             throw e;
         }
+    }
+
+    /**
+     * <p>
+     * Devuelve la descripción <code>NewDirtRoad</code>
+     * utilizada en las tablas de la GUI. Ejemplo:
+     * </p> <p>
+     * "New dirt road r3"
+     * </p>
+     * 
+     * @return 	<code>String</code> con la descripción
+     */
+    @Override
+    protected String getEventDescription() {
+        // Descripción del evento.
+        StringBuilder description = new StringBuilder();
+        description.append("New dirt road ");
+        description.append(id);
+
+        return description.toString();
     }
 
     /**

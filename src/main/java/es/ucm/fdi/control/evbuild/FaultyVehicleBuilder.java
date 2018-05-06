@@ -58,7 +58,7 @@ public class FaultyVehicleBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + "when reading time of faulty vehicles."
+					e.getMessage() + "when reading time of faulty vehicles."
 				);
 			}
 
@@ -68,7 +68,7 @@ public class FaultyVehicleBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + "when reading duration of faulty vehicles."
+					e.getMessage() + "when reading duration of faulty vehicles."
 				);
 			}
 
@@ -80,7 +80,7 @@ public class FaultyVehicleBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + "when reading list of faulty vehicles."
+					e.getMessage() + "when reading list of faulty vehicles."
 				);
 			}
 

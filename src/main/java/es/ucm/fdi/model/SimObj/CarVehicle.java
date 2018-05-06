@@ -4,19 +4,13 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import es.ucm.fdi.ini.IniSection;
+import es.ucm.fdi.model.simulation.SimulationException;
 
 /**
  * Clase que representa un coche como un objeto
  * de simulación. Hereda de {@link Vehicle}
  */
 public class CarVehicle extends Vehicle {
-	
-	/**
-	 * Información sobre el tipo de vehículo que
-	 * debe ponerse como valor en la clave <code>type</code>
-	 * de la <code>IniSection</code> generada.
-	 */
-	private static final String TYPE = "car"; // car
 
 	/**
 	 * Resistencia a las averías.
@@ -53,10 +47,11 @@ public class CarVehicle extends Vehicle {
 	 * @param breakChance 	probabilidad de avería
 	 * @param breakDuration duración máxima de avería
 	 * @param seed 			semilla aleatoria
+	 * @throws SimulationException 
 	 */
 	public CarVehicle(String identifier, ArrayList<Junction> trp,
 			int max, int res, double breakChance, int breakDuration, 
-			long seed) {
+			long seed) throws SimulationException {
 		super(identifier, trp, max);
 		resistance = res;
 		faultyChance = breakChance;
@@ -127,17 +122,23 @@ public class CarVehicle extends Vehicle {
 		// Se generan los datos en el informe.
 		section.setValue("id", id);
 		section.setValue("time", simTime);
-		section.setValue("type", TYPE);
+		section.setValue("type", getType());
 		section.setValue("speed", actualSpeed);
 		section.setValue("kilometrage", kilometrage);
 		section.setValue("faulty", breakdownTime);
-		section.setValue(
-			"location", hasArrived ? 
-				"arrived" : 
-				"(" + road.getID() + "," + location + ")"
-		);
+		section.setValue("location", getReportLocation());
 
 		return section;
+	}
+
+	/**
+     * {@inheritDoc}
+     * 
+     * @return  {@inheritDoc}
+     */
+    @Override
+    protected String getType() {
+		return "car";
 	}
 
 	/*
@@ -145,7 +146,7 @@ public class CarVehicle extends Vehicle {
 	* PERO LA COMPARACIÓN ES CORRECTA POR SECCIONES.
 	public IniSection generateIniSection(int simTime) {
 		IniSection section = super.generateIniSection(simTime);
-		section.setValue("type", TYPE);
+		section.setValue("type", getType());
 	
 		return section;
 	}

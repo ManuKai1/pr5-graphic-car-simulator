@@ -7,6 +7,7 @@ import es.ucm.fdi.model.SimObj.CarVehicle;
 import es.ucm.fdi.model.SimObj.Junction;
 import es.ucm.fdi.model.simulation.AlreadyExistingSimObjException;
 import es.ucm.fdi.model.simulation.NonExistingSimObjException;
+import es.ucm.fdi.model.simulation.SimulationException;
 import es.ucm.fdi.model.simulation.TrafficSimulation;
 
 /**
@@ -71,16 +72,40 @@ public class NewCarVehicle extends NewVehicle {
 	 * 
 	 * @throws AlreadyExistingSimObjException 	if <code>Vehicle</code>
 	 * 											ID already registered
+	 * @throws NonExistingSimObjException   	if a junction on its itinerary
+	 * 											is nonexistent.
 	 */
 	@Override
 	public void execute(TrafficSimulation sim) 
-			throws AlreadyExistingSimObjException {
+			throws AlreadyExistingSimObjException, NonExistingSimObjException {
 		try {
 			super.execute(sim);
 		}
 		catch ( AlreadyExistingSimObjException e ) {
 			throw e;
+		} catch (NonExistingSimObjException e) {
+			throw e;
 		}
+	}
+
+	/**
+	 * <p>
+	 * Devuelve la descripción <code>NewCarVehicle</code>
+	 * utilizada en las tablas de la GUI. Ejemplo:
+	 * </p> <p>
+	 * "New car vehicle v1"
+	 * </p>
+	 * 
+	 * @return 	<code>String</code> con la descripción
+	 */
+	@Override
+	protected String getEventDescription() {
+		// Descripción del evento.
+		StringBuilder description = new StringBuilder();
+		description.append("New car vehicle ");
+		description.append(id);
+
+		return description.toString();
 	}
 	
 	/**
@@ -114,7 +139,11 @@ public class NewCarVehicle extends NewVehicle {
 			}
 		}
 
-		return	new CarVehicle(id, trip, maxSpeed, resistance, faultyChance,
-						faultDuration, randomSeed);
+		try {
+			return	new CarVehicle(id, trip, maxSpeed, resistance, faultyChance,
+							faultDuration, randomSeed);
+		} catch (SimulationException e) {
+			throw new NonExistingSimObjException(e.getMessage());
+		}
 	}	
 }

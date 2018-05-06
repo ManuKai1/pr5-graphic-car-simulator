@@ -57,7 +57,7 @@ public class NewJunctionBuilder extends EventBuilder {
 			}
 			catch (IllegalArgumentException e) {
 				throw new IllegalArgumentException(
-					e + " in new Junction."
+					e.getMessage() + " in new Junction."
 				);
 			}
 
@@ -68,7 +68,7 @@ public class NewJunctionBuilder extends EventBuilder {
 				}
 				catch (IllegalArgumentException e) {
 					throw new IllegalArgumentException(
-						e + " when reading time " + 
+						e.getMessage() + " when reading time " + 
 						"in Junction with id " + id
 					);
 				}

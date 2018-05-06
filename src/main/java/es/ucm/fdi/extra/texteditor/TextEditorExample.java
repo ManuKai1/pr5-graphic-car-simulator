@@ -46,7 +46,7 @@ public class TextEditorExample extends JFrame implements ActionListener {
 		mainPanel.add(area);
 
 		// tool bar
-		mainPanel.add(createJTolBar(), BorderLayout.PAGE_START);
+		mainPanel.add(createJToolBar(), BorderLayout.PAGE_START);
 
 		// menu bar
 		this.setJMenuBar(createMenuBar());
@@ -107,7 +107,7 @@ public class TextEditorExample extends JFrame implements ActionListener {
 		return menuBar;
 	}
 
-	public JToolBar createJTolBar() {
+	public JToolBar createJToolBar() {
 		JToolBar toolBar = new JToolBar();
 
 		JButton load = new JButton();

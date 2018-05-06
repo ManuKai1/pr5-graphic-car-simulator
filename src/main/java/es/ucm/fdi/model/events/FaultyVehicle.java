@@ -49,21 +49,48 @@ public class FaultyVehicle extends Event {
 	 * </p>
 	 * 
 	 * @param sim la simulación sobre la que se ejecuta el evento.
+	 * @throws NonExistingSimObjException 
 	 */
 	@Override
-	public void execute(TrafficSimulation sim) {
+	public void execute(TrafficSimulation sim) throws NonExistingSimObjException {
 		try {
 			sim.makeFaulty(vehiclesID, duration);
 		}
 		catch (NonExistingSimObjException e) {
-			System.err.println(e.getMessage());
+			throw e;
 		}
 	}
-	
 
+	/**
+	 * <p>
+	 * Devuelve la descripción <code>FaultyVehicle</code>
+	 * utilizada en las tablas de la GUI. Ejemplo:
+	 * </p> <p>
+	 * "Break vehicles [v2,v6,v8] for 11 units of time"
+	 * </p>
+	 * 
+	 * @return 	<code>String</code> con la descripción
+	 */
+	@Override
+	protected String getEventDescription() {
+		// Descripción del evento.
+		StringBuilder description = new StringBuilder();
+		description.append("Break vehicles [");
 
+		for (int i = 0; i < vehiclesID.size(); ++i) {
+			String vID = vehiclesID.get(i);
+			description.append(vID);
 
+			if ( i < vehiclesID.size() - 1) {
+				description.append(",");
+			}
+		}
+		description.append("] for ");
+		description.append( Integer.toString(duration) );
+		description.append(" units of time");
 
+		return 	description.toString();
+	}
 
 
 	/**
