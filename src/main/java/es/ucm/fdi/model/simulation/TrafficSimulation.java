@@ -203,10 +203,13 @@ public class TrafficSimulation {
 	
 	/**
 	 * Genera un string con reports de todos los SimObject.
+	 * Utilizdo para cargar el report generado en el área
+	 * de texto de la {@code GUI}.
 	 * @return String con reports creados.
 	 */
-	public String reportsToString(){
-		Ini iniFile = generateIniReports();
+	public String reportsToString(List<SimObject> objectsToReport) {
+		Ini iniFile = generateIniReports(objectsToReport);
+		
 		return iniFile.toString();
 	}
 	
@@ -229,6 +232,21 @@ public class TrafficSimulation {
 		for (Vehicle vehicle : roadMap.getVehicles().values() ) {
 			iniFile.addsection(vehicle.generateIniSection(time));
 		}
+		return iniFile;
+	}
+
+	/**
+	 * Genera un {@code .ini} con reports de los
+	 * {@code SimObject}s que recibe como argumento.
+	 */
+	private Ini generateIniReports(List<SimObject> objectsToReport) {
+		// Creación de ini
+		Ini iniFile = new Ini();
+		// SimObjects
+		for (SimObject obj : objectsToReport ) {
+			iniFile.addsection(obj.generateIniSection(time));
+		}
+
 		return iniFile;
 	}
 	

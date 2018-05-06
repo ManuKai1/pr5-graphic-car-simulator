@@ -1,6 +1,8 @@
 package es.ucm.fdi.view;
 
 import java.awt.BorderLayout;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -10,7 +12,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumn;
 
+import es.ucm.fdi.model.SimObj.SimObject;
 import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.util.Describable;
 import es.ucm.fdi.util.TableDataType;
@@ -19,9 +23,9 @@ import es.ucm.fdi.util.TableDataType;
 public class SimTable extends JPanel {
 
     private JTable table;
-    private TableDataType[] headers;
+    private List<TableDataType> headers;
     private List<? extends Describable> tableElements;
-    private ListOfMapsTableModel model = new ListOfMapsTableModel();
+    private ListOfMapsTableModel model;
     
 
     private class ListOfMapsTableModel extends AbstractTableModel {
@@ -29,9 +33,10 @@ public class SimTable extends JPanel {
         public Map<TableDataType, Object> elementData = new HashMap<>();
         public Map<Integer, Boolean> reportChecks = new HashMap<>();
 
+
         @Override
         public String getColumnName(int columnIndex) {
-            return  headers[columnIndex].toString();
+            return  headers.get(columnIndex).toString();
         }
 
         @Override
@@ -41,19 +46,19 @@ public class SimTable extends JPanel {
 
         @Override
         public int getColumnCount() {
-            return headers.length;
+            return headers.size();
         }
 
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             
             // Caso de la numeración de la tabla de eventos.
-            if ( headers[columnIndex] == TableDataType.E_NUM ) {
+            if ( headers.get(columnIndex) == TableDataType.E_NUM ) {
                 return  Integer.toString(rowIndex + 1);
             }
 
             // Caso de los checks para acotar reports.
-            if ( headers[columnIndex] == TableDataType.REPORT ) {
+            if ( headers.get(columnIndex) == TableDataType.REPORT ) {
                 Boolean check = reportChecks.get(rowIndex);
 
                 if (check == null) {
@@ -67,7 +72,7 @@ public class SimTable extends JPanel {
             // Caso normal.
             tableElements.get(rowIndex).describe(elementData);
 
-            return  elementData.get(headers[columnIndex]);
+            return  elementData.get(headers.get(columnIndex));
         }
 
         /**
@@ -77,7 +82,7 @@ public class SimTable extends JPanel {
          */
         @Override
         public Class<?> getColumnClass(int columnIndex) {
-            if (headers[columnIndex] == TableDataType.REPORT) {
+            if (headers.get(columnIndex) == TableDataType.REPORT) {
                 return Boolean.class;
             }
             else {
@@ -91,7 +96,7 @@ public class SimTable extends JPanel {
          */
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-            if ( headers[columnIndex] == TableDataType.REPORT ) {
+            if ( headers.get(columnIndex) == TableDataType.REPORT ) {
                 return true;
             }
             else {
@@ -106,9 +111,13 @@ public class SimTable extends JPanel {
          */
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-            if ( headers[columnIndex] == TableDataType.REPORT ) {
+            if ( headers.get(columnIndex) == TableDataType.REPORT ) {
                 reportChecks.put(rowIndex, (Boolean) aValue);
             }
+        }
+
+        public Map<Integer, Boolean> getChecks() {
+            return reportChecks;
         }
         
     }
@@ -116,8 +125,9 @@ public class SimTable extends JPanel {
     public SimTable(TableDataType[] head, List<? extends Describable> elements) {
         super( new BorderLayout() );
         
-        headers = head;
+        headers = new ArrayList<>(Arrays.asList(head));
         tableElements = elements;
+        model = new ListOfMapsTableModel();
 
         // Se crea la tabla basada en el modelo.
         table = new JTable(model);
@@ -135,7 +145,7 @@ public class SimTable extends JPanel {
     }
 
     public void resetTable(TableDataType[] newHeaders, List<? extends Describable> newElements) {
-        headers = newHeaders;
+        headers = new ArrayList<>(Arrays.asList(newHeaders));
         tableElements = newElements;
 
         // Limpieza del elemento de mapa.
@@ -168,5 +178,20 @@ public class SimTable extends JPanel {
                 iter.remove();
             }
         }
+    }
+
+    public List<SimObject> getSelected() {
+        List<SimObject> selected = new ArrayList<>();
+        
+        int columnIndex = headers.indexOf(TableDataType.REPORT);
+
+        for (int row = 0; row < tableElements.size(); ++row) {
+            if ( (Boolean) model.getValueAt(row, columnIndex) ) {
+                SimObject d = (SimObject) tableElements.get(row);
+                selected.add(d);
+            }
+        }
+        
+        return selected;
     }
 }

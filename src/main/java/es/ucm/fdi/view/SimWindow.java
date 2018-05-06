@@ -50,6 +50,7 @@ import es.ucm.fdi.ini.Ini;
 import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.SimObj.Junction;
 import es.ucm.fdi.model.SimObj.Road;
+import es.ucm.fdi.model.SimObj.SimObject;
 import es.ucm.fdi.model.SimObj.Vehicle;
 import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.model.simulation.RoadMap;
@@ -690,14 +691,19 @@ public class SimWindow extends JFrame implements Listener {
 
 	/**
 	 * Método que genera en su área los informes
-	 * correspondientes al tiempo actual.
+	 * seleccionados, correspondientes al tiempo actual.
 	 */
 	private void generateReports() {
-		String reports = control.getSimulator().reportsToString();
+		List<SimObject> objectsToReport = getSelectedObjects();
+
+		String reports = 
+			control.getSimulator().reportsToString(objectsToReport);
+		
+		// Se cargan los reports 
 		reportsTextArea.setText(reports);
 		clearRep.setEnabled(true);
 		saveRep.setEnabled(true);
-		infoText.setText("Generated reports for current time.");
+		infoText.setText("Generated reports of selected objects for current time.");
 	}
 
 	/**
@@ -873,5 +879,20 @@ public class SimWindow extends JFrame implements Listener {
 		}
 
 		eventsTable.setList(tableElements);
+	}
+
+	/**
+	 * Devuelve una lista con los {@code SimObj} seleccionados
+	 * en las tablas de la {@code GUI}.
+	 */
+	private List<SimObject> getSelectedObjects() {
+		List<SimObject> reportObjects = new ArrayList<>();
+
+		reportObjects.addAll( junctionsTable.getSelected() );
+		reportObjects.addAll( roadsTable.getSelected() );
+		reportObjects.addAll( vehiclesTable.getSelected() );
+
+
+		return reportObjects;
 	}
 }
