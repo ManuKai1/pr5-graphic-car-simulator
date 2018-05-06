@@ -129,6 +129,7 @@ public class TrafficSimulation {
 				executeEvents();
 			} catch (SimulationException e1) {
 				fireUpdateEvent(EventType.ERROR, e1.getMessage());
+				break;
 			}
 			
 			// 2 // SIMULACIÓN //

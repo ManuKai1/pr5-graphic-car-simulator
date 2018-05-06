@@ -556,6 +556,7 @@ public class SimWindow extends JFrame implements Listener {
 					JOptionPane.WARNING_MESSAGE);
 		}
 		editorPopupMenu.add(subMenu);
+		//Al hacer clic derecho
 		eventsTextArea.addMouseListener(new MouseListener() {
 
 			@Override
@@ -705,6 +706,7 @@ public class SimWindow extends JFrame implements Listener {
 	 */
 	private void runSimulator() {
 		try {
+			generateRep.setEnabled(true);
 			control.getSimulator().execute((int) stepsSpinner.getValue(),
 					reports);
 
@@ -712,12 +714,12 @@ public class SimWindow extends JFrame implements Listener {
 			int minTime = control.getSimulator().getCurrentTime();
 			
 			updateEventsTable(minTime);
-			generateRep.setEnabled(true);
 			if(reports != null){
 				clearRep.setEnabled(true);
 				saveRep.setEnabled(true);
 			}
 		} catch (IOException e) {
+			generateRep.setEnabled(false);
 			JOptionPane.showMessageDialog(this,
 					e.getMessage());
 		}
@@ -746,11 +748,18 @@ public class SimWindow extends JFrame implements Listener {
 		}
 	}
 
+	/**
+	 * Limpia la zona de eventos
+	 */
 	private void clearEvents() {
 		eventsTextArea.setText("");
 		infoText.setText("Events cleared.");
 	}
 	
+	/**
+	 * Alterna entre salida nula y salida
+	 * a zona de reports
+	 */
 	private void changeOutput(){
 		if(reports == null){
 			reports = new ReportStream();
@@ -834,6 +843,7 @@ public class SimWindow extends JFrame implements Listener {
 		case ERROR:
 			JOptionPane.showMessageDialog(this,
 					error, "Simulator error", JOptionPane.WARNING_MESSAGE);
+			resetSimulator();
 			break;
 		default : break;
 		}

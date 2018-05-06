@@ -12,6 +12,8 @@ import es.ucm.fdi.ini.IniSection;
 import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.model.simulation.SimulationException;
 import es.ucm.fdi.model.simulation.TrafficSimulation;
+import es.ucm.fdi.model.simulation.TrafficSimulation.Listener;
+import es.ucm.fdi.model.simulation.TrafficSimulation.UpdateEvent;
 
 /**
  * <p>
@@ -51,6 +53,22 @@ public class Controller {
      * Simulación a la que el controlador tiene acceso.
      */
     private TrafficSimulation simulator;
+    
+    /**
+     * Usado para mostrar errores por consola.
+     */
+    private class BatchListener implements Listener{
+
+		@Override
+		public void update(UpdateEvent ue, String error) {
+			switch(ue.getEvent()){
+			case ERROR : System.err.println(error);
+				break;
+			default : break;
+			}
+		}
+		
+    }
 
     /**
      * Constructor de {@link Controller} que recibe 
@@ -111,16 +129,15 @@ public class Controller {
             throw e2;
         }
         
-
+        BatchListener error = new BatchListener();
+        simulator.addSimulatorListener(error);
+        
         // 2 // 
         // Se ejecuta el simulador el número de pasos batchTimeLimit
         // y se actualiza el OutputStream.
         try {
 			simulate(batchTimeLimit);
 		}
-        catch (SimulationException e3) {
-            throw e3;
-        } 
         catch (IOException e4) {
 			throw e4;
 		} 
@@ -188,10 +205,20 @@ public class Controller {
 		} 
     }
 
+    /**
+     * Cambia el archivo Ini de entrada
+     * @param newIni nuevo Ini de entrada
+     */
     public void setIniInput(Ini newIni) {
         iniInput = newIni;
     }
     
+    /**
+     * Cambia el archivo Ini de entrada
+     * dado un InputStream
+     * @param is InputStream desde el que generar Ini
+     * @throws IOException fallo al leer is
+     */
     public void setIniInput(InputStream is) throws IOException {
         try {
 			iniInput = new Ini(is);
@@ -200,6 +227,10 @@ public class Controller {
 		}
     }
 
+    /**
+     * Resetea el controlador y lee los eventos del ini.
+     * @throws ParseException si hay algún evento no parseable.
+     */
     public void reset() throws ParseException {
         simulator = new TrafficSimulation();
         EventParser parser = new EventParser();
@@ -236,7 +267,6 @@ public class Controller {
         return batchTimeLimit;
     }
 
-    //Setter de outStream
 	public void setOutStream(OutputStream newOut) {
 		outStream = newOut;	
 	}
