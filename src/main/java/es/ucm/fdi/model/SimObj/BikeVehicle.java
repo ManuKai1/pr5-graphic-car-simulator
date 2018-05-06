@@ -3,6 +3,7 @@ package es.ucm.fdi.model.SimObj;
 import java.util.ArrayList;
 
 import es.ucm.fdi.ini.IniSection;
+import es.ucm.fdi.model.simulation.SimulationException;
 
 /**
  * Clase que representa una bicicleta como un objeto
@@ -16,8 +17,9 @@ public class BikeVehicle extends Vehicle {
 	 * @param identifier 	identificador del objeto
 	 * @param trp 			ruta de <code>Junctions</code>
 	 * @param max 			máxima velocidad alcanzable
+	 * @throws SimulationException 
 	 */
-	public BikeVehicle(String identifier, ArrayList<Junction> trp, int max) {
+	public BikeVehicle(String identifier, ArrayList<Junction> trp, int max) throws SimulationException {
 		super(identifier, trp, max);
 	}
 

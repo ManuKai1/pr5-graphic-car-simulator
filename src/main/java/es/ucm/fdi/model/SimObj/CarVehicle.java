@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import es.ucm.fdi.ini.IniSection;
+import es.ucm.fdi.model.simulation.SimulationException;
 
 /**
  * Clase que representa un coche como un objeto
@@ -46,10 +47,11 @@ public class CarVehicle extends Vehicle {
 	 * @param breakChance 	probabilidad de avería
 	 * @param breakDuration duración máxima de avería
 	 * @param seed 			semilla aleatoria
+	 * @throws SimulationException 
 	 */
 	public CarVehicle(String identifier, ArrayList<Junction> trp,
 			int max, int res, double breakChance, int breakDuration, 
-			long seed) {
+			long seed) throws SimulationException {
 		super(identifier, trp, max);
 		resistance = res;
 		faultyChance = breakChance;

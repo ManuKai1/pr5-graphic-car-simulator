@@ -91,8 +91,10 @@ public class Vehicle extends SimObject {
 	 * @param identifier 	identificador del objeto
 	 * @param trp 			ruta de <code>Junctions</code>
 	 * @param max 			máxima velocidad alcanzable
+	 * @throws SimulationException cuando no se encuentra la primera carretera
+	 * 								entre sus junction
 	 */
-	public Vehicle(String identifier, ArrayList<Junction> trp, int max) {
+	public Vehicle(String identifier, ArrayList<Junction> trp, int max) throws SimulationException {
 		super(identifier);
 		trip = trp;
 		maxSpeed = max;
@@ -106,7 +108,7 @@ public class Vehicle extends SimObject {
 			road.pushVehicle(this);
 		}
 		catch (SimulationException e) {
-			System.err.println( e.getMessage() );
+			throw e;
 		}
 	}
 	
@@ -177,8 +179,9 @@ public class Vehicle extends SimObject {
 	 * </p> <p>
 	 * El método falla si no encuentra ninguna <code>Road</code>
 	 * entre las dos <code>Junctions</code>
+	 * @throws SimulationException si no se encuentra la siguiente carretera
 	 */
-	public void moveToNextRoad() {
+	public void moveToNextRoad() throws SimulationException {
 		int waitingPos = lastTripPos + 1; // Cruce donde estaba esperando
 		int nextWaitingPos = waitingPos + 1; // Cruce donde debe acabar la siguiente road
 
@@ -197,7 +200,7 @@ public class Vehicle extends SimObject {
 
 				location = 0;
 			} catch (SimulationException e) {
-				System.err.println( e.getMessage() );
+				throw e;
 			}			
 		}
 
