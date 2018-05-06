@@ -202,7 +202,7 @@ public class TrafficSimulation {
 	}
 	
 	/**
-	 * Genera un string con reports de todos los SimObject.
+	 * Genera un string con reports de los SimObject en la lista.
 	 * Utilizdo para cargar el report generado en el área
 	 * de texto de la {@code GUI}.
 	 * @return String con reports creados.
