@@ -1,3 +1,7 @@
+Autores: Manuel Llorca y Pablo Hernández
+
+Enlace a GitHub:
+
 Arreglos y cambios P4:
 - Se han pasado las pruebas a un test JUnit, ahora
 el main hace lo que debe.
