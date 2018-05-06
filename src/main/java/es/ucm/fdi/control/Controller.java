@@ -7,13 +7,11 @@ import java.io.OutputStream;
 import org.apache.commons.cli.ParseException;
 
 import es.ucm.fdi.control.evbuild.EventParser;
-import es.ucm.fdi.ini.Ini;
-import es.ucm.fdi.ini.IniSection;
+import es.ucm.fdi.ini.*;
 import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.model.simulation.SimulationException;
 import es.ucm.fdi.model.simulation.TrafficSimulation;
-import es.ucm.fdi.model.simulation.TrafficSimulation.Listener;
-import es.ucm.fdi.model.simulation.TrafficSimulation.UpdateEvent;
+import es.ucm.fdi.model.simulation.TrafficSimulation.*;
 
 /**
  * <p>
@@ -21,7 +19,7 @@ import es.ucm.fdi.model.simulation.TrafficSimulation.UpdateEvent;
  * </p> <p>
  * En su método {@link #execute()} crea un simulador
  * {@link TrafficSimulation} a partir de un archivo
- * <code>.ini</code> que almacena los {@link Event Events}.
+ * {@code .ini} que almacena los {@link Event Events}.
  * </p> <p>
  * El simulador se actualiza durante un tiempo determinado
  * {@link #batchTimeLimit}, volcando los resultados en un flujo
@@ -30,10 +28,11 @@ import es.ucm.fdi.model.simulation.TrafficSimulation.UpdateEvent;
  */
 public class Controller {
     
+    // ** ATRIBUTOS ** //
     /**
-     * Archivo <code>.ini</code> dividido en 
-     * <code>IniSections</code> del que se extraen 
-     * los <code>Events</code> de la simulación.
+     * Archivo {@code .ini} dividido en 
+     * {@code IniSection}s del que se extraen 
+     * los {@code Event}s de la simulación.
      */
     private Ini iniInput;
 
@@ -44,8 +43,8 @@ public class Controller {
     private OutputStream outStream;
 
     /**
-     * Número de ticks que se ejecuta el simulador en modo
-     * batch.
+     * Número de ticks que se ejecuta el simulador 
+     * en modo {@code batch}.
      */
     private int batchTimeLimit;
 
@@ -57,29 +56,36 @@ public class Controller {
     /**
      * Usado para mostrar errores por consola.
      */
-    private class BatchListener implements Listener{
+    private class BatchListener implements Listener {
 
 		@Override
 		public void update(UpdateEvent ue, String error) {
-			switch(ue.getEvent()){
-			case ERROR : System.err.println(error);
-				break;
-			default : break;
+			switch(ue.getEvent()) {
+                case ERROR: 
+                    System.err.println(error);
+                    break;
+                default: 
+                    break;
 			}
 		}
-		
     }
 
+
+
+
+
+
+    // ** CONSTRUCTOR ** //
     /**
      * Constructor de {@link Controller} que recibe 
-     * el archivo <code>.ini</code>, el flujo de salida
+     * el archivo {@code .ini}, el flujo de salida
      * y el tiempo límite de ejecución.
      * 
-     * @param in    <code>Ini</code> con el archivo 
-     *              <code>.ini</code>
-     * @param out   <code>OutputStream</code> donde 
+     * @param in    - {@code Ini} con el archivo 
+     *              {@code .ini}
+     * @param out   - {@code OutputStream} donde 
      *              se vuelcan los datos
-     * @param time  tiempo límite de ejecución
+     * @param time  - tiempo límite de ejecución
      */
     public Controller(Ini in, OutputStream out, int time) {
         iniInput = in;
@@ -88,17 +94,22 @@ public class Controller {
         simulator = new TrafficSimulation();
     }
 
+
+
+
+
+    // ** EJECUCIÓN EN BATCH ** //
     /**
      * <p>
-     * Método de ejecución que:
+     * Método de ejecución en modo {@code batch} que:
      * </p> <p>
-     * 1. Crea una <code>TrafficSimulation</code> y un 
-     * <code>EventParser</code>.
+     * 1. Crea una {@code TrafficSimulation} y un 
+     * {@code EventParser}.
      * </p> <p>
-     * 2. Recorre las secciones de <code>iniInput</code> 
+     * 2. Recorre las secciones de {@code iniInput} 
      * guardando los eventos en la simulación.
      * </p> <p>
-     * 3. Ejecuta la <code>TrafficSimulation</code>.
+     * 3. Ejecuta la {@code TrafficSimulation}.
      * </p> 
      *
      * @throws ParseException                   if event parsing failed 
@@ -114,7 +125,8 @@ public class Controller {
      *                                          simulation
      */
     public void executeBatch() 
-            throws ParseException, IOException, SimulationException {
+            throws  ParseException, IllegalArgumentException, 
+                    SimulationException, IOException {
 
         // 1 //
         // Recorre las secciones del archivo .ini de entrada
@@ -143,6 +155,11 @@ public class Controller {
 		} 
     }
 
+
+
+
+
+    // ** MÉTODOS DE SIMULACIÓN ** //
     /**
      * Carga los eventos del archivo de entrada
      * {@code iniInput} en el {@code simulator}.
@@ -205,19 +222,19 @@ public class Controller {
 		} 
     }
 
+
+
+
+
+    // ** SETTERS/GETTERS ** //
     /**
-     * Cambia el archivo Ini de entrada
-     * @param newIni nuevo Ini de entrada
-     */
-    public void setIniInput(Ini newIni) {
-        iniInput = newIni;
-    }
-    
-    /**
-     * Cambia el archivo Ini de entrada
-     * dado un InputStream
-     * @param is InputStream desde el que generar Ini
-     * @throws IOException fallo al leer is
+     * Cambia el archivo {@code Ini} de entrada
+     * dado un {@code InputStream}
+     * 
+     * @param is    - {@ InputStream} a partir del que
+     *              se genera el nuevo {@code Ini}
+     * 
+     * @throws IOException  fallo al leer {@code is}
      */
     public void setIniInput(InputStream is) throws IOException {
         try {
@@ -228,49 +245,21 @@ public class Controller {
     }
 
     /**
-     * Resetea el controlador y lee los eventos del ini.
-     * @throws ParseException si hay algún evento no parseable.
+     * Devuelve el tiempo actual de ejecución
+     * del simulador.
+     * 
+     * @return  tiempo de ejecución actual
      */
-    public void reset() throws ParseException {
-        simulator = new TrafficSimulation();
-        EventParser parser = new EventParser();
-
-        // Recorre las secciones del archivo .ini de entrada
-        // y construye y guarda los eventos en el simulador.
-        for ( IniSection sec : iniInput.getSections() ) {
-        	Event ev;
-            
-            try {
-        		ev = parser.parse(sec);
-                
-        	}
-            catch(IllegalArgumentException e) {
-            	throw new ParseException(
-                    "Event parsing failed:\n" + e
-                );
-            }
-
-            try {
-                simulator.pushEvent(ev);   
-            }
-            catch (IllegalArgumentException e) {
-                throw e; // Illegal time
-            }            
-        }
-    }
-
     public int getExecutionTime() {
         return simulator.getCurrentTime();
     }
 
-    public int getBatchTimeLimit() {
-        return batchTimeLimit;
-    }
-
-	public void setOutStream(OutputStream newOut) {
-		outStream = newOut;	
-	}
-
+    /**
+     * Devuelve el simulador del controlador.
+     * 
+     * @return  {@code TrafficSimulation} con el
+     *          simulador
+     */
 	public TrafficSimulation getSimulator() {
 		return simulator;
 	}

@@ -8,39 +8,51 @@ import es.ucm.fdi.model.events.NewVehicle;
 import es.ucm.fdi.model.SimObj.Vehicle;
 
 /**
- * Clase que construye un <code>Event</code> 
+ * Clase que construye un {@code Event} 
  * {@link NewVehicle} utilizado para crear un 
  * {@link Vehicle} durante la simulación.
  * Hereda de {@link EventBuilder}.
  */
 public class NewVehicleBuilder extends EventBuilder {
 
+	// ** ATRIBUTOS ** //
 	/**
-	 * Etiqueta utilizada en las <code>IniSections</code>
+	 * Etiqueta utilizada en las {@code IniSection}s
 	 * para representar este tipo de eventos.
 	 */
 	private static final String SECTION_TAG = "new_vehicle";
 
+
+
+
+
+
+	// ** CONSTRUCTOR ** //
 	/**
 	 * Constructor de {@link NewVehicleBuilder} que 
-	 * pasa el atributo <code>SECTION_TAG</code> al 
+	 * pasa el atributo {@code SECTION_TAG} al 
 	 * constructor de la superclase.
 	 */
-	public NewVehicleBuilder(){
+	public NewVehicleBuilder() {
 		super(SECTION_TAG);
 	}
 	
+
+
+
+	// ** MÉTODO DE PARSE ** //
 	/**
 	 * Método de parsing que comprueba si la 
-	 * <code>IniSection</code> pasada como argumento 
-	 * representa un evento <code>NewVehicle</code>
+	 * {@code IniSection} pasada como argumento 
+	 * representa un evento {@code NewVehicle}
 	 * y si sus parámetros son correctos.
 	 * 
-	 * @param ini 	<code>IniSection</code> a parsear
-	 * @return 		<code>NewVehicle</code> event or 
-	 * 				<code>null</code> if parsing failed
+	 * @param ini -	{@code IniSection} a parsear
 	 * 
-	 * @throws IllegalArgumentException if <code>ini</code> represents 
+	 * @return 		{@code NewVehicle} event or 
+	 * 				{@code null} if parsing failed
+	 * 
+	 * @throws IllegalArgumentException if {@code ini} represents 
 	 *	 								the searched event but its 
 	 *									arguments are not valid
 	 */
@@ -104,7 +116,8 @@ public class NewVehicleBuilder extends EventBuilder {
 			// New Vehicle.
 			return 	new NewVehicle(time, id, maxSpeed, trip);
 		}
-		else 
+		else {
 			return null;
+		}
 	}
 }

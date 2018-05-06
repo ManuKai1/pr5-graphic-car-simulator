@@ -6,46 +6,56 @@ import es.ucm.fdi.model.events.NewHighwayRoad;
 import es.ucm.fdi.model.SimObj.HighwayRoad;
 
 /**
- * Clase que construye un <code>Event</code> 
+ * Clase que construye un {@code Event} 
  * {@link NewHighwayRoad} utilizado para crear una 
  * {@link HighwayRoad} durante la simulación.
  * Hereda de {@link EventBuilder}.
  */
 public class NewHighwayRoadBuilder extends EventBuilder {
 
+	// ** ATRIBUTOS ** //
 	/**
-	 * Etiqueta utilizada en las <code>IniSections</code>
+	 * Etiqueta utilizada en las {@code IniSection}s
 	 * para representar este tipo de eventos.
 	 */
 	private static final String SECTION_TAG = "new_road";
 
 	/**
-	 * Valor que debería almacenar la clave <code>type</code>
-	 * de una <code>IniSection</code> que represente a un
-	 * <code>HighwayRoad</code>.
+	 * Valor que debería almacenar la clave {@code type}
+	 * de una {@code IniSection} que represente a un
+	 * {@code HighwayRoad}.
 	 */
 	private static final String TYPE = "lanes";
 
+
+
+
+	// ** CONSTRUCTOR ** //
     /**
 	 * Constructor de {@link NewHighwayRoadBuilder} que 
-	 * pasa el atributo <code>SECTION_TAG</code> al 
+	 * pasa el atributo {@code SECTION_TAG} al 
 	 * constructor de la superclase.
 	 */
     public NewHighwayRoadBuilder() {
         super(SECTION_TAG);
     }
 
+
+
+
+	// ** MÉTODO DE PARSE ** //
 	/**
 	 * Método de parsing que comprueba si la 
-	 * <code>IniSection</code> pasada como argumento 
-	 * representa un evento <code>NewBikeVehicle</code>
+	 * {@code IniSection} pasada como argumento 
+	 * representa un evento {@code NewHighwayRoad}
 	 * y si sus parámetros son correctos.
 	 * 
-	 * @param ini 	<code>IniSection</code> a parsear
-	 * @return 		<code>NewHighwayRoad</code> event or 
-	 * 				<code>null</code> if parsing failed
+	 * @param ini 	- {@code IniSection} a parsear
 	 * 
-	 * @throws IllegalArgumentException if <code>ini</code> represents 
+	 * @return 		{@code NewHighwayRoad} event or 
+	 * 				{@code null} if parsing failed
+	 * 
+	 * @throws IllegalArgumentException if {@code ini} represents 
 	 *	 								the searched event but its 
 	 *									arguments are not valid
 	 */
@@ -142,8 +152,9 @@ public class NewHighwayRoadBuilder extends EventBuilder {
             return 	new NewHighwayRoad(time, id, length, maxSpeed, 
 							src, dest, lanes);
         } 
-        else 
+        else {
 			return null;
+		}
     }
 }
 
