@@ -1,7 +1,6 @@
 package es.ucm.fdi.util;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * A TreeMap that supports multiple values for the same key, via ArrayLists.
@@ -10,6 +9,7 @@ import java.util.stream.Collectors;
  * that is, newer values with the same key will be stored after any other values
  * with the same key.
  */
+@SuppressWarnings("serial")
 public class MultiTreeMap<K, V> extends TreeMap<K, ArrayList<V>> {
 
     public MultiTreeMap() {}

@@ -10,34 +10,49 @@ import es.ucm.fdi.ini.IniSection;
  */
 public class HighwayRoad extends Road {
 
+    // ** ATRIBUTOS ** //
     /**
      * Número de carriles de la autopista.
      */
     private int numLanes;
 
+
+
+
+
+    // ** CONSTRUCTOR ** //
     /**
      * Constructor de {@link HighwayRoad}.
      * 
-     * @param identifier    identificador del objeto
-     * @param len           longitud de la vía
-     * @param spLimit       límite de velocidad
-     * @param fromJ         <code>Junction</code> donde empieza
-     * @param toJ           <code>Junction</code> donde acaba
-     * @param lanes         número de carriles
+     * @param identifier    - identificador del objeto
+     * @param len           - longitud de la vía
+     * @param spLimit       - límite de velocidad
+     * @param fromJ         - {@code Junction} donde empieza
+     * @param toJ           - {@code Junction} donde acaba
+     * @param lanes         - número de carriles
      */
     public HighwayRoad(String identifier, int len, int spLimit, 
             Junction fromJ, Junction toJ, int lanes) {
+
         super(identifier, len, spLimit, fromJ, toJ);
         numLanes = lanes;
     }
     
+
+
+
+
+
+
+
+    // ** MÉTODOS COMPLEMENTARIOS DE AVANCE ** //
     /**
-     * Calcula la velocidad base de la <code>HighwayRoad</code>:   
+     * Calcula la velocidad base de la {@code HighwayRoad}:   
      * el mínimo entre la velocidad de congestión y el límite 
-     * de velocidad <code>speedLimit</code>.
+     * de velocidad {@code speedLimit}.
      * 
      * @return  la velocidad base de 
-     *          la <code>HighwayRoad</code>.
+     *          la {@code HighwayRoad}.
      */
     @Override
     protected int getBaseSpeed() {
@@ -49,16 +64,16 @@ public class HighwayRoad extends Road {
 
     /**
      * <p>
-     * Modifica la velocidad que llevarán los <code>Vehicles</code> 
-     * en la <code>HighwayRoad</code> previo avance.
+     * Modifica la velocidad que llevarán los {@code Vehicle}s 
+     * en la {@code HighwayRoad} previo avance.
      * </p> <p>
-     * En la <code>HighwayRoad</code>, el <code>reductionFactor</code> 
-     * es inicialmente <code>1</code> y aumenta a <code>2</code> si 
-     * el número de <code>Vehicles</code> averiados supera al 
-     * número de carriles <code>numLanes</code>.
+     * En la {@code HighwayRoad}, el <code>reductionFactor</code> 
+     * es inicialmente {@code 1} y aumenta a {@code 2} si 
+     * el número de {@code Vehicle}s averiados supera al 
+     * número de carriles {@code numLanes}.
      * </p>
      * 
-     * @param onRoad    lista de <code>Vehicles</code> 
+     * @param onRoad    - lista de {@code Vehicle}s 
      *                  en <code>DirtRoad</code>
      */
     @Override
@@ -87,14 +102,23 @@ public class HighwayRoad extends Road {
         }
     }
 
+    
+    
+    
+    
+    
+    
+    
+    // ** MÉTODO DE INFORME ** //
     /**
-     * Genera una <code>IniSection</code> que informa de los 
-     * atributos de la <code>HighwayRoad</code> en el 
+     * Genera una {@code IniSection} que informa de los 
+     * atributos de la {@code HighwayRoad} en el 
      * tiempo del simulador.
      * 
-     * @param simTime   tiempo del simulador
-     * @return          <code>IniSection</code> con información
-     *                  de la <code>HighwayRoad</code>
+     * @param simTime   - tiempo del simulador
+     * 
+     * @return          {@code IniSection} con información
+     *                  de la {@code HighwayRoad}
      */
     @Override
     public IniSection generateIniSection(int simTime) {
@@ -123,15 +147,4 @@ public class HighwayRoad extends Road {
     protected String getType() {
 		return "lanes";
 	}
-
-    /*
-    * ESTE MÉTODO NO CONSERVA EL ORDEN DE LOS EXPECTED OUTPUTS, 
-    * PERO LA COMPARACIÓN ES CORRECTA POR SECCIONES.
-    public IniSection generateIniSection(int simTime) {
-        IniSection section = super.generateIniSection(simTime);
-        section.setValue("type", getType());
-        
-        return section;
-    }
-    */
 }

@@ -11,37 +11,51 @@ import es.ucm.fdi.model.simulation.TrafficSimulation;
  */
 public class NewJunction extends Event {
 
+	// ** ATRIBUTOS ** //
 	/**
 	 * Identificador del objeto de simulación.
 	 */
 	protected String id;
 	
+	
+	
+	
+	
+	// ** CONSTRUCTOR ** //
 	/**
 	 * Constructor de {@link NewJunction}.
 	 * 
-	 * @param newTime 	tiempo de ejecución del evento.
-	 * @param ID 		identificador de la nueva <code>Junction</code>.
+	 * @param newTime 	- tiempo de ejecución del evento
+	 * @param ID 		- identificador de la nueva
+	 * 					{@code Junction}
 	 */
 	public NewJunction(int newTime, String ID) {
 		super(newTime);
 		id = ID;
 	}
 	
+	
+	
+	
+	
+	
+	// ** MÉTODO DE EJECUCIÓN ** //
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * El <code>NewJunction</code> crea una nueva
-	 * <code>Junction</code> dentro de la simulación.
+	 * El {@code NewJunction} crea una nueva
+	 * {@code Junction} dentro de la simulación.
 	 * </p> <p>
 	 * La ejecución del evento puede fallar por la presencia
-	 * de un <code>SimObj</code> ya registrado en la simulación
-	 * con el ID de la nueva <code>Junction</code>.
+	 * de un {@code SimObject} ya registrado en la simulación
+	 * con el ID de la nueva {@code Junction}.
 	 * </p>
 	 * 
-	 * @param sim la simulación sobre la que se ejecuta el evento
+	 * @param sim 	- la simulación sobre la que 
+	 * 				se ejecuta el evento
 	 * 
-	 * @throws AlreadyExistingSimObjException 	if <code>Junction</code> 
-	 * 											ID already registered 
+	 * @throws AlreadyExistingSimObjException 	if {@code Junction}	ID 
+	 * 											already registered 
 	 */
 	@Override
 	public void execute(TrafficSimulation sim) 
@@ -56,15 +70,20 @@ public class NewJunction extends Event {
 		}
 	}
 
+	
+	
+	
+	
+	// ** MÉTODO DE DESCRIPCIÓN ** //
 	/**
 	 * <p>
-	 * Devuelve la descripción <code>NewJunction</code>
+	 * Devuelve la descripción {@code NewJunction}
 	 * utilizada en las tablas de la GUI. Ejemplo:
 	 * </p> <p>
 	 * "New junction j3"
 	 * </p>
 	 * 
-	 * @return 	<code>String</code> con la descripción
+	 * @return 	{@code String} con la descripción
 	 */
 	@Override
 	protected String getEventDescription() {
@@ -77,11 +96,15 @@ public class NewJunction extends Event {
 	}
 	
 	
+	
+	
+	
+	// ** MÉTODO DE NUEVA INTERSECCIÓN ** //
 	/**
-	 * Método que genera una nueva <code>Junction</code>
-	 * a partir de los actributos del <code>Event</code>.
+	 * Método que genera una nueva {@code Junction}
+	 * a partir de los actributos del evento.
 	 * 
-	 * @return <code>Junction</code> with indicated ID
+	 * @return 	{@code Junction} with indicated ID
 	 */
 	protected Junction newJunction() {
 		return new Junction(id);
@@ -92,15 +115,18 @@ public class NewJunction extends Event {
 
 
 
+	// ** MÉTODO DE COMPARACIÓN ** //
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * En el caso de <code>NewJunction</code>,
+	 * En el caso de {@code NewJunction},
 	 * comprueba también que los IDs sean iguales.
 	 * </p>
 	 * 
-	 * @param obj objeto a comparar
-	 * @return if <code>NewJunction</code> equals <code>obj</code>
+	 * @param obj 	- objeto a comparar
+	 * 
+	 * @return 	if {@code NewJunction} 
+	 * 			equals {@code obj}
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -115,5 +141,4 @@ public class NewJunction extends Event {
 		
 		return same;
 	}
-	
 }

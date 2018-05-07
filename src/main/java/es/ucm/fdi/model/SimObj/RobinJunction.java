@@ -10,17 +10,18 @@ import es.ucm.fdi.model.simulation.SimulationException;
 
 /**
  * Clase que representa una intersección inteligente, que modifica
- * la duración del semáforo según el flujo de las <code>Roads</code>,
+ * la duración del semáforo según el flujo de las {@code Road}s,
  * como un objeto de simulación.
  * 
  * /**
  * Clase que representa una intersección inteligente, 
  * que modifica la duración del semáforo según el flujo
- * de las <code>Roads</code>, como un objeto de simulación. 
+ * de las {@code Road}s, como un objeto de simulación. 
  * Hereda de {@link Junction}
  */
 public class RobinJunction extends Junction {
 
+    // ** ATRIBUTOS ** //
     /**
      * Tiempo mínimo de duración de un semáforo.
      */
@@ -32,7 +33,7 @@ public class RobinJunction extends Junction {
     protected int maxLightTime;
 
     /**
-     * Mapa de <code>incomingRoads</code> a sus 
+     * Mapa de {@code incomingRoads} a sus 
      * respectivos intervalos de duración de sus semáforos.
      */
     protected Map<Road, Integer> timeLapses = new HashMap<>();
@@ -43,25 +44,31 @@ public class RobinJunction extends Junction {
     protected int elapsedTime = 0;
 
     /**
-     * Booleano que informa si en una <code>RobinJunction</code> 
+     * Booleano que informa si en una {@code RobinJunction} 
      * el semáforo ha estado abierto y en ningún momento ha 
      * pasado ningún coche.
      */
     protected boolean uselessGreen = true;
 
     /**
-     * Booleano que informa si en una <code>RobinJunction</code>
-     * el semáforo ha estado abierto y cada vez ha cruzado un coche.
+     * Booleano que informa si en una {@code RobinJunction}
+     * el semáforo ha estado abierto y cada vez ha cruzado 
+     * un {@code Vehicle}.
      */
     protected boolean usefulGreen = true;
 
 
+
+
+
+
+    // ** CONSTRUCTOR ** //
     /**
      * Constructor de {@link RobinJunction}.
      * 
-     * @param identifier    identificador del objeto
-     * @param minTime       duración mínima del semáforo
-     * @param maxTime       duración máxima del semáforo
+     * @param identifier    - identificador del objeto
+     * @param minTime       - duración mínima del semáforo
+     * @param maxTime       - duración máxima del semáforo
      */
     public RobinJunction(String identifier, int minTime, int maxTime) {
         super(identifier);
@@ -69,13 +76,20 @@ public class RobinJunction extends Junction {
         maxLightTime = maxTime;
     }
 
+
+
+
+
+
+
+    // ** MÉTODOS COMPLEMENTARIOS DE AVANCE ** //
     /**
      * {@inheritDoc}
      * <p>
-     * En una <code>RobinJunction</code>, la primera actualización 
-     * es análoga a la de una <code>Junction</code> común: se 
+     * En una {@code RobinJunction}, la primera actualización 
+     * es análoga a la de una {@code Junction} común: se 
      * pone en verde el primer semáforo de la lista de 
-     * <code>incomingRoads</code>.
+     * {@code incomingRoads}.
      * </p>
      */
     @Override
@@ -89,15 +103,15 @@ public class RobinJunction extends Junction {
     /**
      * {@inheritDoc}
      * <p>
-     * En una <code>RobinJunction</code>, se comprueba si 
-     * algún <code>Vehicle</code> ha cruzado para actualizar 
-     * los parámetros <code>uselessGreen</code> y
-     * <code>usefulGreen</code> que se utilizarán luego para 
+     * En una {@code RobinJunction}, se comprueba si 
+     * algún {@code Vehicle} ha cruzado para actualizar 
+     * los parámetros {@code uselessGreen} y
+     * {@code usefulGreen} que se utilizarán luego para 
      * modificar la duración del semáforo.
      * </p>
      * 
-     * @param greenRoad     <code>Road</code> con 
-     *                      el semáforo en verde
+     * @param greenRoad     {@code Road} con el
+     *                      semáforo en verde
      */
     @Override
     protected void roadUpdate(Road greenRoad) {
@@ -127,17 +141,17 @@ public class RobinJunction extends Junction {
     /**
      * {@inheritDoc}
      * <p>
-     * En una <code>RobinJunction</code>, se comprueba si el 
-     * semáforo de la <code>usedRoad</code> ha agotado su 
-     * <code>timeLapse</code>.
+     * En una {@code RobinJunction}, se comprueba si el 
+     * semáforo de la {@code usedRoad} ha agotado su 
+     * {@code timeLapse}.
      * </p> <p>
      * Si es así: se pone en rojo, se calcula la nueva duración 
      * del semáforo cuando vuelva a ponerse verde, se pone en 
-     * verde el semáforo de la siguiente <code>Road</code> en 
-     * <code>incomingRoads</code>, y se resetean los parámetros
-     * <code>elapsedTime, uselessGreen, usefulGreen</code>.
+     * verde el semáforo de la siguiente {@code Road} en 
+     * {@code incomingRoads}, y se resetean los parámetros
+     * {@codeelapsedTime, uselessGreen, usefulGreen}.
      * </p> <p>
-     * Si no, no ocurre nada y se actualiza <code>elapsedTime</code>.
+     * Si no, no ocurre nada y se actualiza {@code elapsedTime}.
      * </p>
      */
     @Override
@@ -194,17 +208,26 @@ public class RobinJunction extends Junction {
         }
     }
 	
-	/**
+	
+    
+    
+    
+    
+    
+    
+    // ** MÉTODO DE INFORME (+ COMPLEMENTARIOS) ** //
+    /**
      * {@inheritDoc}
      * <p>
-     * En una <code>RobinJunction</code> se incluye además 
-     * <code>type</code> y se incluye el tiempo restante del 
-     * semáforo de la <code>Road</code> en verde.
+     * En una {@code RobinJunction} se incluye además 
+     * el tipo y el tiempo restante del semáforo de la 
+     * {@code Road} en verde.
      * </p>
      * 
-     * @param simTime   tiempo del simulador
-     * @return          informe <code>IniSection</code> 
-     *                  de la <code>RobinJunction</code>
+     * @param simTime   - tiempo del simulador
+     * 
+     * @return  informe {@code IniSection} 
+     *          de la {@code RobinJunction}
      */
     @Override
     public IniSection generateIniSection(int simTime) {
@@ -219,33 +242,19 @@ public class RobinJunction extends Junction {
         section.setValue("id", id);
         section.setValue("time", simTime);
         section.setValue("queues", getQueuesValue());
-    section.setValue("type", getType());
+        section.setValue("type", getType());
 
         return section;
-    }
-
-    /*
-    * ESTE MÉTODO NO CONSERVA EL ORDEN DE LOS EXPECTED OUTPUTS, 
-    * PERO LA COMPARACIÓN ES CORRECTA POR SECCIONES.
-    public IniSection generateIniSection(int simTime) {
-        // Se utiliza getQueuesValue() de RobinJunction.
-        IniSection section = super.generateIniSection(simTime);         
-        section.setValue("type", getType());
-    
-    	return section;
-    }
-    */
-    
-    
+    }   
     
     /**
      * {@inheritDoc}
      * <p>
-     * En una <code>RobinJunction</code> se incluye el tiempo 
-     * restante del semáforo de la <code>Road</code> en verde.
+     * En una {@code RobinJunction} se incluye el tiempo 
+     * restante del semáforo de la {@code Road} en verde.
      * </p>
      * 
-     * @return <code>String</code> con las colas.
+     * @return {@code String} con las colas.
      */
     @Override
     protected String getQueuesValue() {
@@ -271,24 +280,32 @@ public class RobinJunction extends Junction {
 
     /**
      * Devuelve el tiempo restante del semáforo de cualquier 
-     * <code>Road</code> con respecto a <code>elapsedTime</code>. 
-     * El método no comprueba que la <code>Road</code> esté en verde.
+     * {@code Road} con respecto a {@code elapsedTime}. 
+     * El método no comprueba que la {@code Road} esté en verde.
      * 
-     * @param road  <code>Road</code> de la que 
+     * @param road  - {@code Road} de la que 
      *              se quiere conocer el tiempo 
      *              del semáforo
+     * 
      * @return      tiempo restante del semáforo
      */
     private int lastingLightTime(Road road) {
         return timeLapses.get(road) - elapsedTime;
     }
 
+    
+    
+    
+    
+    
+    
+    // ** MÉTODOS ADICIONALES ** //
     /**
-     * Añade una nueva <code>Road</code> de entrada a la 
-     * <code>RobinJunction</code>. Al introducir una entrante,
+     * Añade una nueva {@code Road} de entrada a la 
+     * {@code RobinJunction}. Al introducir una entrante,
      * la duración de su semáforo es máxima.
      * 
-     * @param newRoad nueva <code>Road</code> entrante
+     * @param newRoad   - nueva {@code Road} entrante
      */
     @Override
     public void addNewIncomingRoad(Road newRoad) {

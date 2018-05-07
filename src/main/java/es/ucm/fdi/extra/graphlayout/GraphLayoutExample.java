@@ -6,8 +6,6 @@ import java.awt.BorderLayout;
 import java.awt.event.*;
 import java.util.Random;
 
-import es.ucm.fdi.view.graphlayout.*;
-
 @SuppressWarnings("serial")
 public class GraphLayoutExample extends JFrame  {
 	

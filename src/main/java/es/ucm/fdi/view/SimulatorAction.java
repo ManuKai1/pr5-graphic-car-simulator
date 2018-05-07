@@ -8,9 +8,9 @@ import java.awt.image.BufferedImage;
 import java.io.InputStream;
 
 /**
- * A simple action.
- * Once created, can be added multiple times; and enabled and disabled
- * at all places at once.
+ * A simple action. Once created, it can be added 
+ * multiple times; and enabled and disabled at all 
+ * places at once.
  */
 @SuppressWarnings("serial")
 public class SimulatorAction extends AbstractAction {

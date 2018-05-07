@@ -6,33 +6,42 @@ import es.ucm.fdi.model.events.Event;
 /**
  * Clase utilizada como herramienta de parseo de
  * {@link IniSection IniSections}, extraídas de 
- * archivos de extensión <code>.ini</code>, que
+ * archivos de extensión {@code .ini}, que
  * representan los {@link Event Events} de la 
  * simulación.
  */
 public class EventParser {
 
+
+	// ** ATRIBUTOS ** //	
 	/**
-	 * Array con los posibles <code>Events</code>
+	 * Array con los posibles {@code Event}s
 	 * del simulador.
 	 */
-	private static EventBuilder[] events = 
-		{
-			new FaultyVehicleBuilder(), 
+	private static EventBuilder[] events = {
+		// Averías
+		new FaultyVehicleBuilder(), 
 
-			new NewJunctionBuilder(),
-			new NewRobinJunctionBuilder(),
-			new NewCrowdedJunctionBuilder(),
+		// Intersecciones
+		new NewJunctionBuilder(),
+		new NewRobinJunctionBuilder(),
+		new NewCrowdedJunctionBuilder(),
 
-			new NewRoadBuilder(), 
-			new NewHighwayRoadBuilder(),
-			new NewDirtRoadBuilder(),
+		// Carreteras
+		new NewRoadBuilder(), 
+		new NewHighwayRoadBuilder(),
+		new NewDirtRoadBuilder(),
 
-			new NewVehicleBuilder(),
-			new NewCarVehicleBuilder(),
-			new NewBikeVehicleBuilder()
-		};
+		// Vehículos
+		new NewVehicleBuilder(),
+		new NewCarVehicleBuilder(),
+		new NewBikeVehicleBuilder()
+	};
 
+
+
+
+	// ** CONSTRUCTOR ** //
 	/**
 	 * Constructor de {@link EventParser}.
 	 */
@@ -40,15 +49,20 @@ public class EventParser {
 		/*NADA*/
 	}
 	
+
+
+
+
+	// ** MÉTODO DE PARSE ** //
 	/**
-	 * Función de búsqueda de <code>Event</code> a partir
-	 * de la <code>IniSection</code> de un archivo con 
-	 * extensión <code>.ini</code>.
+	 * Función de búsqueda de {@code Event} a partir
+	 * de la {@code IniSection} de un archivo con 
+	 * extensión {@code .ini}.
 	 * 
-	 * @param ini 	<code>IniSection</code> del archivo
+	 * @param ini 	- {@code IniSection} del archivo
 	 * 
-	 * @return 		<code>Event</code> indicado en 
-	 * 				<code>ini</code> (si se encuentra).
+	 * @return 		{@code Event} indicado en 
+	 * 				{@code ini} (si se encuentra).
 	 * 
 	 * @throws IllegalArgumentException 	if an event matched the
 	 * 										section's tag, but the
@@ -80,6 +94,4 @@ public class EventParser {
 			"No event found."
 		);
 	}
-	
-	
 }

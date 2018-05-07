@@ -14,37 +14,49 @@ import es.ucm.fdi.model.simulation.TrafficSimulation;
  */
 public class NewDirtRoad extends NewRoad {
 
+    // ** CONSTRUCTOR ** //
     /**
-     * Constructor de <code>NewRoad</code>.
+     * Constructor de {@link NewDirtRoad}.
 	 * 
-	 * @param newTime   tiempo de ejecución del evento
-	 * @param ID        identificador de la nueva <code>DirtRoad</code>
-	 * @param max       longitud de la vía
-	 * @param lim       límite de velocidad
-	 * @param fromID    <code>Junction</code> donde empieza
-	 * @param toID      <code>Junction</code> donde acaba
+	 * @param newTime   - tiempo de ejecución del evento
+	 * @param ID        - identificador de la nueva
+     *                  {@code DirtRoad}
+	 * @param max       - longitud de la vía
+	 * @param lim       - límite de velocidad
+	 * @param fromID    {@code Junction} donde empieza
+	 * @param toID      {@code Junction} donde acaba
 	 */
     public NewDirtRoad(int newTime, String ID, int lgth, int lim,
             String fromID, String toID) {
+
         super(newTime, ID, lgth, lim, fromID, toID);
     }
 
+
+
+
+
+    // ** MÉTODO DE EJECUCIÓN ** //
     /**
      * {@inheritDoc}
      * <p>
-     * El <code>NewDirtRoad</code> crea un nuevo objeto
-     * <code>DirtRoad</code> en la simulación, derivado 
-     * de una <code>Road</code>.
+     * El {@code NewDirtRoad} crea un nuevo objeto
+     * {@code DirtRoad} en la simulación.
      * </p>
      * 
-     * @param sim la simulación sobre la que se ejecuta el evento
+     * @param sim   - la simulación sobre la que
+     *              se ejecuta el evento
      * 
-     * @throws AlreadyExistingSimObjException   if <code>Road</code> 
-     *                                          ID already registered
+     * @throws AlreadyExistingSimObjException   if {@code Road} ID
+     *                                          already registered
+     * @throws NonExistingSimObjException 	    if source or target 
+     *                                          {@code Junction}s not
+     *                                          registered
      */
     @Override
     public void execute(TrafficSimulation sim) 
-        throws AlreadyExistingSimObjException, NonExistingSimObjException {
+            throws AlreadyExistingSimObjException, NonExistingSimObjException {
+        
         try {
             super.execute(sim);
         } catch (AlreadyExistingSimObjException e) {
@@ -55,15 +67,21 @@ public class NewDirtRoad extends NewRoad {
         }
     }
 
+    
+    
+    
+    
+    
+    // ** MÉTODO DE DESCRIPCIÓN ** //
     /**
      * <p>
-     * Devuelve la descripción <code>NewDirtRoad</code>
+     * Devuelve la descripción {@code NewDirtRoad}
      * utilizada en las tablas de la GUI. Ejemplo:
      * </p> <p>
      * "New dirt road r3"
      * </p>
      * 
-     * @return 	<code>String</code> con la descripción
+     * @return 	{@code String} con la descripción
      */
     @Override
     protected String getEventDescription() {
@@ -75,19 +93,29 @@ public class NewDirtRoad extends NewRoad {
         return description.toString();
     }
 
+    
+    
+    
+    
+    // ** MÉTODO DE NUEVA CARRETERA ** //
     /**
-     * Método que genera una nueva <code>DirtRoad</code>
-     * a partir de los atributos del <code>Event<code>.
+     * Método que genera una nueva {@code DirtRoad}
+     * a partir de los atributos del evento.
      * 
-     * @param sim   la simulación sobre la que se ejecuta el evento
-     * @return      <code>DirtRoad</code> con los datos del <code>Event</code>
+     * @param sim      - la simulación sobre la que
+     *                 se ejecuta el evento
      * 
-     * @throws NonExistingSimObjException   si alguna de las 2 <code>Junctions</code>
-     *                                      no está registrada
+     * @return  {@code DirtRoad} con los 
+     *          datos del evento
+     * 
+     * @throws NonExistingSimObjException 	    if source or target 
+     *                                          {@code Junction}s not
+     *                                          registered
      */
     @Override
     protected DirtRoad newRoad(TrafficSimulation sim) 
             throws NonExistingSimObjException {
+
         Junction fromJunction = sim.getRoadMap().getJunctionWithID(fromJunctionID);
         Junction toJunction = sim.getRoadMap().getJunctionWithID(toJunctionID);
 

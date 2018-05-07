@@ -5,24 +5,44 @@ import java.util.Map;
 
 import javax.swing.JPanel;
 
-import es.ucm.fdi.view.graphlayout.*;
+import es.ucm.fdi.extra.graphlayout.*;
 
 import es.ucm.fdi.model.SimObj.Junction;
 import es.ucm.fdi.model.SimObj.Road;
 import es.ucm.fdi.model.SimObj.Vehicle;
 import es.ucm.fdi.model.simulation.RoadMap;
 
+/**
+ * Clase que representa un panel en Swing con una
+ * grafo que representa el estado de los objetos 
+ * de la simulación.
+ */
 @SuppressWarnings("serial")
 public class SimGraph extends JPanel {
 
+    // ** ATRIBUTOS ** //
+    /**
+     * El grafo.
+     */
     private GraphComponent _graphComp;
+
+    /**
+     * El mapa de la simulación.
+     */
     private RoadMap roadMap;
 
+
+
+
+    // ** CONSTRUCTOR ** //
+    /**
+     * Constructos de {@link SimGraph} que recibe el
+     * {@code RoadMap} de una simulación.
+     */
     public SimGraph(RoadMap map) {
         roadMap = map;
         initGUI();
     }
-
 
     private void initGUI() {
         _graphComp = new GraphComponent();
@@ -33,6 +53,13 @@ public class SimGraph extends JPanel {
         this.setVisible(true);
     }
 
+
+
+
+
+
+
+    // ** MÉTODO DE GENERACIÓND DEL GRAFO ** //
     /**
      * Genera un {@code Graph} a partir del {@code _roadMap} 
      * guardado como atributo y se pasa al atributo

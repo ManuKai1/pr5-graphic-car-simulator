@@ -7,13 +7,14 @@ import es.ucm.fdi.model.simulation.NonExistingSimObjException;
 import es.ucm.fdi.model.simulation.TrafficSimulation;
 
 /**
- * {@link Event} que representa la avería de uno o varios 
- * {@link Vehicle} en la simulación.
+ * {@link Event} que representa la avería de uno 
+ * o varios {@link Vehicle} en la simulación.
  */
 public class FaultyVehicle extends Event {
 
+	// ** ATRIBUTOS ** //
 	/**
-	 * Lista con los IDs de los <code>Vehicles</code>
+	 * Lista con los IDs de los {@code Vehicle}s
 	 * que se van a averiar.
 	 */
 	private List<String> vehiclesID;
@@ -23,13 +24,20 @@ public class FaultyVehicle extends Event {
 	 */
 	private int duration;
 	
+
+
+
+
+	// ** CONSTRUCTOR ** //
 	/**
 	 * Constructor de {@link FaultyVehicle}.
 	 * 
-	 * @param newTime 	tiempo de ejecución del evento
-	 * @param vehicles 	<code>List</code> con los IDs de
-	 * 						los <code>Vehicles</code> a averiar
-	 * @param dur 		tiempo de avería inducido
+	 * @param newTime 	- tiempo de ejecución del 
+	 * 					evento
+	 * @param vehicles 	- {@code List<String>} con los 
+	 * 					IDs de los {@code Vehicle}s a 
+	 * 					averiar
+	 * @param dur 		- tiempo de avería inducido
 	 */
 	public FaultyVehicle(int newTime, List<String> vehicles, int dur) {
 		super(newTime);
@@ -37,19 +45,27 @@ public class FaultyVehicle extends Event {
 		duration = dur;
 	}
 	
+
+
+
+
+
+	// ** MÉTODO DE EJECUCIÓN ** //
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * El <code>FaultyVehicleEvent</code> produce la avería 
-	 * de una colección de <code>Vehicles</code> dentro de 
+	 * El evento {@code FaultyVehicle} produce la avería 
+	 * de una colección de {@code Vehicle}s dentro de 
 	 * la simulación.
 	 * </p> <p>
 	 * La ejecución del evento puede fallar por la ausencia
-	 * de un <code>SimObj</code> no registrado en la simulación.
+	 * de un {@code SimObj} no registrado en la simulación.
 	 * </p>
 	 * 
-	 * @param sim la simulación sobre la que se ejecuta el evento.
-	 * @throws NonExistingSimObjException 
+	 * @param sim 	{@inheritDoc}
+	 * 
+	 * @throws NonExistingSimObjException 	if a {@code Vehicle} to
+	 * 										make faulty is not found
 	 */
 	@Override
 	public void execute(TrafficSimulation sim) throws NonExistingSimObjException {
@@ -61,15 +77,20 @@ public class FaultyVehicle extends Event {
 		}
 	}
 
+
+
+
+
+	// ** MÉTODO DE DESCRIPCIÓN ** //
 	/**
 	 * <p>
-	 * Devuelve la descripción <code>FaultyVehicle</code>
+	 * Devuelve la descripción {@code FaultyVehicle}
 	 * utilizada en las tablas de la GUI. Ejemplo:
 	 * </p> <p>
 	 * "Break vehicles [v2,v6,v8] for 11 units of time"
 	 * </p>
 	 * 
-	 * @return 	<code>String</code> con la descripción
+	 * @return	{@code String} con la descripción
 	 */
 	@Override
 	protected String getEventDescription() {
@@ -93,17 +114,22 @@ public class FaultyVehicle extends Event {
 	}
 
 
+
+
+
+	// ** MÉTODO DE COMPARACIÓN ** //
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * En el caso de <code>FaultyVehicle</code>, comprueba
-	 * también que la lista de <code>Vehicles</code> a averiar 
+	 * En el caso de {@code FaultyVehicle}, comprueba
+	 * también que la lista de {@code Vehicle}s a averiar 
 	 * y el tiempo de avería sean iguales.
 	 * </p>
 	 * 
-	 * @param obj 	objeto a comparar
-	 * @return 		if <code>FaultyVehicleEvent</code> 
-	 * 					equals <code>obj</code>
+	 * @param obj 	- objeto a comparar
+	 * 
+	 * @return 		if {@code FaultyVehicle} 
+	 *				equals {@code obj}
 	 */
 	@Override
 	public boolean equals(Object obj) {

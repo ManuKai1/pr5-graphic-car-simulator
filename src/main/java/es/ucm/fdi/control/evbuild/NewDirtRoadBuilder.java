@@ -6,52 +6,64 @@ import es.ucm.fdi.model.events.NewDirtRoad;
 import es.ucm.fdi.model.SimObj.DirtRoad;
 
 /**
- * Clase que construye un <code>Event</code> 
+ * Clase que construye un {@code Event} 
  * {@link NewDirtRoad} utilizado para crear una 
  * {@link DirtRoad} durante la simulación.
  * Hereda de {@link EventBuilder}.
  */
 public class NewDirtRoadBuilder extends EventBuilder {
 
-
+	// ** ATRIBUTOS ** //
 	/**
-	 * Etiqueta utilizada en las <code>IniSections</code>
+	 * Etiqueta utilizada en las {@code IniSection}s
 	 * para representar este tipo de eventos.
 	 */
 	private static final String SECTION_TAG = "new_road";
 
 	/**
-	 * Valor que debería almacenar la clave <code>type</code>
-	 * de una <code>IniSection</code> que represente a una
-	 * <code>DirtRoad</code>.
+	 * Valor que debería almacenar la clave {@code type}
+	 * de una {@code IniSection} que represente a una
+	 * {@code DirtRoad}.
 	 */
 	private static final String TYPE = "dirt";
 
+
+
+
+	// ** CONSTRUCTOR ** //
     /**
 	 * Constructor de {@link NewDirtRoadBuilder} que 
-	 * pasa el atributo <code>SECTION_TAG</code> al 
+	 * pasa el atributo {@code SECTION_TAG} al 
 	 * constructor de la superclase.
 	 */
     public NewDirtRoadBuilder() {
         super(SECTION_TAG);
     }
 
+
+
+
+
+	// ** MÉTODO DE PARSE ** //
     /**
 	 * Método de parsing que comprueba si la 
-	 * <code>IniSection</code> pasada como argumento 
-	 * representa un evento <code>NewDirtRoad</code>
+	 * {@code IniSection} pasada como argumento 
+	 * representa un evento {@code NewDirtRoad}
 	 * y si sus parámetros son correctos.
 	 * 
-	 * @param ini 	<code>IniSection</code> a parsear
-	 * @return 		<code>NewDirtRoad</code> event or 
-	 * 				<code>null</code> if parsing failed
+	 * @param ini 	- {@code IniSection} a parsear
 	 * 
-	 * @throws IllegalArgumentException if <code>ini</code> represents 
+	 * @return 		{@code NewDirtRoad} event or 
+	 * 				{@code null} if parsing failed
+	 * 
+	 * @throws IllegalArgumentException if {@code ini} represents 
 	 *	 								the searched event but its 
 	 *									arguments are not valid
 	 */
     @Override
-    Event parse(IniSection ini) {
+    Event parse(IniSection ini)
+			throws IllegalArgumentException {
+
         if (iniNameMatch(ini) && typeMatch(ini, TYPE)) {
             String id;
 			int time = 0;
@@ -130,7 +142,8 @@ public class NewDirtRoadBuilder extends EventBuilder {
 							maxSpeed, src, dest);
 
         } 
-        else 
+        else {
 			return null;
+		}
     }
 }

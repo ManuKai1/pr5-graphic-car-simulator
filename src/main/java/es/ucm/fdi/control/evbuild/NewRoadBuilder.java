@@ -7,38 +7,56 @@ import es.ucm.fdi.model.events.NewRoad;
 import es.ucm.fdi.model.SimObj.Road;
 
 /**
- * Clase que construye un <code>Event</code> 
+ * Clase que construye un {@code Event} 
  * {@link NewRoad} utilizado para crear una
  * {@link Road} durante la simulación.
  * Hereda de {@link EventBuilder}.
  */
 public class NewRoadBuilder extends EventBuilder {
 	
+	// ** ATRIBUTOS ** //
 	/**
-	 * Etiqueta utilizada en las <code>IniSections</code>
+	 * Etiqueta utilizada en las {@code IniSection}s
 	 * para representar este tipo de eventos.
 	 */
 	private static final String SECTION_TAG = "new_road";
 
+
+
+
+	// ** CONSTRUCTOR ** //
 	/**
-	 * Constructor de <code>NewRoadBuilder</code> que pasa
-	 * el parámetro <code>new_road</code> al constructor de la
-	 * superclase.
+	 * Constructor de {@link NewRoadBuilder} que pasa
+	 * el atributo {@code SECTION_TAG} al constructor de 
+	 * la superclase.
 	 */
 	public NewRoadBuilder() {
 		super(SECTION_TAG);
 	}
 	
+
+
+
+
+	// ** MÉTODO DE PARSE ** //
 	/**
-	 * Método de <code>parsing</code> de <code>NewRoadBuilder</code> que comprueba
-	 * si la <code>IniSection</code> pasada como argumento representa un <code>NewRoad</code>
+	 * Método de parsing que comprueba si la 
+	 * {@code IniSection} pasada como argumento 
+	 * representa un evento {@code NewRoad}
 	 * y si sus parámetros son correctos.
 	 * 
-	 * @param ini <code>IniSection</code> a parsear.
-	 * @return <code>NewRoad</code> o <code>null</code>.
+	 * @param ini 	- {@code IniSection} a parsear
+	 * 
+	 * @return 		{@code NewRoad} event or 
+	 * 				{@code null} if parsing failed
+	 * 
+	 * @throws IllegalArgumentException if {@code ini} represents 
+	 *	 								the searched event but its 
+	 *									arguments are not valid
 	 */
 	@Override
-	Event parse(IniSection ini) {
+	Event parse(IniSection ini)
+			throws IllegalArgumentException {
 
 		// Se comprueba si es un NewRoad
 		if ( iniNameMatch(ini) && typeMatch(ini, null) ) {
@@ -118,7 +136,8 @@ public class NewRoadBuilder extends EventBuilder {
 			return 	new NewRoad(time, id, length, 
 							maxSpeed, src, dest);
 		}
-		else 
+		else {
 			return null;
+		}
 	}
 }

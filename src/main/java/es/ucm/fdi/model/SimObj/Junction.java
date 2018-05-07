@@ -16,21 +16,22 @@ import es.ucm.fdi.util.TableDataType;
  */
 public class Junction extends SimObject {
 	
+	// ** ATRIBUTOS ** //
 	/**
 	 * Etiqueta que encabeza el informe de una
-	 * <code>Junction</code> cualquiera.
+	 * {@code Junction} cualquiera.
 	 */
 	protected final String REPORT_TITLE = "[junction_report]";
 
 	/**
-	 * Mapa de <code>Roads</code> entrantes
-	 * en la <code>Junction</code>.
+	 * Mapa de {@code Road}s entrantes
+	 * en la {@code Junction}.
 	 */
 	protected Map<String, Road> incomingRoads = new LinkedHashMap<>();
 
 	/**
-	 * Mapa de <code>Roads</code> salientes 
-	 * en la <code>Junction</code>.
+	 * Mapa de {@code Road}s salientes 
+	 * en la {@code Junction}.
 	 */
 	protected Map<String, Road> exitRoads = new LinkedHashMap<>();
 
@@ -39,7 +40,13 @@ public class Junction extends SimObject {
 	 * representa el semáforo encendido.
 	 */
 	protected int light = -1;	
-	
+
+
+
+
+
+
+	// ** CONSTRUCTOR ** //
 	/**
 	 * Constructor de {@link Junction}.
 	 * 
@@ -49,22 +56,28 @@ public class Junction extends SimObject {
 		super(identifier);
 	}
 
+
+
+
+
+
+	// ** MÉTODO DE AVANCE (+ COMPLEMENTARIOS) ** //
 	/**
 	 * {@inheritDoc}
-	 * Método de AVANCE de <code>Junction</code>.
+	 * Método de AVANCE de {@code Junction}.
 	 * <p>
 	 * En la primera iteración tras la creación de 
-	 * la <code>Junction</code>, se produce la primera 
+	 * la {@code Junction}, se produce la primera 
 	 * actualización del semáforo con {@link #firstLightUpdate()}
 	 * </p> <p>
 	 * En primer lugar, se actualiza en {@link #roadUpdate(Road)}
-	 * la cola de la <code>greenRoad</code> con el semáforo en verde.
+	 * la cola de la {@code greenRoad} con el semáforo en verde.
 	 * </p> <p>
 	 * En segundo lugar, se actualiza el tiempo de avería de los 
-	 * <code>Vehicles</code> averiados en la cola de espera con 
+	 * {@code Vehicle}s averiados en la cola de espera con 
 	 * {@link #refreshWaiting()}
 	 * </p> <p> 
-	 * Finalmente, se actualiza el semáforo de la <code>Junction</code>
+	 * Finalmente, se actualiza el semáforo de la {@code Junction}
 	 * mediante {@link #lightUpdate()}
 	 * </p>
 	 */
@@ -72,7 +85,7 @@ public class Junction extends SimObject {
 	public void proceed() {
 		// Si no tiene carreteras entrantes no necesita
 		// ningún control de semáforo
-		if (hasIncomingRoads()) {
+		if ( hasIncomingRoads() ) {
 			if (light == -1) {			
 				// * //
 				// Primera actualización del semáforo.
@@ -99,6 +112,17 @@ public class Junction extends SimObject {
 	}
 
 	/**
+	 * Comprueba si la {@code Junction}
+	 * tiene {@code Road}s entrantes.
+	 * 
+	 * @return 	si el número de mapeos clave-valor de 
+	 * 			{@code incomingRoads} no es nulo
+	 */
+	private boolean hasIncomingRoads() {
+		return (incomingRoads.size() > 0);
+	}
+
+	/**
 	 * Actualiza el semáforo en el primer tick 
 	 * de la simulación.
 	 */
@@ -113,10 +137,10 @@ public class Junction extends SimObject {
 	}
 
 	/**
-	 * Actualiza la cola de la <code>Road</code> 
+	 * Actualiza la cola de la {@code Road} 
 	 * con el semáforo en verde.
 	 * 
-	 * @param greenRoad 	<code>Road</code> con 
+	 * @param greenRoad 	{@code Road} con 
 	 * 						el semáforo en verde
 	 */
 	protected void roadUpdate(Road greenRoad) {
@@ -135,7 +159,7 @@ public class Junction extends SimObject {
 	}
 	
 	/**
-	 * Actualiza el semáforo de la <code>Junction</code>.
+	 * Actualiza el semáforo de la {@code Junction}.
 	 */
 	protected void lightUpdate() {
 		// Tomamos la carretera usada
@@ -157,15 +181,26 @@ public class Junction extends SimObject {
 		nextRoad = array.get(light);
 		incomingRoads.get(nextRoad).setLight(true);
 	}
-	
+
+
+
+
+
+
+
+
+
+
+	// ** MÉTODO DE INFORME (+ COMPLEMENTARIOS) ** //
 	/**
-	 * Genera una <code>IniSection</code> que informa de los 
-	 * atributos de la <code>Junction</code> en el 
+	 * Genera una {@code IniSection} que informa de los 
+	 * atributos de la {@code Junction} en el 
 	 * tiempo del simulador.
 	 * 
-	 * @param simTime 	tiempo del simulador
-	 * @return 			<code>IniSection</code> con información
-	 * 					de la <code>Junction</code>
+	 * @param simTime 	- tiempo del simulador
+	 * 
+	 * @return 			{@code IniSection} con información
+	 * 					de la {@code Junction}
 	 */
 	public IniSection generateIniSection(int simTime) {
 		// 1 //
@@ -185,10 +220,10 @@ public class Junction extends SimObject {
 	}
 
 	/**
-	 * Genera un <code>StringBuilder</code> con la información
-	 * sobre las colas de la <code>Junction</code>.
+	 * Genera un {@code StringBuilder} con la información
+	 * sobre las colas de la {@code Junction}.
 	 * 
-	 * @return <code>String</code> con las colas.
+	 * @return 	{@code String} con las colas.
 	 */
 	protected String getQueuesValue() {
 		// Generación del string de queues
@@ -205,90 +240,21 @@ public class Junction extends SimObject {
 
 		return queues.toString();
 	}
-	
-	/**
-	 * Devuelve la Mapa de <code>Roads</code> entrantes
-	 * 
-	 * @return Mapa de <code>Roads</code> entrantes.
-	 */
-	public Map<String, Road> getIncomingRoads() {
-		return incomingRoads;
-	}
-	
-	/**
-	 * Comprueba si la <code>Junction</code>
-	 * tiene <code>Roads</code> entrantes.
-	 * 
-	 * @return 	si el número de mapeos clave-valor de 
-	 * 			<code>incomingRoads</code> no es nulo
-	 */
-	public boolean hasIncomingRoads() {
-		return (incomingRoads.size() > 0);
-	}
-
-	/**
-	 * Devuelve el Mapa de <code>Roads</code> salientes
-	 * 
-	 * @return mapa de <code>Roads</code> salientes
-	 */
-	public Map<String, Road> getExitRoads() {
-		return exitRoads;
-	}
-
-	/**
-	 * Añade una nueva <code>Road</code> de salida a la 
-	 * <code>Junction</code>.
-	 * 
-	 * @param newRoad Nueva <code>Road</code> saliente
-	 */
-	public void addNewExitRoad(Road newRoad) {
-		exitRoads.put(newRoad.getID(), newRoad);
-	}
-
-	/**
-	 * Añade una nueva <code>Road</code> de entrada a la 
-	 * <code>Junction</code>.
-	 * 
-	 * @param newRoad Nueva <code>Road</code> entrante
-	 */
-	public void addNewIncomingRoad(Road newRoad) {
-		incomingRoads.put(newRoad.getID(), newRoad);
-	}
-	
-	
-	/**
-	 * Método que devuelve la <code>Road</code> entre dos 
-	 * <code>Junctions</code>. La junction de origen 
-	 * es la actual.
-	 * 
-	 * @param toJunction 	<code>Junction</code> de destino
-	 * @return 				<code>Road</code> entre las dos 
-	 * 						<code>Junctions</code>
-	 * 
-	 * @throws SimulationException 	if <code>Road</code> between 
-	 * 								<code>Junctions</code> not 
-	 * 								found
-	 */
-	public Road getRoadTo(Junction junction) throws SimulationException {
-		String toID;
-		for (Entry<String, Road> exit : exitRoads.entrySet()) {
-			toID = exit.getKey();
-			if ( junction.incomingRoads.containsKey(toID) ) {
-				return exitRoads.get(toID);
-			}
-		}
-		
-		throw new SimulationException(
-			"Road not found between junctions with id: " + 
-			id + ", " + junction.getID()
-		);
-	}
 
 
 
+
+
+
+
+
+
+
+
+	// ** MÉTODO DE DESCRIPCIÓN (+ COMPLEMENTARIOS) ** //
 	/**
 	 * {@inheritDoc}
-	 * Añade una <code>Junction</code> al mapa, con los
+	 * Añade una {@code Junction} al mapa, con los
 	 * datos: id, tipo, colas de verde, colas de rojo.
 	 * 
 	 * @param out {@inheritDoc}
@@ -306,8 +272,8 @@ public class Junction extends SimObject {
 
 	/**
 	 * <p>
-	 * Devuelve un <code>String</code> con el estado de 
-	 * la cola de espera de la <code>Road</code> con el 
+	 * Devuelve un {@code String} con el estado de 
+	 * la cola de espera de la {@code Road} con el 
 	 * semáforo en verde.
 	 * </p> <p>
 	 * Ejemplo:
@@ -315,8 +281,8 @@ public class Junction extends SimObject {
 	 * [(r2,green,[v3,v6,v8])]
 	 * </p>
 	 * 
-	 * @return	<code>String</code> con el estado de la
-	 * 			<code>Road</code> en verde
+	 * @return	{@code String} con el estado de la
+	 * 			{@code Road} en verde
 	 */
 	protected String getGreenDescription() {
 		StringBuilder green = new StringBuilder();
@@ -335,8 +301,8 @@ public class Junction extends SimObject {
 
 	/**
 	 * <p>
-	 * Devuelve un <code>String</code> con el estado de 
-	 * la cola de espera de las <code>Roads</code> con el 
+	 * Devuelve un {@code String} con el estado de 
+	 * la cola de espera de las {@code Road}s con el 
 	 * semáforo en rojo.
 	 * </p> <p>
 	 * Ejemplo:
@@ -344,8 +310,8 @@ public class Junction extends SimObject {
 	 * [(r2,red,[v3,v6,v8]),(r4,red,[v5])]
 	 * </p>
 	 * 
-	 * @return	<code>String</code> con el estado de la
-	 * 			<code>Road</code> en rojo
+	 * @return	{@code String} con el estado de la
+	 * 			{@code Road} en rojo
 	 */
 	protected String getRedDescription() {
 		StringBuilder red = new StringBuilder();
@@ -360,6 +326,85 @@ public class Junction extends SimObject {
 		red.append("]");
 
 		return red.toString();
+	}
+
+	
+
+
+
+
+
+
+
+
+	
+	// ** MÉTODOS ADICIONALES ** //
+	/**
+	 * Devuelve la Mapa de {@code Road}s entrantes
+	 * 
+	 * @return Mapa de {@code Road}s entrantes.
+	 */
+	public Map<String, Road> getIncomingRoads() {
+		return incomingRoads;
+	}
+
+	/**
+	 * Devuelve el Mapa de {@code Road}s salientes
+	 * 
+	 * @return mapa de {@code Road}s salientes
+	 */
+	public Map<String, Road> getExitRoads() {
+		return exitRoads;
+	}
+
+	/**
+	 * Añade una nueva {@code Road} de salida a la 
+	 * {@code Junction}.
+	 * 
+	 * @param newRoad 	- nueva {@code Road} saliente
+	 */
+	public void addNewExitRoad(Road newRoad) {
+		exitRoads.put(newRoad.getID(), newRoad);
+	}
+
+	/**
+	 * Añade una nueva {@code Road} de entrada a la 
+	 * {@code Junction}.
+	 * 
+	 * @param newRoad 	- nueva {@code Road} entrante
+	 */
+	public void addNewIncomingRoad(Road newRoad) {
+		incomingRoads.put(newRoad.getID(), newRoad);
+	}
+	
+	
+	/**
+	 * Método que devuelve la {@code Road} entre dos 
+	 * {@code Junction}s. La junction de origen 
+	 * es la actual.
+	 * 
+	 * @param toJunction 	- {@code Junction} de destino
+	 * 
+	 * @return 				{@code Road} entre las dos 
+	 * 						{@code Junction}s
+	 * 
+	 * @throws SimulationException 	if {@code Road} between 
+	 * 								{@code Junction}s not 
+	 * 								found
+	 */
+	public Road getRoadTo(Junction junction) throws SimulationException {
+		String toID;
+		for (Entry<String, Road> exit : exitRoads.entrySet()) {
+			toID = exit.getKey();
+			if ( junction.incomingRoads.containsKey(toID) ) {
+				return exitRoads.get(toID);
+			}
+		}
+		
+		throw new SimulationException(
+			"Road not found between junctions with id: " + 
+			id + ", " + junction.getID()
+		);
 	}
 
 	/**

@@ -12,6 +12,7 @@ import es.ucm.fdi.model.simulation.SimulationException;
  */
 public class CarVehicle extends Vehicle {
 
+	// ** ATRIBUTOS ** //
 	/**
 	 * Resistencia a las averías.
 	 */
@@ -37,17 +38,26 @@ public class CarVehicle extends Vehicle {
 	 */
 	private int kmSinceFaulty = 0;
 	
+
+
+
+
+
+
+
+	// ** CONSTRUCTOR ** //
 	/**
 	 * Constructor de {@link CarVehicle}.
 	 * 
-	 * @param identifier 	identificador del objeto
-	 * @param trp 			ruta de <code>Junctions</code>
-	 * @param max 			máxima velocidad alcanzable
-	 * @param res 			resistencia a averiarse
-	 * @param breakChance 	probabilidad de avería
-	 * @param breakDuration duración máxima de avería
-	 * @param seed 			semilla aleatoria
-	 * @throws SimulationException 
+	 * @param identifier 	- identificador del objeto
+	 * @param trp 			- ruta de {@code Junction}s
+	 * @param max 			- máxima velocidad alcanzable
+	 * @param res 			- resistencia a averiarse
+	 * @param breakChance 	- probabilidad de avería
+	 * @param breakDuration - duración máxima de avería
+	 * @param seed 			- semilla aleatoria
+	 * 
+	 * @throws SimulationException {@inheritDoc}
 	 */
 	public CarVehicle(String identifier, ArrayList<Junction> trp,
 			int max, int res, double breakChance, int breakDuration, 
@@ -59,13 +69,20 @@ public class CarVehicle extends Vehicle {
 		randomSeed = new Random(seed);
 	}
 	
+
+
+
+
+
+
+	// ** MÉTODO DE AVANCE ** //
 	/**
 	 * {@inheritDoc}
 	 * <p>
 	 * ----------
 	 * </p> <p>
-	 * *Como <code>CarVehicle</code>, se comprueba si el
-	 * <code>Vehicle</code> puede averiarse por distancia
+	 * *Como {@code CarVehicle}, se comprueba si el
+	 * {@code Vehicle} puede averiarse por distancia
 	 * recorrida y probabilidad de avería.
 	 * </p>
 	 */
@@ -101,14 +118,23 @@ public class CarVehicle extends Vehicle {
 		kmSinceFaulty += kilometrage - oldKilometrage;
 	}
 	
+	
+	
+	
+	
+	
+	
+	
+	// ** MÉTODO DE INFORME ** //
 	/**
-	 * Genera una <code>IniSection</code> que informa de
-	 * los atributos del <code>CarVehicle</code> en el 
+	 * Genera una {@code IniSection} que informa de
+	 * los atributos del {@code CarVehicle} en el 
 	 * tiempo del simulador.
 	 * 
-	 * @param simTime 	tiempo del simulador
-	 * @return 			<code>IniSection</code> con información 
-	 * 					del <code>CarVehicle</code>
+	 * @param simTime 	- tiempo del simulador
+	 * 
+	 * @return 			{@code IniSection} con información 
+	 * 					del {@code CarVehicle}
 	 */
 	@Override
 	public IniSection generateIniSection(int simTime) {
@@ -140,15 +166,4 @@ public class CarVehicle extends Vehicle {
     protected String getType() {
 		return "car";
 	}
-
-	/*
-	* ESTE MÉTODO NO CONSERVA EL ORDEN DE LOS EXPECTED OUTPUTS, 
-	* PERO LA COMPARACIÓN ES CORRECTA POR SECCIONES.
-	public IniSection generateIniSection(int simTime) {
-		IniSection section = super.generateIniSection(simTime);
-		section.setValue("type", getType());
-	
-		return section;
-	}
-	*/
 }

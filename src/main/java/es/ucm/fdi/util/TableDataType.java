@@ -1,5 +1,9 @@
 package es.ucm.fdi.util;
 
+/**
+ * Tipo enumerado que representa los distintos datos
+ * que se van a mostrar en las tablas del {@code GUI}.
+ */
 public enum TableDataType {
     E_NUM("#"),       // For event numeration
     E_TIME("Time"),   // For event execution time

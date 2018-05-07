@@ -5,29 +5,34 @@ import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.model.events.NewRobinJunction;
 
 /**
- * Clase que construye un <code>Event</code> 
+ * Clase que construye un {@code Event}
  * {@link NewRobinJunction} utilizado para crear una
  * {@link RobinJunction} durante la simulación.
  * Hereda de {@link EventBuilder}.
  */
 public class NewRobinJunctionBuilder extends EventBuilder {
     
+    // ** ATRIBUTOS ** //
     /**
-     * Etiqueta utilizada en las <code>IniSections</code>
+     * Etiqueta utilizada en las {@code IniSection}s
      * para representar este tipo de eventos.
      */
     private static final String SECTION_TAG = "new_junction";
 
     /**
-     * Valor que debería almacenar la clave <code>type</code>
-     * de una <code>IniSection</code> que represente a una
-     * <code>RobinJunction</code>.
+     * Valor que debería almacenar la clave {@code type}
+     * de una {@code IniSection} que represente a una
+     * {@code RobinJunction}.
      */
     private static final String TYPE = "rr";
 
+
+
+
+    // ** CONSTRUCTOR ** //
     /**
      * Constructor de {@link NewRobinJunctionBuilder} que 
-     * pasa el atributo <code>SECTION_TAG</code> al 
+     * pasa el atributo {@code SECTION_TAG} al 
      * constructor de la superclase.
      */
     public NewRobinJunctionBuilder() {
@@ -36,15 +41,15 @@ public class NewRobinJunctionBuilder extends EventBuilder {
     
     /**
      * Método de parsing que comprueba si la 
-     * <code>IniSection</code> pasada como argumento 
-     * representa un evento <code>NewRobinJunction</code>
+     * {@code IniSection} pasada como argumento 
+     * representa un evento {@code NewRobinJunction}
      * y si sus parámetros son correctos.
      * 
-     * @param ini 	<code>IniSection</code> a parsear
-     * @return 		<code>NewRobinJunction</code> event or 
-     * 				<code>null</code> if parsing failed
+     * @param ini 	{@code IniSection} a parsear
+     * @return 		{@code NewRobinJunction} event or 
+     * 				{@code null} if parsing failed
      * 
-     * @throws IllegalArgumentException if <code>ini</code> represents 
+     * @throws IllegalArgumentException if {@code ini} represents 
      *	 								the searched event but its 
      *									arguments are not valid
      */
@@ -113,9 +118,10 @@ public class NewRobinJunctionBuilder extends EventBuilder {
             }
 			
             // New Robin Junction.
-			return new NewRobinJunction(time, id, minTime, maxTime);
+			return  new NewRobinJunction(time, id, minTime, maxTime);
 		}
-		else 
+		else {
             return null;
+        }
 	}
 }

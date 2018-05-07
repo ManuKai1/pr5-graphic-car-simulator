@@ -10,26 +10,34 @@ import es.ucm.fdi.ini.IniSection;
  */
 public class DirtRoad extends Road {
 
+
+    // ** CONSTRUCTOR ** //
     /**
      * Constructor de {@link DirtRoad}.
      * 
-     * @param identifier    identificador del objeto
-     * @param len           longitud de la vía
-     * @param spLimit       límite de velocidad
-     * @param fromJ         <code>Junction</code> donde empieza
-     * @param toJ           <code>Junction</code> donde acaba
+     * @param identifier    - identificador del objeto
+     * @param len           - longitud de la vía
+     * @param spLimit       - límite de velocidad
+     * @param fromJ         - {@code Junction} donde empieza
+     * @param toJ           - {@code Junction} donde acaba
      */
     public DirtRoad(String identifier, int len, int spLimit,
             Junction fromJ, Junction toJ) {
         super(identifier, len, spLimit, fromJ, toJ);
     }
 
+    
+    
+    
+    
+    
+    // ** MÉTODOS COMPLEMENTARIOS DE AVANCE ** //
     /**
-     * Calcula la velocidad base de la <code>DirtRoad</code>: 
-     * el límite de velocidad <code>speedLimit</code>.
+     * Calcula la velocidad base de la {@code DirtRoad}: 
+     * el límite de velocidad {@code speedLimit}.
      * 
      * @return  la velocidad base de 
-     *          la <code>DirtRoad</code>.
+     *          la {@code DirtRoad}.
      */
     @Override
     protected int getBaseSpeed() {
@@ -39,16 +47,16 @@ public class DirtRoad extends Road {
     /**
      * <p>
      * Modifica la velocidad que llevarán los 
-     * <code>Vehicles</code> en la <code>DirtRoad</code> 
+     * {@code Vehicle}s en la {@code DirtRoad} 
      * previo avance.
      * </p> <p>
-     * En la <code>DirtRoad</code>, el <code>reductionFactor</code> 
-     * aumenta en uno por cada <code>Vehicle</code> averiado 
-     * delante de un <code>Vehicle</code>.
+     * En la {@code DirtRoad}, el {@code reductionFactor} 
+     * aumenta en uno por cada {@code Vehicle} averiado 
+     * delante de un {@code Vehicle}.
      * </p>
      * 
-     * @param onRoad    lista de <code>Vehicles</code> 
-     *                  en <code>DirtRoad</code>.
+     * @param onRoad    lista de {@code Vehicle}s 
+     *                  en {@code DirtRoad}.
      */
     @Override
     protected void vehicleSpeedModifier(ArrayList<Vehicle> onRoad) {
@@ -69,14 +77,21 @@ public class DirtRoad extends Road {
         }
     }
 
+
+
+
+
+
+
+    // ** MÉTODO DE INFORME (+ COMPLEMENTARIOS) ** //
     /**
-     * Genera una <code>IniSection</code> que informa de los 
-     * atributos de la <code>DirtRoad</code> en el 
+     * Genera una {@code IniSection} que informa de los 
+     * atributos de la {@code DirtRoad} en el 
      * tiempo del simulador.
      * 
      * @param simTime   tiempo del simulador
-     * @return          <code>IniSection</code> con información
-     *                  de la <code>DirtRoad</code>
+     * @return          {@code IniSection} con información
+     *                  de la {@code DirtRoad}
      */
     @Override
     public IniSection generateIniSection(int simTime) {
@@ -105,15 +120,4 @@ public class DirtRoad extends Road {
     protected String getType() {
 		return "dirt";
 	}
-
-    /*
-    * ESTE MÉTODO NO CONSERVA EL ORDEN DE LOS EXPECTED OUTPUTS, 
-    * PERO LA COMPARACIÓN ES CORRECTA POR SECCIONES.
-    public IniSection generateIniSection(int simTime) {
-        IniSection section = super.generateIniSection(simTime);
-        section.setValue("type", getType());
-        
-        return section;
-    }
-    */
 }

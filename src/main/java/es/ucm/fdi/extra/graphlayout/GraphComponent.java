@@ -1,4 +1,4 @@
-package es.ucm.fdi.view.graphlayout;
+package es.ucm.fdi.extra.graphlayout;
 
 import java.awt.Color;
 import java.awt.Dimension;

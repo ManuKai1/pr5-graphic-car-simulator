@@ -8,53 +8,64 @@ import es.ucm.fdi.model.events.NewCarVehicle;
 import es.ucm.fdi.model.SimObj.CarVehicle;
 
 /**
- * Clase que construye un <code>Event</code> 
+ * Clase que construye un {@code Event} 
  * {@link NewCarVehicle} utilizado para crear un 
  * {@link CarVehicle} durante la simulación.
  * Hereda de {@link EventBuilder}.
  */
 public class NewCarVehicleBuilder extends EventBuilder {
 
+	// ** ATRIBUTOS ** //
 	/**
-	 * Etiqueta utilizada en las <code>IniSections</code>
+	 * Etiqueta utilizada en las {@code IniSection}s
 	 * para representar este tipo de eventos.
 	 */
 	private static final String SECTION_TAG = "new_vehicle";
 
 	/**
-	 * Valor que debería almacenar la clave <code>type</code>
-	 * de una <code>IniSection</code> que represente a un
-	 * <code>CarVehicle</code>.
+	 * Valor que debería almacenar la clave {@code type}
+	 * de una {@code IniSection} que represente a un
+	 * {@code CarVehicle}.
 	 */
 	private static final String TYPE = "car";
 
 
+
+
+	// ** CONSTRUCTOR ** //
 	/**
 	 * Constructor de {@link NewCarVehicleBuilder} que 
-	 * pasa el atributo <code>SECTION_TAG</code> al 
+	 * pasa el atributo {@code SECTION_TAG} al 
 	 * constructor de la superclase.
 	 */
 	public NewCarVehicleBuilder() {
 		super(SECTION_TAG);
 	}
 
+
+
+
+
+	// ** MÉTODO DE PARSE ** //
 	/**
 	 * Método de parsing que comprueba si la 
-	 * <code>IniSection</code> pasada como argumento 
-	 * representa un evento <code>NewCarVehicle</code>
+	 * {@code IniSection} pasada como argumento 
+	 * representa un evento {@code NewCarVehicle}
 	 * y si sus parámetros son correctos.
 	 * 
-	 * @param ini 	<code>IniSection</code> a parsear
-	 * @return 		<code>NewCarVehicle</code> event or 
-	 * 				<code>null</code> if parsing failed
+	 * @param ini 	- {@code IniSection} a parsear
 	 * 
-	 * @throws IllegalArgumentException if <code>ini</code> represents 
+	 * @return 		{@code NewCarVehicle} event or 
+	 * 				{@code null} if parsing failed
+	 * 
+	 * @throws IllegalArgumentException if {@code ini} represents 
 	 *	 								the searched event but its 
 	 *									arguments are not valid
 	 */
 	@Override
 	Event parse(IniSection ini)
 			throws IllegalArgumentException {
+		
 		// Se comprueba si es un NewCarVehicle
 		if ( iniNameMatch(ini) && typeMatch(ini, TYPE) ) {
 			String id;
@@ -136,8 +147,9 @@ public class NewCarVehicleBuilder extends EventBuilder {
 			try {
 				faultDuration = parsePositiveInt(ini, "max_fault_duration");
 			}
-			//La duración de avería no era un entero
+			
 			catch (IllegalArgumentException e) {
+				//La duración de avería no era un entero
 				throw new IllegalArgumentException(
 					e.getMessage() + " when reading fault duration "
 					+ "in car with id " + id
@@ -163,8 +175,8 @@ public class NewCarVehicleBuilder extends EventBuilder {
 			return 	new NewCarVehicle(time, id, maxSpeed, trip, resistance, 
 							faultyChance, faultDuration, seed);
 		}
-		else 
+		else {
 			return null;
+		}
 	}
-
 }

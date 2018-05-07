@@ -19,73 +19,80 @@ import es.ucm.fdi.util.TableDataType;
  */
 public class Road extends SimObject {
 	
+	// ** ATRIBUTOS ** //
 	/**
 	 * Etiqueta que encabeza el informe de una 
-	 * <code>Road</code> cualquiera.
+	 * {@code Road} cualquiera.
 	 */
 	protected static final String REPORT_TITLE = "[road_report]";
 	
 	/**
-	 * Longitud de la <code>Road</code>.
+	 * Longitud de la {@code Road}.
 	 */
 	private int length;
 
 	/**
 	 * Límite de velocidad para los 
-	 * <code>Vehicles</code> en la <code>Road</code>.
+	 * {@code Vehicle}s en la {@code Road}.
 	 */
 	protected int speedLimit;
 
 	/**
-	 * <code>Junction</code> donde empieza 
-	 * la <code>Road</code>.
+	 * {@code Junction}s donde empieza 
+	 * la {@code Road}.
 	 */
 	private Junction fromJunction;
 
 	/**
-	 * <code>Junction</code> donde acaba 
-	 * la <code>Road</code>.
+	 * {@code Junction}s donde acaba 
+	 * la {@code Road}.
 	 */
 	private Junction toJunction;
 	
 	/**
-	 * Lista de <code>Vehicles</code>> ordenada por orden 
-	 * de entrada en la <code>Road</code>. Utilizada para 
-	 * el caso en que dos <code>Vehicles</code> se encuentran 
+	 * Lista de {@code Vehicle}s ordenada por orden 
+	 * de entrada en la {@code Road}. Utilizada para 
+	 * el caso en que dos {@code Vehicle}s se encuentran 
 	 * en la misma posición.
 	 */
 	private Deque<Vehicle> entryRecord = new ArrayDeque<>();
 
 	/**
-	 * Lista de <code>Vehicles</code> en la <code>Road</code> 
-	 * que no están esperando a cruzar la <code>toJunction</code>.
+	 * Lista de {@code Vehicle}s en la {@code Road} 
+	 * que no están esperando a cruzar la {@code toJunction}.
 	 */
 	protected List<Vehicle> vehiclesOnRoad = new ArrayList<>();
 
 	/**
 	 * Lista temporal reutilizada en cada tick en la que 
-	 * se ordenan los <code>Vehicles</code> que llegan a 
-	 * <code>toJunction</code> por tiempo de llegada.
+	 * se ordenan los {@code Vehicle}s que llegan a 
+	 * {@code toJunction} por tiempo de llegada.
 	 */
 	private List<ArrivedVehicle> arrivalsToWaiting = new ArrayList<>();
 
 	/**
-	 * Lista de <code>Vehicles</code> en la <code>Road</code> 
-	 * que están  esperando para cruzar <code>toJunction</code>.
+	 * Lista de {@code Vehicle}s en la {@code Road} 
+	 * que están esperando para cruzar {@code toJunction}.
 	 */
 	private Deque<Vehicle> waiting = new ArrayDeque<>();
 
 	/**
 	 * Booleano que indica si el semáforo de la 
-	 * <code>toJunction</code> está verde para la <code>Road</code>.
+	 * {@code toJunction} está verde para la {@code Road}.
 	 */
 	private boolean isGreen = false;
 	
+
+
+
+
+
+
+	// ** COMPARADORES ** //
 	/**
-	 * Comparador según la localización de 2 <code>Vehicles</code>
-	 * en la <code>carretera</code, para ordenar 
-	 * <code>vehiclesOnRoad</code> tras cada avance de los 
-	 * <code>Vehicles</code>.
+	 * Comparador según la localización de 2 {@code Vehicle}s
+	 * en la {@code Road}, para ordenar {@code vehiclesOnRoad} 
+	 * tras cada avance de los {@code Vehicle}s.
 	 */
 	private static class CompByLocation implements Comparator<Vehicle> {
 		
@@ -115,7 +122,9 @@ public class Road extends SimObject {
 				}
 
 				// Fallo del programa (no se debería dar)
-				throw new RuntimeException("Vehicles weren´t recorded when entered their road.");
+				throw new RuntimeException(
+					"Vehicles weren´t recorded when entered their road."
+				);
 			}
 		}
 
@@ -124,8 +133,8 @@ public class Road extends SimObject {
 
 	/**
 	 * Comparador según el tiempo de llegada al final 
-	 * de la <code>Road</code>, para ordenar los 
-	 * <code>arrivedVehicles</code> según su tiempo de llegada.
+	 * de la {@code Road}, para ordenar los 
+	 * {@code arrivedVehicle}s según su tiempo de llegada.
 	 */
 	private static class CompArrivedVehicles implements Comparator<ArrivedVehicle> {
 		
@@ -144,9 +153,16 @@ public class Road extends SimObject {
 		// ROADEND - (v1, 0.1s) < (v2, 0.5s) < (v3, 2s) < (v4, 3s) - ROADBEGIN
 	}
 
+
+
+
+
+
+
+	// ** CLASE INTERNA ** //
 	/**
-	 * Clase interna que guarda cada <code>Vehicle</code> con 
-	 * su tiempo de llegada al final de la <code>Road</code>.
+	 * Clase interna que guarda cada {@code Vehicle} con 
+	 * su tiempo de llegada al final de la {@code Road}.
 	 */
 	private class ArrivedVehicle {
 		private Vehicle arrived;
@@ -165,15 +181,26 @@ public class Road extends SimObject {
 			return time;
 		}
 	}
-		
+
+
+
+
+
+
+
+
+
+
+
+	// ** CONSTRUCTOR ** //	
 	/**
 	 * Constructor de {@link Road}.
 	 * 
-	 * @param identifier 	identificador del objeto
-	 * @param len 			longitud de la vía
-	 * @param spLimit 		límite de velocidad
-	 * @param fromJ 		<code>Junction</code> donde empieza
-	 * @param toJ 			<code>Junction</code> donde acaba
+	 * @param identifier 	- identificador del objeto
+	 * @param len 			- longitud de la vía
+	 * @param spLimit 		- límite de velocidad
+	 * @param fromJ 		- {@code Junction}s donde empieza
+	 * @param toJ 			- {@code Junction}s donde acaba
 	 */
 	public Road(String identifier, int len, int spLimit, 
 			Junction fromJ, Junction toJ) {
@@ -187,20 +214,28 @@ public class Road extends SimObject {
 		getInOwnJunctions();	
 	}
 
+	
+	
+	
+	
+	
+	
+	
+	// ** MÉTODO DE AVANCE (+ COMPLEMENTARIOS) ** //
 	/**
 	 * {@inheritDoc}
-	 * Método de AVANCE de <code>Road</code>.
+	 * Método de AVANCE de {@code Road}.
 	 * <p>
 	 * En primer lugar, modifica la velocidad que llevarán 
-	 * los <code>Vehicles</code> durante el avance, teniendo 
-	 * en cuenta factores de la <code>Road</code>. 
+	 * los {@code Vehicle}s durante el avance, teniendo 
+	 * en cuenta factores de la {@code Road}. 
 	 * </p> <p>
-	 * En segundo lugar, provoca el avance de los <code>Vehicles</code> 
-	 * en la <code>Road</code> y los reordena si ha habido adelantamientos. 
+	 * En segundo lugar, provoca el avance de los {@code Vehicle}s 
+	 * en la {@code Road} y los reordena si ha habido adelantamientos. 
 	 * </p> <p> 
-	 * Finalmente, introduce a los <code>Vehicles</code> que han llegado
-	 * al final de la <code>Road</code> en la cola de espera 
-	 * <code>waiting</code>.
+	 * Finalmente, introduce a los {@code Vehicle}s que han llegado
+	 * al final de la {@code Road} en la cola de espera 
+	 * {@code waiting}.
 	 * </p>
 	 */
 	@Override
@@ -234,27 +269,11 @@ public class Road extends SimObject {
 	}
 
 	/**
-	 * Calcula la velocidad base de la <code>Road</code>: 
-	 * el mínimo entre el <code>speedLimit</code> y la 
-	 * velocidad que permite la congestión del tráfico en
-	 * la <code>Road</code>.
+	 * Modifica la velocidad que llevarán los {@code Vehicle}s
+	 * en la {@code Road} previo avance.
 	 * 
-	 * @return 	la velocidad base de 
-	 * 			la <code>Road</code>.
-	 */
-	protected int getBaseSpeed() {
-		// Cálculo de velocidadBase según la fórmula
-		int congestionSpeed = ( speedLimit / Math.max(vehiclesOnRoad.size(), 1) ) + 1;
-
-		return ( Math.min(speedLimit, congestionSpeed) );
-	}
-
-	/**
-	 * Modifica la velocidad que llevarán los <code>Vehicles</code>
-	 * en la <code>Road</code> previo avance.
-	 * 
-	 * @param onRoad 	lista de <code>Vehicles</code> 
-	 * 					en <code>Road</code>
+	 * @param onRoad 	- lista de {@code Vehicle}s 
+	 * 					en {@code Road}
 	 */
 	protected void vehicleSpeedModifier(ArrayList<Vehicle> onRoad) {
 		// Velocidad máxima a la que pueden avanzar los vehículos.
@@ -275,8 +294,8 @@ public class Road extends SimObject {
 	}
 
 	/**
-	 * Inserta los <code>Vehicles</code> que han llegado al 
-	 * final de la  <code>Road</code> en <code>waiting</code>, 
+	 * Inserta los {@code Vehicle}s que han llegado al 
+	 * final de la  {@code Road} en {@code waiting}, 
 	 * ordenados por tiempo de llegada.
 	 */
 	public void pushArrivalsToWaiting() {
@@ -293,84 +312,77 @@ public class Road extends SimObject {
 	}
 
 	/**
-	 * Guarda un <code>Vehicle</code> y su tiempo de llegada 
-	 * en la lista de <code>Vehicles</code> que van a entrar
-	 * en <code>waiting</code>.
+	 * Calcula la velocidad base de la {@code Road}: 
+	 * el mínimo entre el <code>speedLimit</code> y la 
+	 * velocidad que permite la congestión del tráfico en
+	 * la {@code Road}.
 	 * 
-	 * @param toWait 		<code>Vehicle</code> que va a 
-	 * 						entrar a la cola de espera
-	 * @param arrivalTime 	tiempo que ha tardado en llegar 
-	 * 						al final en el tick actual
+	 * @return 	la velocidad base de 
+	 * 			la {@code Road}.
 	 */
-	public void arriveToWaiting(Vehicle toWait, float arrivalTime) {
-		// Se guarda en el Map su información de llegada.
-		arrivalsToWaiting.add(new ArrivedVehicle(toWait, arrivalTime));
-	}	
+	protected int getBaseSpeed() {
+		// Cálculo de velocidadBase según la fórmula
+		int congestionSpeed = ( speedLimit / Math.max(vehiclesOnRoad.size(), 1) ) + 1;
 
-	/**
-	 * Mueve el primer <code>Vehicle</code> a la espera en la 
-	 * <code>Junction</code> de salida de la <code>Road</code>
-	 * a su correspondiente <code>Road</code> indicada por la ruta.
-	 * 
-	 * @return 	si ha cruzado el 
-	 * 			<code>Vehicle</code>
-	 * 
-	 * @throws SimulationException 	si la <code>Road</code> 
-	 * 								está en rojo
-	 */
-	public boolean moveWaitingVehicle() throws SimulationException {
-		if ( isGreen ) {
-			boolean hasCrossed = false;
-
-			// Primer vehículo que está esperando.
-			Vehicle toMove = waiting.getFirst();
-
-			// Si hay algún vehículo y no está averiado.
-			if (toMove != null && toMove.getBreakdownTime() == 0) {
-				// Se le saca de la lista de espera y del registro de entradas. 
-				entryRecord.remove(toMove);
-				waiting.pollFirst();
-
-				// Se mueve a la siguiente carretera.
-				toMove.moveToNextRoad();
-
-				hasCrossed = true;
-			}
-
-			return hasCrossed;
-		}
-		else {
-			throw new SimulationException(
-				"Tried to advance waiting vehicle with red traffic lights" + 
-				" in road with id: " + id
-			);
-		}	
+		return ( Math.min(speedLimit, congestionSpeed) );
 	}
 
+
+
+
+
+
+	
+
+	
+
+	
+
+
+
+
+
+
+
+	// ** MÉTODO DE INFORME (+ COMPLEMENTARIOS) ** //
 	/**
-	 * Actualiza el estado de los <code>Vehicles>/code>
-	 * averiados en la  cola de espera <code>waiting</code>.
+	 * Genera una {@code IniSection} que informa de los 
+	 * atributos de la {@code Road} en el tiempo del simulador.
+	 * 
+	 * @param simTime 	- tiempo del simulador
+	 * 
+	 * @return 			{@code IniSection} con 
+	 * 					información de la {@code Road}
 	 */
-	public void refreshWaiting() {
-		for ( Vehicle v : waiting ) {
-			if ( v.getBreakdownTime() > 0 ) {
-				v.setBreakdownTime(-1); // Se resta un día.
-			}
-		}
+	public IniSection generateIniSection(int simTime) {
+		// 1 //
+		// Se crea la etiqueta de la sección (sin corchetes).
+		String tag = REPORT_TITLE;
+		tag = (String) tag.subSequence(1, tag.length() - 1);
+		IniSection section = new IniSection(tag);
+
+		// 2 // 
+		// Se generan los datos en el informe.
+		section.setValue("id", id);
+		section.setValue("time", simTime);
+		section.setValue("state", getRoadState().toString());
+		
+		
+		return section;
 	}
 
 	/**
 	 * <p>
-	 * Devuelve un <code>StringBuilder</code> con el estado 
-	 * de la <code>Road</code>.
+	 * Devuelve un {@code StringBuilder} con el estado 
+	 * de la {@code Road}.
 	 * </p> <p>
 	 * Ejemplo:
 	 * </p> <p>
 	 * (v1, 80), (v3, 80), (v2, 76), (v5, 33)
 	 * </p>
 	 * 
-	 * @return 	<code>StringBuilder</code> with 
-	 * 			state of <code>Road</code>
+	 * @return 	{@code StringBuilder} with 
+	 * 			state of {@code Road}
 	 */
 	public StringBuilder getRoadState() {
 		StringBuilder state = new StringBuilder();
@@ -403,17 +415,229 @@ public class Road extends SimObject {
 		return state;
 	}
 
+
+
+
+
+
+
+	// ** MÉTODO DE DESCRIPCIÓN (+ COMPLEMENTARIOS) ** //
+	/**
+	 * {@inheritDoc} Añade una {@code Road} al map, con 
+	 * los datos: id, source, target, length, max speed, 
+	 * vehicles.
+	 * 
+	 * @param out {@inheritDoc}
+	 */
+	@Override
+	public void describe(Map<TableDataType, Object> out) {
+		String source = fromJunction.getID();
+		String target = toJunction.getID();
+		String length = Integer.toString(this.length);
+		String maxSpeed = Integer.toString(this.speedLimit);
+		String state = getRoadStateDescription();
+
+		out.put(TableDataType.ID, id);
+		out.put(TableDataType.R_TYPE, getType());
+		out.put(TableDataType.R_SOURCE, source);
+		out.put(TableDataType.R_TARGET, target);
+		out.put(TableDataType.R_LENGHT, length);
+		out.put(TableDataType.R_MAX, maxSpeed);
+		out.put(TableDataType.R_STATE, state);
+	}
+
+	/**
+	 * Devuelve un {@code String} con el estado de la
+	 * {@code Road} con el formato específico de las
+	 * tablas de la {@code GUI}
+	 * 
+	 * @return 	{@code String} con el estado de 
+	 * 			{@code Road} para la tabla
+	 */
+	private String getRoadStateDescription() {
+		StringBuilder state = new StringBuilder();
+
+		state.append("[");
+		// Primero los vehículos en la cola de espera.
+		for (Vehicle v : waiting) {
+			// ID
+			state.append(v.getID());
+			state.append(",");
+		}
+
+		// Después los vehículos en la carretera.
+		for (Vehicle v : vehiclesOnRoad) {
+			// ID
+			state.append(v.getID());
+			state.append(",");
+		}
+
+		// Borrado de última coma (mín "[")
+		if (state.length() > 1) {
+			state.deleteCharAt(state.length() - 1);
+		}
+
+		state.append("]");
+
+		return state.toString();
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+	// ** MÉTODOS ADICIONALES (PARA AVANCE GENERAL) ** //
+	/**
+	 * Guarda un {@code Vehicle} y su tiempo de llegada 
+	 * en la lista de {@code Vehicle}s que van a entrar
+	 * en {@code waiting}.
+	 * 
+	 * @param toWait 		- {@code Vehicle} que va a 
+	 * 						entrar a la cola de espera
+	 * @param arrivalTime 	- tiempo que ha tardado en llegar 
+	 * 						al final en el tick actual
+	 */
+	public void arriveToWaiting(Vehicle toWait, float arrivalTime) {
+		// Se guarda en el Map su información de llegada.
+		arrivalsToWaiting.add(new ArrivedVehicle(toWait, arrivalTime));
+	}	
+
+	/**
+	 * Mueve el primer {@code Vehicle} a la espera en la 
+	 * {@code Junction}s de salida de la {@code Road}
+	 * a su correspondiente {@code Road} indicada por la ruta.
+	 * 
+	 * @return 	si ha cruzado el 
+	 * 			{@code Vehicle}
+	 * 
+	 * @throws SimulationException 	si la {@code Road} 
+	 * 								está en rojo
+	 */
+	public boolean moveWaitingVehicle() throws SimulationException {
+		if ( isGreen ) {
+			boolean hasCrossed = false;
+
+			// Primer vehículo que está esperando.
+			Vehicle toMove = waiting.getFirst();
+
+			// Si hay algún vehículo y no está averiado.
+			if (toMove != null && toMove.getBreakdownTime() == 0) {
+				// Se le saca de la lista de espera y del registro de entradas. 
+				entryRecord.remove(toMove);
+				waiting.pollFirst();
+
+				// Se mueve a la siguiente carretera.
+				toMove.moveToNextRoad();
+
+				hasCrossed = true;
+			}
+
+			return hasCrossed;
+		}
+		else {
+			throw new SimulationException(
+				"Tried to advance waiting vehicle with red traffic lights" + 
+				" in road with id: " + id
+			);
+		}	
+	}
+
+	/**
+	 * Actualiza el estado de los {@code Vehicle}s
+	 * averiados en la cola de espera {@code waiting}.
+	 */
+	public void refreshWaiting() {
+		for ( Vehicle v : waiting ) {
+			if ( v.getBreakdownTime() > 0 ) {
+				v.setBreakdownTime(-1); // Se resta un día.
+			}
+		}
+	}
+
+	/**
+	 * Método que actualiza la información de {@code fromJunction, toJunction}
+	 * para que incluyen a la instancia {@code Road} en sus 
+	 * listas {@code incomingRoads, exitRoads}.
+	 */
+	private void getInOwnJunctions() {
+		// fromJunction.getExitRoads().add(this);
+		// toJunction.getIncomingRoads().add(this);
+
+		fromJunction.addNewExitRoad(this);
+		toJunction.addNewIncomingRoad(this);
+	}
+
+	/**
+	 * Mete un {@code Vehicle} al final de 
+	 * {@code vehiclesOnRoad}.
+	 * 
+	 * @param v 	- {@code Vehicle} a 
+	 * 				añadir al final
+	 */
+	public void pushVehicle(Vehicle v) {
+		vehiclesOnRoad.add(v);
+
+		// Se guarda el último de la lista en 
+		// el registro de entradas, pues ha sido
+		// el último en entrar.
+		entryRecord.add(v);
+	}
+
+	/**
+	 * Saca un {@code Vehicle} de {@code vehiclesOnRoad}.
+	 * 
+	 * @param v 	- {@code Vehicle} a quitar
+	 * 
+	 * @throws NoSuchElementException 	si {@code v} no está en
+	 * 									{@code vehiclesOnRoad}
+	 */
+	public void popVehicle(Vehicle v) throws NoSuchElementException {
+		if ( ! vehiclesOnRoad.remove(v) ) {
+			throw new NoSuchElementException(
+				"Vehicle to pop not found."
+			);
+		}
+	}
+
+	/**
+	 * Método de modificación del estado del semáforo
+	 * 
+	 * @param green 	- nuevo estado del semáforo
+	 */
+	public void setLight(boolean green) {
+		isGreen = green;
+	}
+	
+
+
+
+
+
+
+
+
+
+
+
+	// ** MÉTODOS ADICIONALES (DE INFO) ** //
 	/**
 	 * <p>
-	 * Devuelve un <code>StringBuilder</code> con el estado de 
-	 * la cola de espera <code>waiting</code> de <code>Road</code>.
+	 * Devuelve un {@code StringBuilder} con el estado de 
+	 * la cola de espera {@code waiting} de {@code Road}.
 	 * </p> <p>
 	 * Ejemplo:
 	 * </p> <p>
 	 * (r2,red,[v3,v2,v5])
 	 * 
-	 * @return 	<code>StringBuilder</code> with 
-	 * 			state of <code>waiting</code>
+	 * @return 	{@code StringBuilder} with 
+	 * 			state of {@code waiting}
 	 */
 	public StringBuilder getWaitingState() {
 		StringBuilder state = new StringBuilder();
@@ -441,10 +665,10 @@ public class Road extends SimObject {
 
 	/**
 	 * <p>
-	 * Devuelve un <code>StringBuilder</code> con el estado de 
-	 * la cola de espera <code>waiting</code> de <code>Road</code>, 
+	 * Devuelve un {@code StringBuilder} con el estado de 
+	 * la cola de espera {@code waiting} de {@code Road}, 
 	 * guardando también el tiempo restante que le queda al semáforo 
-	 * en verde para ponerse rojo, <code>lightTime</code>.
+	 * en verde para ponerse rojo, {@code lightTime}.
 	 * </p> <p>
 	 * Ejemplos:
 	 * </p> <p>
@@ -452,8 +676,11 @@ public class Road extends SimObject {
 	 * </p> <p>
 	 * (r4,green:4,[v1,v6])
 	 * 
-	 * @param lightTime tiempo restante que el semáforo estará encendido
-	 * @return <code>StringBuilder</code> with state of <code>waiting</code>
+	 * @param lightTime 	- tiempo restante que el 
+	 * 						semáforo estará encendido
+	 * 
+	 * @return 	{@code StringBuilder} with 
+	 * 			state of {@code waiting}
 	 */
 	public StringBuilder getWaitingState(int lightTime) {
 		StringBuilder state = new StringBuilder();
@@ -482,76 +709,6 @@ public class Road extends SimObject {
 	}
 
 	/**
-	 * Genera una <code>IniSection</code> que informa de los 
-	 * atributos de la <code>Road</code> en el tiempo del simulador.
-	 * 
-	 * @param simTime 	tiempo del simulador
-	 * @return 			<code>IniSection</code> con 
-	 * 					información de la <code>Road</code>
-	 */
-	public IniSection generateIniSection(int simTime) {
-		// 1 //
-		// Se crea la etiqueta de la sección (sin corchetes).
-		String tag = REPORT_TITLE;
-		tag = (String) tag.subSequence(1, tag.length() - 1);
-		IniSection section = new IniSection(tag);
-
-		// 2 // 
-		// Se generan los datos en el informe.
-		section.setValue("id", id);
-		section.setValue("time", simTime);
-		section.setValue("state", getRoadState().toString());
-		
-		
-		return section;
-	}
-	
-	/**
-	 * Método que actualiza la información de <code>fromJunction,
-	 * toJunction</code> para que incluyen a la instancia 
-	 * <code>Road</code> en sus listas <code>incomingRoads, exitRoads</code>.
-	 */
-	private void getInOwnJunctions() {
-		// fromJunction.getExitRoads().add(this);
-		// toJunction.getIncomingRoads().add(this);
-
-		fromJunction.addNewExitRoad(this);
-		toJunction.addNewIncomingRoad(this);
-	}
-
-	/**
-	 * Mete un <code>Vehicle</code> al final de 
-	 * <code>vehiclesOnRoad</code>.
-	 * 
-	 * @param v 	<code>Vehicle</code> a 
-	 * 				añadir al final
-	 */
-	public void pushVehicle(Vehicle v) {
-		vehiclesOnRoad.add(v);
-
-		// Se guarda el último de la lista en 
-		// el registro de entradas, pues ha sido
-		// el último en entrar.
-		entryRecord.add(v);
-	}
-
-	/**
-	 * Saca un <code>Vehicle</code> de <code>vehiclesOnRoad</code>.
-	 * 
-	 * @param v 	<code>Vehicle</code> a quitar
-	 * 
-	 * @throws NoSuchElementException 	si <code>v</code> no está 
-	 * 									en <code>vehiclesOnRoad</code>
-	 */
-	public void popVehicle(Vehicle v) throws NoSuchElementException {
-		if ( ! vehiclesOnRoad.remove(v) ) {
-			throw new NoSuchElementException(
-				"Vehicle to pop not found."
-			);
-		}
-	}	
-	
-	/**
 	 * Devuelve la longitud de la vía.
 	 * 
 	 * @return longitud de la vía
@@ -570,26 +727,18 @@ public class Road extends SimObject {
 	}
 
 	/**
-	 * Devuelve si la cola de espera <code>waiting</code> está vacía.
+	 * Devuelve si la cola de espera {@code waiting} 
+	 * está vacía.
 	 * 
-	 * @return si <code>waiting</code> está vacía
+	 * @return si {@code waiting} está vacía
 	 */
 	public boolean noVehiclesWaiting() {
 		return waiting.isEmpty();
 	}
 
 	/**
-	 * Método de modificación del estado del semáforo
-	 * 
-	 * @param green nuevo estado del semáforo
-	 */
-	public void setLight(boolean green) {
-		isGreen = green;
-	}
-
-	/**
-	 * Devuelve la <code>Junction</code> desde la que 
-	 * empieza la <code>Road</code>.
+	 * Devuelve la {@code Junction}s desde la que 
+	 * empieza la {@code Road}.
 	 * 
 	 * @return <code>fromJunction</code>
 	 */
@@ -598,10 +747,10 @@ public class Road extends SimObject {
 	}
 
 	/**
-	 * Devuelve la <code>Junction</code> donde acaba la
-	 * <code>Road</code>.
+	 * Devuelve la {@code Junction}s donde acaba la
+	 * {@code Road}.
 	 * 
-	 * @return <code>toJunction</code>
+	 * @return {@code toJunction}
 	 */
 	public Junction getToJunction() {
 		return toJunction;
@@ -609,20 +758,20 @@ public class Road extends SimObject {
 
 	/**
 	 * Devuelve la lista de registro de entradas de 
-	 * los <code>Vehicles</code> que están en la 
-	 * <code>Road</code>
+	 * los {@code Vehicle}s que están en la 
+	 * {@code Road}
 	 * 
-	 * @return <code>entryRecord</code>
+	 * @return 	registro de entradas
 	 */
-	public Deque<Vehicle> getEntryRecord() {
+	private Deque<Vehicle> getEntryRecord() {
 		return entryRecord;
 	}
 
 	/**
-	 * Devuelve el número de <code>Vehicles</code> esperando
-	 * en la cola <code>waiting</code>.
+	 * Devuelve el número de {@code Vehicle}s esperando
+	 * en la cola {@code waiting}.
 	 * 
-	 * @return número de <code>Vehicles</code> esperando.
+	 * @return número de {@code Vehicle}s esperando.
 	 */
 	public int getNumWaitingVehicles() {
 		return waiting.size();
@@ -643,61 +792,15 @@ public class Road extends SimObject {
 		return "-";
 	}
 
-
 	/**
-	 * {@inheritDoc}
-	 * Añade una <code>Road</code> al map, con los datos:
-	 * id, source, target, length, max speed, vehicles
+	 * Devuelve una lista con todos los vehículos en
+	 * la {@code Road}, los de {@code vehiclesOnRoad}
+	 * y los de {@code waiting}.
 	 * 
-	 * @param out {@inheritDoc}
+	 * @return 	{@code List<Vehicle>} con todos
+	 * 			los {@code Vehicle}s de la 
+	 * 			{@code Road}
 	 */
-	@Override
-	public void describe(Map<TableDataType, Object> out) {
-		String source = fromJunction.getID();
-		String target = toJunction.getID();
-		String length = Integer.toString(this.length);
-		String maxSpeed = Integer.toString(this.speedLimit);
-		String state = getRoadStateDescription();
-
-
-		out.put(TableDataType.ID, id);
-		out.put(TableDataType.R_TYPE, getType());
-		out.put(TableDataType.R_SOURCE, source);
-		out.put(TableDataType.R_TARGET, target);
-		out.put(TableDataType.R_LENGHT, length);
-		out.put(TableDataType.R_MAX, maxSpeed);
-		out.put(TableDataType.R_STATE, state);
-	}
-
-	private String getRoadStateDescription() {
-		StringBuilder state = new StringBuilder();
-
-		state.append("[");
-		// Primero los vehículos en la cola de espera.
-		for (Vehicle v : waiting) {
-			// ID
-			state.append( v.getID() );
-			state.append(",");
-		}
-
-		// Después los vehículos en la carretera.
-		for (Vehicle v : vehiclesOnRoad) {
-			// ID
-			state.append(v.getID());
-			state.append(",");
-		}
-
-		// Borrado de última coma (mín "[")
-		if (state.length() > 1) {
-			state.deleteCharAt(state.length() - 1);
-		}
-
-		state.append("]");
-
-		return 	state.toString();
-	}
-
-
 	public List<Vehicle> getRoadVehicles() {
 		List<Vehicle> list = new ArrayList<>();
 
@@ -706,5 +809,4 @@ public class Road extends SimObject {
 
 		return list;
 	}
-
 }
