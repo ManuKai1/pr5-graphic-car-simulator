@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -14,22 +13,64 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
 import es.ucm.fdi.model.SimObj.SimObject;
-import es.ucm.fdi.model.events.Event;
 import es.ucm.fdi.util.Describable;
 import es.ucm.fdi.util.TableDataType;
 
+/**
+ * Clase que representa un panel en Swing con una
+ * tabla de la simulación que muestra los datos de
+ * de objetos {@link Describable}.
+ */
 @SuppressWarnings("serial")
 public class SimTable extends JPanel {
 
+    // ** ATRIBUTOS ** //
+    /**
+     * Tabla en formato Swing.
+     */
     private JTable table;
+
+    /**
+     * Lista con los nombres de las columnas
+     * de la tabla.
+     */
     private List<TableDataType> headers;
+
+    /**
+     * Lista con los objetos {@code Describable} que
+     * se representan en la tabla.
+     */
     private List<? extends Describable> tableElements;
+
+    /**
+     * Modelo de tabla para la {@code JTable}.
+     */
     private ListOfMapsTableModel model;
     
 
+
+
+
+
+    // ** CLASE INTERNA ** //
+    /**
+     * Modelo de tabla para representar datos de objetos
+     * {@code Describable}. Hereda de {@code AbstractTableModel}.
+     */
     private class ListOfMapsTableModel extends AbstractTableModel {
         
+        /**
+         * Mapa utilizado para actualiza la información de 
+         * cada objeto utilando el método {code describe()}
+         * en la método {@link #getValueAt(int, int)}.
+         */
         public Map<TableDataType, Object> elementData = new HashMap<>();
+
+        /**
+         * Mapa utilizado para actualizar las JCheckBox de la tabla
+         * mediante su actualización en {@link #setValueAt(Object, int, int)}
+         * que indican si ha de hacerse un informe de ese objeto o no.
+         */
         public Map<Integer, Boolean> reportChecks = new HashMap<>();
 
 
@@ -76,8 +117,9 @@ public class SimTable extends JPanel {
 
         /**
          * {@inheritDoc}
-         * Overriden so that the JTable renders Booleans as
-         * JCheckBoxes.
+         * Se implementa de forma que la tabla renderice de
+         * forma automática los {@code Boolean}s como 
+         * {@code JCheckBox}s.
          */
         @Override
         public Class<?> getColumnClass(int columnIndex) {
@@ -91,7 +133,8 @@ public class SimTable extends JPanel {
 
         /**
          * {@inheritDoc}
-         * Overriden so that JCheckBoxex can be edited.
+         * Se implementa para que las {@code JCheckBox}s puedan
+         * ser editables.
          */
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -105,8 +148,8 @@ public class SimTable extends JPanel {
 
         /**
          * {@inheritDoc}
-         * Overriden so that JCheckBoxes can be (un)checked.
-         * Only checkBoxes can be set.
+         * Se implementa de forma que al hacer click en una
+         * {@code JCheckBox}, se modifique su estado.
          */
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
@@ -116,6 +159,17 @@ public class SimTable extends JPanel {
         }
     }
 
+
+
+
+
+
+    //** CONSTRUCTOR ** //
+    /**
+     * Constructor de una {@link #SimTable} que recibe un
+     * array de cabeceras {@code head} y una lista de elementos
+     * {@code elements} cuya información se va a mostrar.
+     */
     public SimTable(TableDataType[] head, List<? extends Describable> elements) {
         super( new BorderLayout() );
         
@@ -134,46 +188,68 @@ public class SimTable extends JPanel {
         );   
     }
 
+
+
+
+
+
+
+
+    // ** MÉTODOS DE MODIFICACIÓN ** //
+    /** Método interno que llama indica al modelo que
+     * los datos de la tabla han cambiado, para que se
+     * actualicen en el {@code GUI}.
+     */
     private void update() {
         model.fireTableDataChanged();
     }
 
-    public void resetTable(TableDataType[] newHeaders, List<? extends Describable> newElements) {
-        headers = new ArrayList<>(Arrays.asList(newHeaders));
-        tableElements = newElements;
-
-        // Limpieza del elemento de mapa.
-        model.elementData.clear();
-
-        // Actualización de la tabla.
-        update();
-    }
-
-    public List<? extends Describable> getTableElements() {
-        return tableElements;
-    }
-    
+    /**
+     * Método que establece una nueva lista de elementos
+     * cuya información debe representarse en la tabla.
+     * 
+     * @param newList   - nueva lista de elementos
+     */
     public void setList(List<? extends Describable> newList){
         tableElements = newList;
         update();
     }
-    
+
+
+    /**
+     * Método que hace un clear de la tabla, haciendo
+     * un clear de {@code tableElements} y llamando a
+     * {@link #update()}.
+     */
     public void clear(){
     	tableElements.clear();
     	update();
     }
 
-    public void updateList(int minTime) {
-        Iterator<? extends Describable> iter = tableElements.listIterator();
-        
-        while ( iter.hasNext() ) {
-            Event e = (Event) iter.next();
-            if (e.getTime() < minTime) {
-                iter.remove();
-            }
-        }
+
+
+
+
+
+    // ** MÉTODOS DE ACCESO ** //
+    /**
+     * Devuelve una lista con los elementos que describe
+     * la tabla.
+     * 
+     * @return  lista de elementos de la tabla
+     */
+    public List<? extends Describable> getTableElements() {
+        return tableElements;
     }
 
+    /**
+     * Método que devuelve una lista con los elementos
+     * de la tabla cuyas {@code JCheckBox}s están
+     * seleccionadas.
+     * 
+     * @return  {@code List<SimObject} con los
+     *          objetos seleccionados
+     */
     public List<SimObject> getSelected() {
         List<SimObject> selected = new ArrayList<>();
         
