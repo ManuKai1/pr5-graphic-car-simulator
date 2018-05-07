@@ -11,23 +11,33 @@ import es.ucm.fdi.model.simulation.SimulationException;
  */
 public class BikeVehicle extends Vehicle {
 
+	// ** CONSTRUCTOR ** //
 	/**
 	 * Constructor de {@link BikeVehicle}.
 	 * 
-	 * @param identifier 	identificador del objeto
-	 * @param trp 			ruta de <code>Junctions</code>
-	 * @param max 			máxima velocidad alcanzable
-	 * @throws SimulationException 
+	 * @param identifier 	- identificador del objeto
+	 * @param trp 			- ruta de {@code Junction}s
+	 * @param max 			- máxima velocidad alcanzable
+	 * 
+	 * @throws SimulationException {@inheritDoc}
 	 */
-	public BikeVehicle(String identifier, ArrayList<Junction> trp, int max) throws SimulationException {
+	public BikeVehicle(String identifier, ArrayList<Junction> trp, int max) 
+			throws SimulationException {
+
 		super(identifier, trp, max);
 	}
 
+
+
+
+
+
+	// ** MÉTODOS COMPLEMENTARIOS DE AVANCE ** //
 	/**
 	 * Modifica el tiempo de avería según el comportamiento 
-	 * especial de un <code>BiKeVehicle</code>.
+	 * especial de un {@code BikeVehicle}.
 	 * 
-	 * @param addedBreakdownTime 	tiempo de avería a sumar
+	 * @param addedBreakdownTime 	- tiempo de avería a sumar
 	 */
 	@Override
 	public void setBreakdownTime(int addedBreakdownTime)  {
@@ -39,14 +49,20 @@ public class BikeVehicle extends Vehicle {
 	}	
 	
 
+
+
+
+
+	// ** MÉTODO DE INFORME ** //
 	/**
-	 * Genera una <code>IniSection</code> que informa de los 
-	 * atributos del <code>BikeVehicle</code> en el tiempo 
+	 * Genera una {@code IniSection} que informa de los 
+	 * atributos del {@code BikeVehicle} en el tiempo 
 	 * del simulador.
 	 * 
-	 * @param simTime 	tiempo del simulador
-	 * @return 			<code>IniSection</code> con información 
-	 * 					del <code>BikeVehicle</code>
+	 * @param simTime 	- tiempo del simulador
+	 * 
+	 * @return 			{@code IniSection} con información 
+	 * 					del {@code BikeVehicle}
 	 */
 	@Override
 	public IniSection generateIniSection(int simTime) {
@@ -79,15 +95,4 @@ public class BikeVehicle extends Vehicle {
     protected String getType() {
 		return "bike";
 	}
-
-	/*
-	* ESTE MÉTODO NO CONSERVA EL ORDEN DE LOS EXPECTED OUTPUTS, 
-	* PERO LA COMPARACIÓN ES CORRECTA POR SECCIONES.
-	public IniSection generateIniSection(int simTime) {
-		IniSection section = super.generateIniSection(simTime);
-		section.setValue("type", getType());
-
-		return section;
-	}
-	*/
 }

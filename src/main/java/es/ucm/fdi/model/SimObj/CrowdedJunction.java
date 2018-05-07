@@ -11,13 +11,14 @@ import es.ucm.fdi.ini.IniSection;
 /**
  * Clase que representa una intersección inteligente, 
  * que modifica la duración y el orden del semáforo 
- * según el tamaño de las colas de las <code>incomingRoads</code>, 
+ * según el tamaño de las colas de las {@code incomingRoads}, 
  * como un objeto de simulación. Hereda de {@link Junction}
  */
 public class CrowdedJunction extends Junction {
 
+    // ** ATRIBUTOS ** //
     /**
-     * Mapa de <code>incomingRoads</code> a sus respectivos 
+     * Mapa de {@code incomingRoads} a sus respectivos 
      * intervalos de duración de sus semáforos.
      */
     protected Map<Road, Integer> timeLapses = new HashMap<>();
@@ -27,10 +28,15 @@ public class CrowdedJunction extends Junction {
     */
     protected int elapsedTime = 0;
 
+    
+    
+    
+    
+    // ** CONSTRUCTOR ** //
     /**
      * Constructor de {@link CrowdedJunction}.
      * 
-     * @param identifier identificador del objeto
+     * @param identifier    - identificador del objeto
      */
     public CrowdedJunction(String identifier) {
         super(identifier); // light: -1
@@ -42,18 +48,23 @@ public class CrowdedJunction extends Junction {
         }
     }
 
+    
+    
+    
+    
+    
+    // ** MÉTODOS COMPLEMENTARIOS DE AVANCE ** //
     /**
      * {@inheritDoc}
      * <p>
-     * En una <code>CrowdedJunction</code>, el primer semáforo que 
-     * se pone en verde es el de la <code>Road</code> con más 
-     * <code>Vehicles</code> en la cola de espera.
+     * En una {@code CrowdedJunction}, el primer semáforo que 
+     * se pone en verde es el de la {@code Road} con más 
+     * {@code Vehicle}s en la cola de espera.
      * </p> <p>
      * Normalmente, al inicio de la simulación, no habrá ningún 
-     * <code>Vehicle</code> esperando, para lo cual se sigue el 
-     * orden establecido en <code>incomingRoads</code> y se 
-     * actualiza la <code>Road</code> con 
-     * <code>timeLapse = 1</code>.
+     * {@code Vehicle} esperando, para lo cual se sigue el 
+     * orden establecido en {@code incomingRoads} y se 
+     * actualiza la {@code Road} con {@code timeLapse = 1}. 
      * </p>
      */
     @Override
@@ -80,13 +91,13 @@ public class CrowdedJunction extends Junction {
     /**
      * {@inheritDoc}
      * <p>
-     * En una <code>CrowdedJunction</code>, el cruce de 
-     * un <code>Vehicle</code> (si es posible) es análogo 
-     * al de una <code>Junction</code> común.
+     * En una {@code CrowdedJunction}, el cruce de 
+     * un {@code Vehicle} (si es posible) es análogo 
+     * al de una {@code Junction} común.
      * </p>
      * 
-     * @param greenRoad     <code>Road</code> con 
-     *                      el semáforo en verde.
+     * @param greenRoad     - {@code Road} con 
+     *                      el semáforo en verde
      */
     @Override
     protected void roadUpdate(Road greenRoad) {
@@ -96,16 +107,16 @@ public class CrowdedJunction extends Junction {
     /**
      * {@inheritDoc}
      * <p>
-     * En una <code>CrowdedJunction</code>, se comprueba si 
-     * el semáforo de la <code>usedRoad</code> ha agotado 
-     * su <code>timeLapse</code>.
+     * En una {@code CrowdedJunction}, se comprueba si 
+     * el semáforo de la {@code usedRoad} ha agotado 
+     * su {@code timeLapse}.
      * </p> <p>
-     * Si es así: se pone en rojo, se busca la <code>Road</code> 
+     * Si es así: se pone en rojo, se busca la {@code Road} 
      * con la cola más concurrida y se pone en verde, se actualiza 
-     * su <code>timeLapse</code> con {@link #mostCrowdedRoad()},
-     * y se resetea <code>elapsedTime</code>.
+     * su {@code timeLapse} con {@link #mostCrowdedRoad()},
+     * y se resetea {@code elapsedTime}.
      * </p> <p>
-     * Si no, no ocurre nada y se actualiza <code>elapsedTime</code>.
+     * Si no, no ocurre nada y se actualiza {@code elapsedTime}.
      * </p> 
      */
     @Override
@@ -147,12 +158,12 @@ public class CrowdedJunction extends Junction {
 
     /**
      * Busca la carretera más concurrida y devuelve su 
-     * posición en la lista <code>incomingRoads</code>. 
+     * posición en la lista {@code incomingRoads}. 
      * En caso de empate, devuelve la posición menor:
-     * la de la primera <code>Road</code> en registrarse
-     * en la <code>Junction</code>.
+     * la de la primera {@code Road} en registrarse
+     * en la {@code Junction}.
      * 
-     * @return  posición de la <code>Road</code> 
+     * @return  posición de la {@code Road} 
      *          más concurrida
      */
     private int mostCrowdedRoad() {
@@ -199,17 +210,27 @@ public class CrowdedJunction extends Junction {
         return crowdedPos;
     }
 
+
+
+
+
+
+
+
+
+    // ** MÉTODO DE INFORME (+ COMPLEMENTARIOS) ** //
     /**
      * {@inheritDoc}
      * <p>
-     * En una <code>CrowdedJunction</code> se incluye además 
-     * <code>type</code> y se incluye el tiempo restante del 
-     * semáforo de la <code>Road</code> en verde.
+     * En una {@code CrowdedJunction} se incluye además 
+     * el tipo y el tiempo restante del semáforo de la 
+     * {@code Road} en verde.
      * </p>
      * 
-     * @param simTime   tiempo del simulador
-     * @return          informe <code>IniSection</code> de 
-     *                  la <code>CrowdedJunction</code>
+     * @param simTime   - tiempo del simulador
+     * 
+     * @return  informe {@code IniSection} de 
+     *          la {@code CrowdedJunction}
      */
     @Override
     public IniSection generateIniSection(int simTime) {
@@ -228,28 +249,16 @@ public class CrowdedJunction extends Junction {
 
         return section;
     }
-
-    /*
-    * ESTE MÉTODO NO CONSERVA EL ORDEN DE LOS EXPECTED OUTPUTS, 
-    * PERO LA COMPARACIÓN ES CORRECTA POR SECCIONES.
-    public IniSection generateIniSection(int simTime) {
-        // Se utiliza getQueuesValue() de RobinJunction.
-        IniSection section = super.generateIniSection(simTime);         
-        section.setValue("type", getType());
     
-    	return section;
-    }
-    */
-
     /**
      * {@inheritDoc}
      * <p>
-     * En una <code>CrowdedJunction</code> se incluye el 
-     * tiempo restante del semáforo de la <code>Road</code> 
+     * En una {@code CrowdedJunction} se incluye el 
+     * tiempo restante del semáforo de la {@code Road} 
      * en verde.
      * </p>
      * 
-     * @return  <code>String</code> con las colas
+     * @return  {@code String} con las colas
      */
     @Override
     protected String getQueuesValue() {
@@ -275,11 +284,11 @@ public class CrowdedJunction extends Junction {
 
     /**
      * Devuelve el tiempo restante del semáforo de 
-     * cualquier <code>Road</code> con respecto a 
-     * <code>elapsedTime</code>. No se comprueba 
-     * que la <code>Road</code> esté en verde.
+     * cualquier {@code Road} con respecto a 
+     * {@code elapsedTime}. No se comprueba 
+     * que la {@code Road} esté en verde.
      * 
-     * @param road  <code>Road</code> de la que 
+     * @param road  {@code Road} de la que 
      *              se quiere conocer el tiempo 
      *              del semáforo
      * @return      tiempo restante del semáforo.
@@ -288,6 +297,14 @@ public class CrowdedJunction extends Junction {
         return ( timeLapses.get(road) - elapsedTime );
     }
 
+
+
+
+
+
+
+
+    // ** MÉTODODS ADICIONALES ** //
     /**
      * {@inheritDoc}
      * 
