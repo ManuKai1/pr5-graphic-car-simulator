@@ -17,15 +17,16 @@ import es.ucm.fdi.model.simulation.TrafficSimulation;
  */
 public class NewCarVehicle extends NewVehicle {
 	
+	// ** ATRIBUTOS ** //
 	/**
-	 * <code>Integer</code> que representa 
+	 * Entero que representa 
 	 * la resistencia a las averías.
 	 */
 	private int resistance;
 
 	/**
 	 * Probabilidad de avería del 
-	 * <code>CarVehicle</code>
+	 * {@code CarVehicle}
 	 */
 	private double faultyChance;
 	
@@ -39,17 +40,24 @@ public class NewCarVehicle extends NewVehicle {
 	 */
 	private long randomSeed;
 	
+
+
+
+
+	// ** CONSTRUCTOR ** //
 	/**
 	 * Constructor de {@link NewCarVehicle}.
 	 * 
-	 * @param newTime 		tiempo de ejecución del evento
-	 * @param ID 			identificador del nuevo <code>CarVehicle</code>
-	 * @param max 			máxima velocidad alcanzable
-	 * @param trip 			ruta de <code>Junctions</code>
-	 * @param res 			resistencia a la avería
-	 * @param breakChance 	probabilidad de avería
-	 * @param breakDuration duración máxima de avería
-	 * @param seed 			semilla aleatoria
+	 * @param newTime 		- tiempo de ejecución del 
+	 * 						evento
+	 * @param ID 			- identificador del nuevo 
+	 * 						{@code CarVehicle}
+	 * @param max 			- máxima velocidad alcanzable
+	 * @param trip 			- ruta de {@code Junction}s
+	 * @param res 			- resistencia a la avería
+	 * @param breakChance 	- probabilidad de avería
+	 * @param breakDuration - duración máxima de avería
+	 * @param seed 			- semilla aleatoria
 	 */
 	public NewCarVehicle(int newTime, String ID, int max, List<String> trip, 
 			int res, double breakChance, int breakDuration, long seed) {
@@ -60,20 +68,27 @@ public class NewCarVehicle extends NewVehicle {
 		randomSeed = seed;
 	}
 	
+	
+	
+	
+	
+	
+	
+	// ** MÉTODO DE EJECUCIÓN ** //
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * El <code>NewCarVehicle</code> crea un nuevo objeto 
-	 * <code>CarVehicle</code> en la simulación, derivado 
-	 * de un <code>Vehicle</code>.
+	 * El evento {@code NewCarVehicle} crea un nuevo objeto 
+	 * {@code CarVehicle} en la simulación.
 	 * </p>
 	 * 
-	 * @param sim la simulación sobre la que se ejecuta el evento
+	 * @param sim 	- la simulación sobre la que 
+	 * 				se ejecuta el evento
 	 * 
-	 * @throws AlreadyExistingSimObjException 	if <code>Vehicle</code>
-	 * 											ID already registered
-	 * @throws NonExistingSimObjException   	if a junction on its itinerary
-	 * 											is nonexistent.
+	 * @throws AlreadyExistingSimObjException 	if {@code Vehicle} ID 
+	 * 											already registered
+	 * @throws NonExistingSimObjException   	if a junction on the 
+	 * 											itinerary does not exist
 	 */
 	@Override
 	public void execute(TrafficSimulation sim) 
@@ -88,15 +103,20 @@ public class NewCarVehicle extends NewVehicle {
 		}
 	}
 
+	
+	
+	
+	
+	// ** MÉTODO DE DESCRIPCIÓN ** //
 	/**
 	 * <p>
-	 * Devuelve la descripción <code>NewCarVehicle</code>
+	 * Devuelve la descripción de {@code NewCarVehicle}
 	 * utilizada en las tablas de la GUI. Ejemplo:
 	 * </p> <p>
 	 * "New car vehicle v1"
 	 * </p>
 	 * 
-	 * @return 	<code>String</code> con la descripción
+	 * @return 	{@code String} con la descripción
 	 */
 	@Override
 	protected String getEventDescription() {
@@ -108,19 +128,27 @@ public class NewCarVehicle extends NewVehicle {
 		return description.toString();
 	}
 	
+	
+	
+	
+	// ** MÉTODO DE NUEVO VEHÍCULO ** //
 	/**
-	 * Método que genera un nuevo <code>CarVehicle</code> 
-	 * a partir de los atributos del <code>Event<code>.
+	 * Método que genera un nuevo {@code CarVehicle} 
+	 * a partir de los atributos del evento.
 	 * 
-	 * @param sim 	la simulación sobre la que se ejecuta el evento
-	 * @return 		<code>CarVehicle</code> con los datos del <code>Event</code>
+	 * @param sim 	- la simulación sobre la que 
+	 * 				se ejecuta el evento
 	 * 
-	 * @throws NonExistingSimObjException 	si alguna <code>Junction</code> 
-	 * 										en la ruta no está registrada
+	 * @return 		{@code CarVehicle} con los datos
+	 * 				del evento
+	 * 
+	 * @throws NonExistingSimObjException 	si alguna {@code Junction} de 
+	 * 										la ruta no está registrada
 	 */
 	@Override
 	protected CarVehicle newVehicle(TrafficSimulation sim) 
 			throws NonExistingSimObjException {
+
 		ArrayList<Junction> trip = new ArrayList<Junction>();
 
 		// Deben existir todos los cruces del itinerario 
@@ -133,7 +161,7 @@ public class NewCarVehicle extends NewVehicle {
 			else {
 				throw new NonExistingSimObjException(
 					"Junction with id: " + jID + 
-					" from itinerary of vehicle with id: " + getId() + 
+					" from itinerary of vehicle with id: " + id + 
 					" not found in simulation."
 				);
 			}

@@ -17,32 +17,40 @@ import es.ucm.fdi.model.simulation.TrafficSimulation;
  */
 public class NewBikeVehicle extends NewVehicle {
 
+	// ** CONSTRUCTOR ** //
 	/**
-	 * Constructor de {@link BikeVehicle}
+	 * Constructor de {@link BikeVehicle}.
 	 * 
-	 * @param newTime 	tiempo de ejecución del evento
-	 * @param ID 		identificador del nuevo <code>BikeVehicle</code>
-	 * @param max 		máxima velocidad alcanzable
-	 * @param trip 		ruta de <code>Junctions</code>
+	 * @param newTime 	- tiempo de ejecución del 
+	 * 					evento
+	 * @param ID 		- identificador del nuevo 
+	 * 					{@code BikeVehicle}
+	 * @param max 		- máxima velocidad alcanzable
+	 * @param trip 		- ruta de {@code Junction}s
 	 */
 	public NewBikeVehicle(int newTime, String ID, int max, List<String> trip) {
 		super(newTime, ID, max, trip);
 	}
 
+	
+	
+	
+	
+	
+	// ** MÉTODO DE EJECUCIÓN ** //
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * El <code>NewBikeVehicle</code> crea un nuevo objeto
-	 * <code>BikeVehicle</code> en la simulación, derivado
-	 * de un <code>Vehicle</code>.
+	 * El evento {@code NewBikeVehicle} crea un nuevo objeto
+	 * {@code BikeVehicle} en la simulación.
 	 * </p>
 	 * 
-	 * @param sim la simulación sobre la que se ejecuta el evento
+	 * @param sim {@inheritDoc}
 	 * 
-	 * @throws AlreadyExistingSimObjException 	if <code>Vehicle</code> 
-	 * 											ID already registered
-	 * @throws NonExistingSimObjException 		if a junction on its itinerary
-	 * 											is nonexistent.
+	 * @throws AlreadyExistingSimObjException 	if {@code Vehicle} ID 
+	 * 											already registered
+	 * @throws NonExistingSimObjException 		if a {@code Junction} on 
+	 * 											the itinerary does not exist
 	 */
 	@Override
 	public void execute(TrafficSimulation sim) 
@@ -57,15 +65,20 @@ public class NewBikeVehicle extends NewVehicle {
 		}
 	}
 
+	
+	
+	
+	
+	// ** MÉTODO DE DESCRIPCIÓN ** //
 	/**
 	 * <p>
-	 * Devuelve la descripción <code>NewBikeVehicle</code>
+	 * Devuelve la descripción {@code NewBikeVehicle}
 	 * utilizada en las tablas de la GUI. Ejemplo:
 	 * </p> <p>
 	 * "New bike vehicle v1"
 	 * </p>
 	 * 
-	 * @return 	<code>String</code> con la descripción
+	 * @return 	{@code String} con la descripción
 	 */
 	@Override
 	protected String getEventDescription() {
@@ -77,20 +90,29 @@ public class NewBikeVehicle extends NewVehicle {
 		return description.toString();
 	}
 	
+	
+	
+	
+	
+	// ** MÉTODO DE NUEVO VEHÍCULO ** //
 	/**
-	 * Método que genera un nuevo <code>BikeVehicle</code>
-	 * a partir de los atributos del <code>Event<code>.
+	 * Método que genera un nuevo {@code BikeVehicle}
+	 * a partir de los atributos del evento.
 	 * 
-	 * @param sim 	la simulación sobre la que se ejecuta el evento
-	 * @return 		<code>BikeVehicle</code> con los datos del <code>Event</code>
+	 * @param sim 	- la simulación sobre la que 
+	 * 				se ejecuta el evento
 	 * 
-	 * @throws NonExistingSimObjException 	si alguna <code>Junction</code>
-	 * 										o <code>Road<code>
-	 * 										en la ruta no está registrada
+	 * @return 		{@code BikeVehicle} con los datos 
+	 * 				del evento
+	 * 
+	 * @throws NonExistingSimObjException 	si alguna {@code Junction}
+	 * 										o {@code Road} en la ruta 
+	 * 										no está registrada
 	 */
 	@Override
 	protected BikeVehicle newVehicle(TrafficSimulation sim) 
 			throws NonExistingSimObjException {
+
 		ArrayList<Junction> trip = new ArrayList<Junction>();
 
 		// Deben existir todos los cruces del 
@@ -103,15 +125,16 @@ public class NewBikeVehicle extends NewVehicle {
 			else {
 				throw new NonExistingSimObjException(
 					"Junction with id: " + jID + 
-					" from itinerary of vehicle with id: " + getId() + 
+					" from itinerary of vehicle with id: " + id + 
 					" not found in simulation."
 				);
 			}
 		}
 		
 		try {
-			return	new BikeVehicle( getId(), trip, maxSpeed );
-		} catch (SimulationException e) {
+			return	new BikeVehicle( id, trip, maxSpeed );
+		} 
+		catch (SimulationException e) {
 			throw new NonExistingSimObjException(e.getMessage());
 		}
 	}

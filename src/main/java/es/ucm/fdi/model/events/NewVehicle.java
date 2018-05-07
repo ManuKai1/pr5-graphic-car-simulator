@@ -16,6 +16,7 @@ import es.ucm.fdi.model.simulation.TrafficSimulation;
  */
 public class NewVehicle extends Event {
 
+	// ** ATRIBUTOS ** //
 	/**
 	 * Identificador del objeto de simulación.
 	 */
@@ -27,18 +28,24 @@ public class NewVehicle extends Event {
 	protected int maxSpeed;
 
 	/**
-	 * Ruta del <code>Vehicle</code>
+	 * Ruta del {@code Vehicle}
 	 * a lo largo del simulador.
 	 */
 	protected List<String> tripID;
 	
+
+
+
+
+	// ** CONSTRUCTOR ** //
 	/**
 	 * Constructor de {@link NewVehicle}.
 	 * 
-	 * @param newTime 	tiempo de ejecución del evento
-	 * @param ID 		identificador del nuevo <code>Vehicle</code>
-	 * @param max 		máxima velocidad alcanzable
-	 * @param trip 		ruta de <code>Junctions</code>
+	 * @param newTime 	- tiempo de ejecución del evento
+	 * @param ID 		- identificador del nuevo 
+	 * 					{@code Vehicle}
+	 * @param max 		- máxima velocidad alcanzable
+	 * @param trip 		- ruta de {@code Junction}s
 	 */
 	public NewVehicle(int newTime, String ID, int max, List<String> trip) {
 		super(newTime);
@@ -46,51 +53,32 @@ public class NewVehicle extends Event {
 		maxSpeed = max;
 		tripID = trip;
 	}
-	
-	/**
-	 * Devuelve el identificador del <code>Vehicle</code>.
-	 * 
-	 * @return identificador de <code>Vehicle</code>
-	 */
-	public String getId() {
-		return id;
-	}
-	
-	/**
-	 * Devuelve la velocidad máxima alcanzable por el <code>Vehicle</code>.
-	 * 
-	 * @return velocidad máxima alcanzable
-	 */
-	public int getMaxSpeed() {
-		return maxSpeed;
-	}
-	
-	/**
-	 * Devuelve la ruta del <code>Vehicle</code> en forma de lista de <code>Junctions</code>.
-	 * 
-	 * @return <code>ArrayList</code> con los ID de las <code>Junctions</code> de la ruta
-	 */
-	public List<String> getTripID(){
-		return tripID;
-	}
 
+	
+	
+	
+	
+	
+	// ** MÉTODO DE EJECUCIÓN ** //
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * El <code>NewVehicle</code> crea un nuevo
-	 * <code>Vehicle</code> dentro de la simulación.
+	 * El {@code NewVehicle} crea un nuevo
+	 * {@code Vehicle} dentro de la simulación.
 	 * </p> <p>
 	 * La ejecución del evento puede fallar por la 
-	 * presencia de un <code>SimObj</code> ya 
+	 * presencia de un {@code SimObject} ya 
 	 * registrado en la simulación con el ID del 
-	 * nuevo <code>Vehicle</code>.
+	 * nuevo {@code Vehicle}.
 	 * </p>
 	 * 
-	 * @param sim la simulación sobre la que se ejecuta el evento
+	 * @param sim 	- la simulación sobre la que 
+	 * 				se ejecuta el evento
 	 * 
-	 * @throws AlreadyExistingSimObjException 	if <code>Vehicle</code> 
+	 * @throws AlreadyExistingSimObjException 	if {@code Vehicle} 
 	 * 											ID already registered 
-	 * @throws NonExistingSimObjException 
+	 * @throws NonExistingSimObjException 		si alguna {@code Junction} de 
+	 *	 										la ruta no está registrada
 	 */
 	@Override
 	public void execute(TrafficSimulation sim) 
@@ -111,15 +99,20 @@ public class NewVehicle extends Event {
 		}
 	}
 
+	
+	
+	
+	
+	// ** MÉTODO DE DESCRIPCIÓN ** //
 	/**
 	 * <p>
-	 * Devuelve la descripción <code>NewVehicle</code>
+	 * Devuelve la descripción {@code NewVehicle}
 	 * utilizada en las tablas de la GUI. Ejemplo:
 	 * </p> <p>
 	 * "New vehicle v1"
 	 * </p>
 	 * 
-	 * @return 	<code>String</code> con la descripción
+	 * @return 	{@coded String} con la descripción
 	 */
 	@Override
 	protected String getEventDescription() {
@@ -131,18 +124,27 @@ public class NewVehicle extends Event {
 		return description.toString();
 	}
 	
+	
+	
+	
+	
+	// ** MÉTODO DE NUEVO VEHÍCULO ** //
 	/**
-	 * Método que genera un nuevo <code>Vehicle</code>
-	 * a partir de los atributos del <code>Event<code>.
+	 * Método que genera un nuevo {@code Vehicle}
+	 * a partir de los atributos del evento.
 	 * 
-	 * @param sim 	la simulación sobre la que se ejecuta el evento
-	 * @return 		<code>Vehicle</code> con los datos del <code>Event</code>
+	 * @param sim 	- la simulación sobre la que
+	 * 				se ejecuta el evento
 	 * 
-	 * @throws NonExistingSimObjException 	si alguna <code>Junction</code> en 
+	 * @return 		{@code Vehicle} con los datos
+	 * 				del evento
+	 * 
+	 * @throws NonExistingSimObjException 	si alguna {@code Junction} en 
 	 * 										la ruta no está registrada
 	 */
 	protected Vehicle newVehicle(TrafficSimulation sim) 
 			throws NonExistingSimObjException {
+
 		ArrayList<Junction> trip = new ArrayList<Junction>();
 
 		// Deben existir todos los cruces del 
@@ -156,13 +158,13 @@ public class NewVehicle extends Event {
 			else {
 				throw new NonExistingSimObjException(
 					"Junction with id: " + jID + 
-					" from itinerary of vehicle with id: " + getId() + 
+					" from itinerary of vehicle with id: " + id + 
 					" not found in simulation."
 				);
 			}
 		}
 		try {
-			return	new Vehicle(getId(), trip, maxSpeed);
+			return	new Vehicle(id, trip, maxSpeed);
 		} catch (SimulationException e) {
 			throw new NonExistingSimObjException(e.getMessage());
 		}
@@ -172,17 +174,17 @@ public class NewVehicle extends Event {
 
 
 
-
+	// ** MÉTODO DE COMPARACIÓN ** //
 	/**
 	 * {@inheritDoc}
 	 * <p>
-	 * En el caso de <code>NewVehicle</code>,
+	 * En el caso de {@code NewVehicle},
 	 * comprueba también que los IDs, la velocidad
 	 * máxima y la ruta son iguales. 
 	 * </p>
 	 * 
 	 * @param obj 	objeto a comparar
-	 * @return 		if <code>NewVehicle</code> equals <code>obj</code>
+	 * @return 		if {@code NewVehicle} equals <code>obj</code>
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -192,7 +194,7 @@ public class NewVehicle extends Event {
 		if (same) {
 			NewVehicle other = (NewVehicle) obj;
 
-			same = ( same && getId() == other.getId() );
+			same = ( same && id == other.id );
 			same = ( same && maxSpeed == other.maxSpeed );
 			same = ( same && tripID.equals(other.tripID) );
 		}

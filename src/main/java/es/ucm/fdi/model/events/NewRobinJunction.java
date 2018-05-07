@@ -12,6 +12,7 @@ import es.ucm.fdi.model.simulation.TrafficSimulation;
  */
 public class NewRobinJunction extends NewJunction {
     
+    // ** ATRIBUTOS ** //
     /**
      * Tiempo mínimo de encendido del semáforo.
      */
@@ -22,13 +23,20 @@ public class NewRobinJunction extends NewJunction {
      */
     private int maxTime;
 
+
+
+
+
+
+    // ** CONSTRUCTOR ** //
     /**
      * Constructor de {@link NewRobinJunction}.
      * 
-     * @param newTime tiempo de ejecución del evento.
-     * @param ID identificador de la nueva <code>RobinJunction</code>.
-     * @param minT tiempo mínimo de semáforo
-     * @param maxT tiempo máximo de semáforo
+     * @param newTime   - tiempo de ejecución del evento
+     * @param ID        - identificador de la nueva
+     *                  {@code RobinJunction}
+     * @param minT      - tiempo mínimo de semáforo
+     * @param maxT      - tiempo máximo de semáforo
      */
     public NewRobinJunction(int newTime, String ID, int minT, int maxT) {
         super(newTime, ID);
@@ -36,20 +44,29 @@ public class NewRobinJunction extends NewJunction {
         maxTime = maxT;
     }
 
+   
+   
+   
+   
+    
+    // ** MÉTODO DE EJECUCIÓN ** //
     /**
      * {@inheritDoc}
      * <p>
-     * El <code>NewRobinJunction</code> crea un nuevo objeto <code>RobinJunction</code> en la 
-     * simulación, derivado de una <code>Junction</code>
+     * El evento {@code NewRobinJunction} crea un nuevo objeto 
+     * {@code RobinJunction} en la  simulación.
      * </p>
      * 
-     * @param sim la simulación sobre la que se ejecuta el evento.
+     * @param sim   - la simulación sobre la que 
+     *              se ejecuta el evento
      * 
-     * @throws AlreadyExistingSimObjException   if <code>Vehicle</code> 
-     *                                          ID already registered
+     * @throws AlreadyExistingSimObjException   if {@code Junction} ID
+     *                                          already registered
      */
     @Override
-    public void execute(TrafficSimulation sim) throws AlreadyExistingSimObjException {
+    public void execute(TrafficSimulation sim) 
+            throws AlreadyExistingSimObjException {
+
         try {
             super.execute(sim);
         }
@@ -58,15 +75,22 @@ public class NewRobinJunction extends NewJunction {
         }
     }
 
+    
+    
+    
+    
+    
+    
+    // ** MÉTODO DE DESCRIPCIÓN ** //
     /**
 	 * <p>
-	 * Devuelve la descripción <code>NewRobinJunction</code>
+	 * Devuelve la descripción {@code NewRobinJunction}
 	 * utilizada en las tablas de la GUI. Ejemplo:
 	 * </p> <p>
 	 * "New robin junction j3"
 	 * </p>
 	 * 
-	 * @return 	<code>String</code> con la descripción
+	 * @return  {@code String} con la descripción
 	 */
 	@Override
 	protected String getEventDescription() {
@@ -78,11 +102,17 @@ public class NewRobinJunction extends NewJunction {
 		return 	description.toString();
 	}
 
+    
+    
+    
+    
+    
+    // ** MÉTODO DE NUEVA INTERSECCIÓN ** //
     /**
-     * Método que genera una nueva <code>RobinJunction</code>ç
+     * Método que genera una nueva {@code RobinJunction}ç
      * a partir de los actributos del <code>Event</code>.
      * 
-     * @return <code>RobinJunction</code> with indicated attributes
+     * @return {@code RobinJunction} with indicated attributes
      */
     @Override
     protected RobinJunction newJunction() {

@@ -11,29 +11,36 @@ import es.ucm.fdi.model.simulation.TrafficSimulation;
  */
 public class NewCrowdedJunction extends NewJunction {
 
+    // ** CONSTRUCTOR ** //
     /**
      * Constructor de {@link NewCrowdedJunction}.
      * 
-     * @param newTime   tiempo de ejecución del evento.
+     * @param newTime   - tiempo de ejecución del 
+     *                  evento
      * @param ID        identificador de la nueva 
-     *                      <code>CrowdedJunction</code>.
+     *                  {@code CrowdedJunction}
      */
     public NewCrowdedJunction(int newTime, String ID) {
         super(newTime, ID);
     }
 
+    
+    
+    
+    
+    // ** MÉTODO DE EJECUCIÓN ** //
     /**
      * {@inheritDoc}
      * <p>
-     * El <code>NewCrowdedJunction</code> crea un nuevo objeto
-     * <code>CrowdedJunction</code> en la* simulación, derivado 
-     * de una <code>Junction</code>.
+     * El evento {@code NewCrowdedJunction} crea un nuevo 
+     * objeto {@code CrowdedJunction} en la simulación.
      * </p>
      * 
-     * @param sim la simulación sobre la que se ejecuta el evento
+     * @param sim   - la simulación sobre la que
+     *              se ejecuta el evento
      * 
-     * @throws AlreadyExistingSimObjException   if <code>Vehicle</code> 
-     *                                          ID already registered
+     * @throws AlreadyExistingSimObjException   if {@code Junction} ID 
+     *                                          already registered
      */
     @Override
     public void execute(TrafficSimulation sim) 
@@ -45,15 +52,22 @@ public class NewCrowdedJunction extends NewJunction {
         }
     }
 
+    
+    
+    
+    
+    
+    
+    // ** MÉTODO DE DESCRIPCIÓN ** //
     /**
 	 * <p>
-	 * Devuelve la descripción <code>NewCrowdedJunction</code>
+	 * Devuelve la descripción {@code NewCrowdedJunction}
 	 * utilizada en las tablas de la GUI. Ejemplo:
 	 * </p> <p>
 	 * "New crowded junction j3"
 	 * </p>
 	 * 
-	 * @return 	<code>String</code> con la descripción
+	 * @return  {@code String} con la descripción
 	 */
 	@Override
 	protected String getEventDescription() {
@@ -65,11 +79,16 @@ public class NewCrowdedJunction extends NewJunction {
 		return 	description.toString();
 	}
 
+    
+    
+    
+    // ** MÉTODO DE NUEVA INTERSECCIÓN ** //
     /**
-     * Método que genera una nueva <code>CrowdedJunction</code>
-     * a partir de los atributos del <code>Event</code>.
+     * Método que genera una nueva {@code CrowdedJunction}
+     * a partir de los atributos del evento.
      * 
-     * @return <code>CrowdedJunction</code> with indicated attributes
+     * @return  {@code CrowdedJunction} with 
+     *          indicated attributes
      */
     @Override 
     protected CrowdedJunction newJunction() {

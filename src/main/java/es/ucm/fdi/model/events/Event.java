@@ -14,23 +14,51 @@ import es.ucm.fdi.util.TableDataType;
  */
 public abstract class Event implements Describable {
 	
+	// ** ATRIBUTOS ** //
 	/**
 	 * Tiempo de ejecución del evento.
 	 */
 	private int time;
-	
+
+
+
+
+
+	// ** CONSTRUCTOR ** //
 	/**
 	 * Constructor de {@link Event}.
 	 * 
-	 * @param newTime tiempo de ejecución del evento
+	 * @param newTime 	- tiempo de ejecución 
+	 * 					del evento
 	 */
 	public Event(int newTime) {
 		time = newTime;
 	}
 
+
+
+
+	// ** MÉTODO DE EJECUCIÓN ** //
+	/**
+	 * Ejecuta el {@code Event} en la simulación {@code sim}.
+	 * 
+	 * @param sim 	- simulación en la que se
+	 * 				ejecuta el evento
+	 */
+	public abstract void execute(TrafficSimulation sim) 
+			throws AlreadyExistingSimObjException, NonExistingSimObjException;
+
+	
+	
+	
+
+	
+	// ** MÉTODOS DE DESCRIPCIÓN ** //
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	public void describe(Map<TableDataType, Object> out)
-	{
+	public void describe(Map<TableDataType, Object> out) {
 		// Inclusión en el mapa.
 		String time = Integer.toString(this.time);
 		String description = getEventDescription();
@@ -40,52 +68,55 @@ public abstract class Event implements Describable {
 
 	protected abstract String getEventDescription();
 
-	/**
-	 * Ejecuta el <code>Event</code> en la simulación <code>sim</code> pasada como argumento.
-	 */
-	public abstract void execute(TrafficSimulation sim) throws AlreadyExistingSimObjException, NonExistingSimObjException;
 
+
+
+
+
+	// ** MÉTODO DE COMPARACIÓN ** //
 	/**
-	 * Devuelve el tiempo en que se ejecutará el <code>Event</code>.
+	 * Comprueba si el {@code Event} es igual a 
+	 * un objeto dado {@code obj}.
 	 * 
-	 * @return tiempo de ejecución del <code>Event</code>
-	 */
-	public int getTime() {
-		return time;
-	}
-	
-
-
-
-
-
-
-
-	/**
-	 * Comprueba si el <code>Event</code> es igual a un objeto dado
-	 * <code>obj</code>.
+	 * @param obj 	- objeto a comparar
 	 * 
-	 * @param obj objeto a comparar
-	 * @return if <code>Event</code> equals <code>obj</code>
+	 * @return 	if {@code Event} equals {@code obj}
 	 */
+	@Override
 	public boolean equals(Object obj) {
 		// Mismo evento.
 		if (this == obj) {
 			return true;
 		}
-		
+
 		// 'obj' no es nada.
 		if (obj == null) {
 			return false;
 		}
-			
+
 		// Clases distintas.
-		if ( getClass() != obj.getClass() ) {
+		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		
+
 		// Comparación del tiempo de ejecución.
 		Event other = (Event) obj;
-		return ( time == other.getTime() );
-	}	
+		return (time == other.getTime());
+	}
+
+
+
+
+
+	// ** GETTERS/SETTERS ** //
+	/**
+	 * Devuelve el tiempo en que se ejecutará 
+	 * el {@code Event}.
+	 * 
+	 * @return 	tiempo de ejecución
+	 * 			{@code Event}
+	 */
+	public int getTime() {
+		return time;
+	}
 }

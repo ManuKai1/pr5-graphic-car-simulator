@@ -5,7 +5,7 @@ import java.util.Map;
 public interface Describable {
 
     /**
-     * Método de actualización de mapa.
+     * Método de actualización de mapa de descripciones.
      * 
      * @param out - mapa a actualizar con los 
      *              pares clave-valor
